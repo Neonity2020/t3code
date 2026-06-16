@@ -81,6 +81,7 @@ import { readLocalApi } from "~/localApi";
 import { getSourceControlPresentation } from "~/sourceControlPresentation";
 import { useStore } from "~/store";
 import { createThreadSelectorByRef } from "~/storeSelectors";
+import { useT } from "~/i18n";
 
 interface GitActionsControlProps {
   gitCwd: string | null;
@@ -188,6 +189,10 @@ function isPublishProviderKind(
 function getPublishProviderReadiness(input: {
   provider: PublishProviderKind;
   sourceControlProviders: ReadonlyArray<SourceControlProviderDiscoveryItem>;
+  messages: {
+    readonly providerUnavailable: string;
+    readonly providerAuthSetup: (provider: string) => string;
+  };
 }): { readonly ready: boolean; readonly hint: string | null } {
   const discovered = input.sourceControlProviders.find(
     (provider) => provider.kind === input.provider,
@@ -195,7 +200,7 @@ function getPublishProviderReadiness(input: {
   if (!discovered) {
     return {
       ready: false,
-      hint: "Provider status unavailable. Open Settings -> Source Control and rescan.",
+      hint: input.messages.providerUnavailable,
     };
   }
   if (discovered.status !== "available") {
@@ -206,7 +211,7 @@ function getPublishProviderReadiness(input: {
       ready: false,
       hint:
         Option.getOrNull(discovered.auth.detail) ??
-        `${discovered.label} is not authenticated. Open Settings -> Source Control for setup guidance.`,
+        input.messages.providerAuthSetup(discovered.label),
     };
   }
   return { ready: true, hint: null };
@@ -347,6 +352,7 @@ interface PublishRepositoryDialogProps {
 }
 
 function PublishRepositoryDialog(props: PublishRepositoryDialogProps) {
+  const t = useT();
   const navigate = useNavigate();
   const sourceControlDiscovery = useSourceControlDiscovery();
   const [publishProvider, setPublishProvider] = useState<PublishProviderKind>("github");
@@ -386,16 +392,21 @@ function PublishRepositoryDialog(props: PublishRepositoryDialogProps) {
   }, [sourceControlDiscovery.data]);
   const publishProviderReadiness = useMemo(() => {
     const sourceControlProviders = sourceControlDiscovery.data?.sourceControlProviders ?? [];
+    const messages = {
+      providerUnavailable: t("settings.sourceControl.openAndRescan"),
+      providerAuthSetup: (provider: string) => t("settings.sourceControl.authSetup", { provider }),
+    };
     return Object.fromEntries(
       PUBLISH_PROVIDER_OPTIONS.map((option) => [
         option.value,
         getPublishProviderReadiness({
           provider: option.value,
           sourceControlProviders,
+          messages,
         }),
       ]),
     ) as Record<PublishProviderKind, { readonly ready: boolean; readonly hint: string | null }>;
-  }, [sourceControlDiscovery.data]);
+  }, [sourceControlDiscovery.data, t]);
   const hasReadyPublishProvider = useMemo(
     () => PUBLISH_PROVIDER_OPTIONS.some((option) => publishProviderReadiness[option.value].ready),
     [publishProviderReadiness],
@@ -632,8 +643,7 @@ function PublishRepositoryDialog(props: PublishRepositoryDialogProps) {
                               }
                             />
                             <TooltipPopup side="top" align="end" className="max-w-72">
-                              {readiness.hint ??
-                                "Open Settings -> Source Control to configure this provider."}
+                              {readiness.hint ?? t("settings.sourceControl.configureProvider")}
                             </TooltipPopup>
                           </Tooltip>
                         </div>

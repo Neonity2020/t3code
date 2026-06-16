@@ -2,6 +2,7 @@ import { Undo2Icon } from "lucide-react";
 import { type ComponentPropsWithoutRef, type ReactNode, useEffect, useState } from "react";
 
 import { cn } from "../../lib/utils";
+import { useT } from "../../i18n";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 
@@ -96,6 +97,8 @@ export function SettingsRow({
 }
 
 export function SettingResetButton({ label, onClick }: { label: string; onClick: () => void }) {
+  const t = useT();
+
   return (
     <Tooltip>
       <TooltipTrigger
@@ -103,7 +106,7 @@ export function SettingResetButton({ label, onClick }: { label: string; onClick:
           <Button
             size="icon-xs"
             variant="ghost"
-            aria-label={`Reset ${label} to default`}
+            aria-label={`${t("common.resetToDefault")}: ${label}`}
             className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
             onClick={(event) => {
               event.stopPropagation();
@@ -114,7 +117,7 @@ export function SettingResetButton({ label, onClick }: { label: string; onClick:
           </Button>
         }
       />
-      <TooltipPopup side="top">Reset to default</TooltipPopup>
+      <TooltipPopup side="top">{t("common.resetToDefault")}</TooltipPopup>
     </Tooltip>
   );
 }

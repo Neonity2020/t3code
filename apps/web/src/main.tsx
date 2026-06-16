@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { ClerkProvider } from "@clerk/react";
 import { RouterProvider } from "@tanstack/react-router";
@@ -18,6 +18,19 @@ import { getRouter } from "./router";
 import { APP_DISPLAY_NAME } from "./branding";
 import { syncDocumentWindowControlsOverlayClass } from "./lib/windowControlsOverlay";
 import { ElectronBrowserHost } from "./browser/ElectronBrowserHost";
+import { useSettings } from "./hooks/useSettings";
+import { resolveLocale } from "./i18n";
+
+function GlobalSettingsSync() {
+  const uiLanguage = useSettings((settings) => settings.uiLanguage);
+
+  useEffect(() => {
+    document.documentElement.lang =
+      resolveLocale(uiLanguage, navigator.language) === "zh" ? "zh-CN" : "en";
+  }, [uiLanguage]);
+
+  return null;
+}
 
 // Electron loads the app from a file-backed shell, so hash history avoids path resolution issues.
 const history = isElectron ? createHashHistory() : createBrowserHistory();
@@ -34,6 +47,7 @@ const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string
 
 const app = (
   <>
+    <GlobalSettingsSync />
     <RouterProvider router={router} />
     <ElectronBrowserHost />
   </>

@@ -118,6 +118,7 @@ import { stackedThreadToast, toastManager } from "./ui/toast";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "./ui/tooltip";
 import { ComposerHandleContext, useComposerHandleContext } from "../composerHandleContext";
 import type { ChatComposerHandle } from "./chat/ChatComposer";
+import { useT } from "../i18n";
 
 const EMPTY_BROWSE_ENTRIES: FilesystemBrowseResult["entries"] = [];
 const BROWSE_STALE_TIME_MS = 30_000;
@@ -270,10 +271,14 @@ type AddProjectRemoteSourceReadiness = Record<
 
 function buildAddProjectRemoteSourceReadiness(
   discovery: SourceControlDiscoveryResult | null,
+  messages: {
+    readonly providerUnavailable: string;
+    readonly providerAuthSetup: (provider: string) => string;
+  },
 ): AddProjectRemoteSourceReadiness {
   const unavailable = {
     ready: false,
-    hint: "Provider status unavailable. Open Settings -> Source Control and rescan.",
+    hint: messages.providerUnavailable,
   } as const;
   const defaultReadiness: AddProjectRemoteSourceReadiness = {
     url: { ready: true, hint: null },
@@ -307,9 +312,7 @@ function buildAddProjectRemoteSourceReadiness(
     if (provider.auth.status === "unauthenticated") {
       readiness[source] = {
         ready: false,
-        hint:
-          Option.getOrNull(provider.auth.detail) ??
-          `${provider.label} is not authenticated. Open Settings -> Source Control for setup guidance.`,
+        hint: Option.getOrNull(provider.auth.detail) ?? messages.providerAuthSetup(provider.label),
       };
       continue;
     }
@@ -391,6 +394,7 @@ function CommandPaletteDialog() {
 }
 
 function OpenCommandPaletteDialog() {
+  const t = useT();
   const navigate = useNavigate();
   const setOpen = useCommandPaletteStore((store) => store.setOpen);
   const openIntent = useCommandPaletteStore((store) => store.openIntent);
@@ -768,6 +772,14 @@ function OpenCommandPaletteDialog() {
     setOpen(false);
     void navigate({ to: "/settings/source-control" });
   }, [navigate, setOpen]);
+  const sourceControlReadinessMessages = useMemo(
+    () => ({
+      providerUnavailable: t("settings.sourceControl.openAndRescan"),
+      providerAuthSetup: (provider: string) => t("settings.sourceControl.authSetup", { provider }),
+      configureProvider: t("settings.sourceControl.configureProvider"),
+    }),
+    [t],
+  );
 
   const buildAddProjectSourceGroups = useCallback(
     (
@@ -822,7 +834,7 @@ function OpenCommandPaletteDialog() {
                 }
               />
               <TooltipPopup align="end" side="left">
-                {disabledHint ?? "Open Settings -> Source Control to configure this provider."}
+                {disabledHint ?? sourceControlReadinessMessages.configureProvider}
               </TooltipPopup>
             </Tooltip>
           </span>
@@ -860,7 +872,12 @@ function OpenCommandPaletteDialog() {
 
       return [{ value: `sources:${environmentId}`, label: "Sources", items: sourceItems }];
     },
-    [openSourceControlSettings, startAddProjectBrowse, startAddProjectClone],
+    [
+      openSourceControlSettings,
+      sourceControlReadinessMessages.configureProvider,
+      startAddProjectBrowse,
+      startAddProjectClone,
+    ],
   );
 
   const startAddProjectSourceSelection = useCallback(
@@ -873,7 +890,7 @@ function OpenCommandPaletteDialog() {
         addonIcon: <FolderPlusIcon className={ADDON_ICON_CLASS} />,
         groups: buildAddProjectSourceGroups(
           environmentId,
-          buildAddProjectRemoteSourceReadiness(initialDiscovery),
+          buildAddProjectRemoteSourceReadiness(initialDiscovery, sourceControlReadinessMessages),
         ),
       });
 
@@ -893,14 +910,14 @@ function OpenCommandPaletteDialog() {
               addonIcon: <FolderPlusIcon className={ADDON_ICON_CLASS} />,
               groups: buildAddProjectSourceGroups(
                 environmentId,
-                buildAddProjectRemoteSourceReadiness(discovery),
+                buildAddProjectRemoteSourceReadiness(discovery, sourceControlReadinessMessages),
               ),
             },
           ];
         });
       });
     },
-    [buildAddProjectSourceGroups],
+    [buildAddProjectSourceGroups, sourceControlReadinessMessages],
   );
 
   const addProjectEnvironmentItems: CommandPaletteActionItem[] = addProjectEnvironmentOptions.map(

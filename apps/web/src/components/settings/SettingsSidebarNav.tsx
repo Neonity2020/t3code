@@ -21,6 +21,7 @@ import {
   useSidebar,
 } from "../ui/sidebar";
 import { T3ConnectSidebarAvatar, T3ConnectSidebarSignIn } from "../clerk/T3ConnectSidebarSignIn";
+import { type MessageKey, useT } from "../../i18n";
 
 export type SettingsSectionPath =
   | "/settings/general"
@@ -31,19 +32,20 @@ export type SettingsSectionPath =
   | "/settings/archived";
 
 export const SETTINGS_NAV_ITEMS: ReadonlyArray<{
-  label: string;
+  labelKey: MessageKey;
   to: SettingsSectionPath;
   icon: ComponentType<{ className?: string }>;
 }> = [
-  { label: "General", to: "/settings/general", icon: Settings2Icon },
-  { label: "Keybindings", to: "/settings/keybindings", icon: KeyboardIcon },
-  { label: "Providers", to: "/settings/providers", icon: BotIcon },
-  { label: "Source Control", to: "/settings/source-control", icon: GitBranchIcon },
-  { label: "Connections", to: "/settings/connections", icon: Link2Icon },
-  { label: "Archive", to: "/settings/archived", icon: ArchiveIcon },
+  { labelKey: "settings.nav.general", to: "/settings/general", icon: Settings2Icon },
+  { labelKey: "settings.nav.keybindings", to: "/settings/keybindings", icon: KeyboardIcon },
+  { labelKey: "settings.nav.providers", to: "/settings/providers", icon: BotIcon },
+  { labelKey: "settings.nav.sourceControl", to: "/settings/source-control", icon: GitBranchIcon },
+  { labelKey: "settings.nav.connections", to: "/settings/connections", icon: Link2Icon },
+  { labelKey: "settings.nav.archive", to: "/settings/archived", icon: ArchiveIcon },
 ];
 
 export function SettingsSidebarNav({ pathname }: { pathname: string }) {
+  const t = useT();
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -94,7 +96,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                           : "size-4 shrink-0 text-muted-foreground/60"
                       }
                     />
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate">{t(item.labelKey)}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
@@ -115,7 +117,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                 onClick={handleBackClick}
               >
                 <ArrowLeftIcon className="size-4" />
-                <span>Back</span>
+                <span>{t("common.back")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

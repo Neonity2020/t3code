@@ -6,6 +6,7 @@ import { type ProviderDriverKind, type ProviderInstanceId } from "@t3tools/contr
 import { ensureLocalApi } from "../localApi";
 import { useDismissedProviderUpdateNotificationKeys } from "../providerUpdateDismissal";
 import { useServerProviders } from "../rpc/serverState";
+import { useT } from "../i18n";
 import { PROVIDER_ICON_BY_PROVIDER } from "./chat/providerIconUtils";
 import {
   canOneClickUpdateProviderCandidate,
@@ -59,6 +60,7 @@ function updateProviderUpdateToast(input: {
   readonly toastId: ProviderUpdateToastId;
   readonly view: ProviderUpdateToastView;
   readonly openSettings: () => void;
+  readonly settingsLabel: string;
 }) {
   if (input.view.type === "loading" || input.view.type === "success") {
     toastManager.update(input.toastId, {
@@ -84,7 +86,7 @@ function updateProviderUpdateToast(input: {
       description: input.view.description,
       timeout: 0,
       actionProps: {
-        children: "Settings",
+        children: input.settingsLabel,
         onClick: input.openSettings,
       },
       actionVariant: "outline",
@@ -100,6 +102,7 @@ function isTerminalProviderUpdateToastView(view: ProviderUpdateToastView) {
 }
 
 export function ProviderUpdateLaunchNotification() {
+  const t = useT();
   const navigate = useNavigate();
   const providers = useServerProviders();
   const activeToastRef = useRef<ActiveProviderUpdateToast | null>(null);
@@ -150,12 +153,13 @@ export function ProviderUpdateLaunchNotification() {
       toastId: activeToast.toastId,
       view,
       openSettings: () => openProviderSettings(activeToast.toastId),
+      settingsLabel: t("common.settings"),
     });
 
     if (isTerminalProviderUpdateToastView(view)) {
       activeToastRef.current = null;
     }
-  }, [providers, openProviderSettings]);
+  }, [providers, openProviderSettings, t]);
 
   useEffect(() => {
     const activeToast = activeToastRef.current;
@@ -204,6 +208,7 @@ export function ProviderUpdateLaunchNotification() {
         toastId,
         view: getProviderUpdateRunningToastView(providerCount),
         openSettings,
+        settingsLabel: t("common.settings"),
       });
 
       void Promise.allSettled(
@@ -225,6 +230,7 @@ export function ProviderUpdateLaunchNotification() {
             toastId,
             view: getProviderUpdateRejectedToastView(providerCount, rejectedMessage),
             openSettings,
+            settingsLabel: t("common.settings"),
           });
           activeToastRef.current = null;
           return;
@@ -242,6 +248,7 @@ export function ProviderUpdateLaunchNotification() {
           toastId,
           view,
           openSettings,
+          settingsLabel: t("common.settings"),
         });
 
         if (isTerminalProviderUpdateToastView(view)) {
@@ -263,7 +270,7 @@ export function ProviderUpdateLaunchNotification() {
                 onClick: runUpdates,
               }
             : {
-                children: "Settings",
+                children: t("common.settings"),
                 onClick: openSettings,
               },
         actionVariant: oneClickProviders.length > 0 ? "default" : "outline",
@@ -277,7 +284,7 @@ export function ProviderUpdateLaunchNotification() {
           ...(oneClickProviders.length > 0
             ? {
                 secondaryActionProps: {
-                  children: "Settings",
+                  children: t("common.settings"),
                   onClick: openSettings,
                 },
                 secondaryActionVariant: "outline" as const,
@@ -293,6 +300,7 @@ export function ProviderUpdateLaunchNotification() {
     notificationKey,
     oneClickProviders,
     openProviderSettings,
+    t,
     updateProviders,
   ]);
 
