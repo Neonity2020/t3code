@@ -46,7 +46,7 @@ import {
   deriveProviderInstanceEntries,
   sortProviderInstanceEntries,
 } from "../../providerInstances";
-import { ensureLocalApi, readLocalApi } from "../../localApi";
+import { ensureLocalApi, hasPairedBackend, readLocalApi } from "../../localApi";
 import { useShallow } from "zustand/react/shallow";
 import { selectProjectsAcrossEnvironments, useStore } from "../../store";
 import { useArchivedThreadSnapshots } from "../../lib/archivedThreadsState";
@@ -1051,6 +1051,16 @@ export function ProviderSettingsPanel() {
 
   const refreshProviders = useCallback(() => {
     if (refreshingRef.current) return;
+    if (!hasPairedBackend()) {
+      toastManager.add(
+        stackedThreadToast({
+          type: "error",
+          title: "Cannot refresh providers",
+          description: "Pair a backend before refreshing provider status.",
+        }),
+      );
+      return;
+    }
     refreshingRef.current = true;
     setIsRefreshingProviders(true);
     void ensureLocalApi()
@@ -1065,6 +1075,17 @@ export function ProviderSettingsPanel() {
   }, []);
 
   const runProviderUpdate = useCallback(async (candidate: ProviderUpdateCandidate) => {
+    if (!hasPairedBackend()) {
+      toastManager.add(
+        stackedThreadToast({
+          type: "error",
+          title: `Cannot update ${PROVIDER_DISPLAY_NAMES[candidate.driver] ?? candidate.driver}`,
+          description: "Pair a backend before upgrading Claude Code or other providers.",
+        }),
+      );
+      return;
+    }
+
     let started = false;
     setUpdatingProviderDrivers((previous) => {
       if (previous.has(candidate.driver)) {

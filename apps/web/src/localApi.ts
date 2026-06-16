@@ -195,6 +195,12 @@ export function ensureLocalApi(): LocalApi {
   return api;
 }
 
+export function hasPairedBackend(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.nativeApi) return true;
+  return getPrimaryKnownEnvironment() !== null;
+}
+
 export async function __resetLocalApiForTests() {
   cachedApi = undefined;
   const { __resetClientSettingsPersistenceForTests } = await import("./hooks/useSettings");

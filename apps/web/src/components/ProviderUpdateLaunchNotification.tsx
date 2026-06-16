@@ -3,7 +3,7 @@ import { DownloadIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { type ProviderDriverKind, type ProviderInstanceId } from "@t3tools/contracts";
 
-import { ensureLocalApi } from "../localApi";
+import { ensureLocalApi, hasPairedBackend } from "../localApi";
 import { useDismissedProviderUpdateNotificationKeys } from "../providerUpdateDismissal";
 import { useServerProviders } from "../rpc/serverState";
 import { useT } from "../i18n";
@@ -190,6 +190,16 @@ export function ProviderUpdateLaunchNotification() {
 
     const runUpdates = () => {
       if (updateStarted || oneClickProviders.length === 0) {
+        return;
+      }
+      if (!hasPairedBackend()) {
+        toastManager.add(
+          stackedThreadToast({
+            type: "error",
+            title: "Cannot update providers",
+            description: "Pair a backend before updating Claude Code or other providers.",
+          }),
+        );
         return;
       }
       updateStarted = true;
