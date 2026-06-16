@@ -507,7 +507,13 @@ function stageMacIcons(stageResourcesDir: string, sourcePng: string, verbose: bo
       verbose,
     });
 
-    yield* generateMacIconSet(sourcePng, iconIcnsPath, tmpRoot, path, verbose);
+    yield* generateMacIconSet(sourcePng, iconIcnsPath, tmpRoot, path, verbose).pipe(
+      Effect.catch((error) =>
+        Effect.logWarning("Failed to generate macOS iconset, keeping the staged icon.icns fallback.", {
+          cause: error,
+        }),
+      ),
+    );
   });
 }
 

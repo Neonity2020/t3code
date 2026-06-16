@@ -15,6 +15,7 @@ import {
   DEFAULT_GIT_TEXT_GENERATION_MODEL_BY_PROVIDER,
   DEFAULT_MODEL_BY_PROVIDER,
   DEFAULT_SERVER_SETTINGS,
+  defaultInstanceIdForDriver,
   isProviderDriverKind,
   type ModelSelection,
   type ProviderInstanceConfig,
@@ -53,14 +54,35 @@ import * as ServerSecretStore from "./auth/ServerSecretStore.ts";
 const encodeServerSettings = Schema.encodeEffect(ServerSettings);
 const encodeServerSettingsJson = Schema.encodeUnknownEffect(fromJsonStringPretty(ServerSettings));
 const decodeServerSettings = Schema.decodeUnknownEffect(ServerSettings);
+const PI_AGENT_DRIVER_KIND = ProviderDriverKind.make("piAgent");
+const PI_AGENT_DEFAULT_INSTANCE_ID = defaultInstanceIdForDriver(PI_AGENT_DRIVER_KIND);
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
+function migratePiAgentLegacyDefault(settings: ServerSettings): ServerSettings {
+  if (settings.providerInstances[PI_AGENT_DEFAULT_INSTANCE_ID] !== undefined) {
+    return settings;
+  }
+  if (settings.providers.piAgent.enabled !== false) {
+    return settings;
+  }
+  return {
+    ...settings,
+    providers: {
+      ...settings.providers,
+      piAgent: {
+        ...settings.providers.piAgent,
+        enabled: true,
+      },
+    },
+  };
+}
+
 const normalizeServerSettings = (
   settings: ServerSettings,
 ): Effect.Effect<ServerSettings, ServerSettingsError> =>
-  encodeServerSettings(settings).pipe(
+  encodeServerSettings(migratePiAgentLegacyDefault(settings)).pipe(
     Effect.flatMap(decodeServerSettings),
     Effect.mapError(
       (cause) =>

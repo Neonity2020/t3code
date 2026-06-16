@@ -335,6 +335,50 @@ it.layer(NodeServices.layer)("server settings", (it) => {
     }).pipe(Effect.provide(makeServerSettingsLayer())),
   );
 
+  it.effect("migrates the old Pi Agent legacy disabled default to enabled", () =>
+    Effect.gen(function* () {
+      const serverSettings = yield* ServerSettingsService;
+      const settings = yield* serverSettings.getSettings;
+
+      assert.equal(settings.providers.piAgent.enabled, true);
+    }).pipe(
+      Effect.provide(
+        ServerSettingsService.layerTest({
+          providers: {
+            piAgent: {
+              enabled: false,
+            },
+          },
+        }),
+      ),
+    ),
+  );
+
+  it.effect("preserves an explicit disabled Pi Agent provider instance", () =>
+    Effect.gen(function* () {
+      const serverSettings = yield* ServerSettingsService;
+      const settings = yield* serverSettings.getSettings;
+
+      assert.equal(settings.providerInstances[ProviderInstanceId.make("piAgent")]?.enabled, false);
+    }).pipe(
+      Effect.provide(
+        ServerSettingsService.layerTest({
+          providers: {
+            piAgent: {
+              enabled: false,
+            },
+          },
+          providerInstances: {
+            [ProviderInstanceId.make("piAgent")]: {
+              driver: ProviderDriverKind.make("piAgent"),
+              enabled: false,
+            },
+          },
+        }),
+      ),
+    ),
+  );
+
   it.effect("trims provider path settings when updates are applied", () =>
     Effect.gen(function* () {
       const serverSettings = yield* ServerSettingsService;

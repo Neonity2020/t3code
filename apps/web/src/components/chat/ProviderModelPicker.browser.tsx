@@ -213,6 +213,7 @@ const TEST_PROVIDERS: ReadonlyArray<ServerProvider> = [
 const CODEX_INSTANCE_ID = ProviderInstanceId.make("codex");
 const CLAUDE_INSTANCE_ID = ProviderInstanceId.make("claudeAgent");
 const OPENCODE_INSTANCE_ID = ProviderInstanceId.make("opencode");
+const PI_AGENT_INSTANCE_ID = ProviderInstanceId.make("piAgent");
 
 function buildCodexProvider(models: ServerProvider["models"]): ServerProvider {
   return {
@@ -240,6 +241,23 @@ function buildOpenCodeProvider(models: ServerProvider["models"]): ServerProvider
     version: "1.0.0",
     status: "ready",
     auth: { status: "authenticated" },
+    checkedAt: new Date().toISOString(),
+    models,
+    slashCommands: [],
+    skills: [],
+  };
+}
+
+function buildPiAgentProvider(models: ServerProvider["models"]): ServerProvider {
+  return {
+    driver: ProviderDriverKind.make("piAgent"),
+    instanceId: PI_AGENT_INSTANCE_ID,
+    displayName: "Pi Agent",
+    enabled: true,
+    installed: true,
+    version: null,
+    status: "ready",
+    auth: { status: "unknown" },
     checkedAt: new Date().toISOString(),
     models,
     slashCommands: [],
@@ -404,6 +422,41 @@ describe("ProviderModelPicker", () => {
         const listText = getModelPickerListText();
         expect(listText).toContain("GPT-5 Codex");
         expect(listText).not.toContain("Claude Opus 4.6");
+      });
+    } finally {
+      await mounted.cleanup();
+    }
+  });
+
+  it("shows Pi Agent in the provider rail with its Auto model", async () => {
+    const providers: ReadonlyArray<ServerProvider> = [
+      ...TEST_PROVIDERS,
+      buildPiAgentProvider([
+        {
+          slug: "auto",
+          name: "Auto",
+          isCustom: false,
+          capabilities: createModelCapabilities({ optionDescriptors: [] }),
+        },
+      ]),
+    ];
+    const mounted = await mountPicker({
+      activeInstanceId: CODEX_INSTANCE_ID,
+      model: "gpt-5-codex",
+      lockedProvider: null,
+      providers,
+    });
+
+    try {
+      await page.getByRole("button").click();
+
+      await vi.waitFor(() => {
+        expect(document.querySelector('[data-model-picker-provider="piAgent"]')).not.toBeNull();
+      });
+      await page.getByRole("button", { name: "Pi Agent", exact: true }).click();
+
+      await vi.waitFor(() => {
+        expect(getVisibleModelNames()).toEqual(["Auto"]);
       });
     } finally {
       await mounted.cleanup();

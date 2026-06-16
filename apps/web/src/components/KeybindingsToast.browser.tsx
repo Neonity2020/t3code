@@ -159,6 +159,7 @@ function createBaseServerConfig(): ServerConfig {
           launchArgs: "",
         },
         cursor: { enabled: true, binaryPath: "", apiEndpoint: "", customModels: [] },
+        piAgent: { enabled: true, binaryPath: "", customModels: [] },
         grok: { enabled: true, binaryPath: "", customModels: [] },
         opencode: {
           enabled: true,
