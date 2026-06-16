@@ -196,8 +196,6 @@ export function ensureLocalApi(): LocalApi {
 }
 
 export function hasPairedBackend(): boolean {
-  if (typeof window === "undefined") return false;
-  if (window.nativeApi) return true;
   return getPrimaryKnownEnvironment() !== null;
 }
 
