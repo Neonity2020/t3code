@@ -27,6 +27,7 @@ import {
 } from "./clientPersistenceStorage";
 
 let cachedApi: LocalApi | undefined;
+let cachedApiEnvironmentId: string | undefined;
 
 function unavailableLocalBackendError(): Error {
   return new Error("Local backend API is unavailable before a backend is paired.");
@@ -173,17 +174,27 @@ export function createLocalApi(rpcClient: WsRpcClient): LocalApi {
 
 export function readLocalApi(): LocalApi | undefined {
   if (typeof window === "undefined") return undefined;
-  if (cachedApi) return cachedApi;
+  const primaryEnvironment = getPrimaryKnownEnvironment();
+  const primaryEnvironmentId = primaryEnvironment?.environmentId;
 
-  if (window.nativeApi) {
-    cachedApi = window.nativeApi;
+  if (cachedApi && cachedApiEnvironmentId === primaryEnvironmentId) {
     return cachedApi;
   }
 
-  const primaryEnvironment = getPrimaryKnownEnvironment();
-  cachedApi = primaryEnvironment
-    ? createLocalApi(getPrimaryEnvironmentConnection().client)
-    : createBrowserLocalApi();
+  if (window.nativeApi) {
+    cachedApi = window.nativeApi;
+    cachedApiEnvironmentId = "__native__";
+    return cachedApi;
+  }
+
+  if (!primaryEnvironment) {
+    cachedApi = undefined;
+    cachedApiEnvironmentId = undefined;
+    return createBrowserLocalApi();
+  }
+
+  cachedApi = createLocalApi(getPrimaryEnvironmentConnection().client);
+  cachedApiEnvironmentId = primaryEnvironmentId;
   return cachedApi;
 }
 
@@ -196,11 +207,15 @@ export function ensureLocalApi(): LocalApi {
 }
 
 export function hasPairedBackend(): boolean {
+  if (typeof window !== "undefined" && window.desktopBridge) {
+    return window.desktopBridge.getLocalEnvironmentBootstrap() !== null;
+  }
   return getPrimaryKnownEnvironment() !== null;
 }
 
 export async function __resetLocalApiForTests() {
   cachedApi = undefined;
+  cachedApiEnvironmentId = undefined;
   const { __resetClientSettingsPersistenceForTests } = await import("./hooks/useSettings");
   __resetClientSettingsPersistenceForTests();
   await resetEnvironmentServiceForTests();

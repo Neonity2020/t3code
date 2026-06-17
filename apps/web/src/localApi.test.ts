@@ -2,6 +2,7 @@ import {
   CommandId,
   DEFAULT_SERVER_SETTINGS,
   type DesktopBridge,
+  type DesktopEnvironmentBootstrap,
   EnvironmentId,
   type VcsStatusResult,
   ProjectId,
@@ -369,7 +370,9 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => {
+afterEach(async () => {
+  const { writePrimaryEnvironmentDescriptor } = await import("./environments/primary");
+  writePrimaryEnvironmentDescriptor(null);
   vi.restoreAllMocks();
 });
 
@@ -384,6 +387,48 @@ describe("wsApi", () => {
     expect(rpcClientMock.server.getConfig).toHaveBeenCalledWith();
     expect(rpcClientMock.server.subscribeConfig).not.toHaveBeenCalled();
     expect(rpcClientMock.server.subscribeLifecycle).not.toHaveBeenCalled();
+  });
+
+  it("rebuilds the local API after a backend is paired", async () => {
+    let bootstrap: DesktopEnvironmentBootstrap | null = null;
+    const getConfig = vi.fn().mockResolvedValue(baseServerConfig);
+    const testWindow = getWindowForTest();
+    Reflect.set(testWindow, "location", {
+      href: "http://localhost:3000/",
+      origin: "http://localhost:3000",
+    });
+    testWindow.desktopBridge = makeDesktopBridge({
+      getLocalEnvironmentBootstrap: () => bootstrap,
+    });
+    rpcClientMock.server.getConfig = getConfig;
+
+    const { readLocalApi } = await import("./localApi");
+
+    await expect(readLocalApi()!.server.getConfig()).rejects.toThrow(
+      "Local backend API is unavailable before a backend is paired.",
+    );
+
+    bootstrap = {
+      label: "Local environment",
+      httpBaseUrl: "http://localhost:3000",
+      wsBaseUrl: "ws://localhost:3000",
+    };
+    const { writePrimaryEnvironmentDescriptor } = await import("./environments/primary");
+    writePrimaryEnvironmentDescriptor({
+      environmentId: EnvironmentId.make("environment-local"),
+      label: "Local environment",
+      platform: {
+        os: "darwin",
+        arch: "arm64",
+      },
+      serverVersion: "0.0.0-test",
+      capabilities: {
+        repositoryIdentity: true,
+      },
+    });
+
+    await expect(readLocalApi()!.server.getConfig()).resolves.toEqual(baseServerConfig);
+    expect(getConfig).toHaveBeenCalledTimes(1);
   });
 
   it("forwards terminal attach, metadata, and shell stream events", async () => {

@@ -13,6 +13,7 @@ import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import { HttpClient, HttpClientRequest } from "effect/unstable/http";
+import { expandHomePath } from "../pathExpansion.ts";
 
 const LATEST_VERSION_CACHE_TTL_MS = 60 * 60 * 1_000;
 const LATEST_VERSION_TIMEOUT_MS = 4_000;
@@ -355,12 +356,13 @@ export const resolveProviderMaintenanceCapabilitiesEffect = Effect.fn(
   }
 
   const env = options?.env ?? (yield* readCommandLookupEnv);
+  const expandedBinaryPath = expandHomePath(binaryPath);
   const resolvedCommandPath =
-    (yield* resolveCommandPath(binaryPath, { env }).pipe(
+    (yield* resolveCommandPath(expandedBinaryPath, { env }).pipe(
       Effect.catchTag("CommandResolutionError", () => Effect.succeed(null)),
-    )) ?? (hasPathSeparator(binaryPath) ? binaryPath : null);
+    )) ?? (hasPathSeparator(expandedBinaryPath) ? expandedBinaryPath : null);
   if (!resolvedCommandPath) {
-    return resolver.resolve(options);
+    return resolver.resolve({ ...options, binaryPath: expandedBinaryPath });
   }
 
   const fileSystem = yield* FileSystem.FileSystem;
@@ -369,6 +371,7 @@ export const resolveProviderMaintenanceCapabilitiesEffect = Effect.fn(
     .pipe(Effect.orElseSucceed(() => resolvedCommandPath));
   return resolver.resolve({
     ...options,
+    binaryPath: expandedBinaryPath,
     env,
     resolvedCommandPath,
     realCommandPath,

@@ -12,6 +12,7 @@ import {
   type AcpSessionRuntimeShape,
   type AcpSpawnInput,
 } from "./AcpSessionRuntime.ts";
+import { expandHomePath } from "../../pathExpansion.ts";
 
 const PI_AGENT_DRIVER_KIND = ProviderDriverKind.make("piAgent");
 const PI_AGENT_DEFAULT_MODEL = "auto";
@@ -37,8 +38,10 @@ export function buildPiAgentAcpSpawnInput(
   cwd: string,
   environment?: NodeJS.ProcessEnv,
 ): AcpSpawnInput {
+  const command = piAgentSettings?.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
+
   return {
-    command: piAgentSettings?.binaryPath || "pi",
+    command,
     args: ["--mode", "rpc"],
     cwd,
     ...(environment ? { env: environment } : {}),

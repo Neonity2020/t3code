@@ -32,6 +32,7 @@ import {
   enrichProviderSnapshotWithVersionAdvisory,
   type ProviderMaintenanceCapabilities,
 } from "../providerMaintenance.ts";
+import { expandHomePath } from "../../pathExpansion.ts";
 
 const PI_AGENT_PRESENTATION = {
   displayName: "Pi Agent",
@@ -171,7 +172,7 @@ const discoverPiAgentModelsViaRpc = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = piAgentSettings.binaryPath || "pi";
+    const command = piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
     const args = ["--mode", "rpc", "--no-session"] as const;
     const spawnCommand = yield* resolveSpawnCommand(command, args, {
       env: environment,
@@ -229,7 +230,7 @@ const runPiAgentVersionCommand = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = piAgentSettings.binaryPath || "pi";
+    const command = piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
     const spawnCommand = yield* resolveSpawnCommand(command, ["--version"], {
       env: environment,
     });
