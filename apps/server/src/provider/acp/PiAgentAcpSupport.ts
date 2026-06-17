@@ -1,13 +1,12 @@
 import { type PiAgentSettings, ProviderDriverKind } from "@t3tools/contracts";
 import { normalizeModelSlug } from "@t3tools/shared/model";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 import * as Scope from "effect/Scope";
 import { ChildProcessSpawner } from "effect/unstable/process";
 import type * as EffectAcpErrors from "effect-acp/errors";
+import { AcpTransportError } from "effect-acp/errors";
 
 import {
-  AcpSessionRuntime,
   type AcpSessionRuntimeOptions,
   type AcpSessionRuntimeShape,
   type AcpSpawnInput,
@@ -16,6 +15,8 @@ import { resolvePiAgentCommandPath } from "../PiAgentCommand.ts";
 
 const PI_AGENT_DRIVER_KIND = ProviderDriverKind.make("piAgent");
 const PI_AGENT_DEFAULT_MODEL = "auto";
+export const PI_AGENT_ACP_UNSUPPORTED_DETAIL =
+  "Pi Agent is installed, but the current Pi Agent CLI exposes its own --mode rpc protocol rather than ACP JSON-RPC. T3 Code cannot start Pi Agent conversations until Pi Agent exposes ACP-compatible session APIs.";
 
 type PiAgentAcpRuntimeSettings = Pick<PiAgentSettings, "binaryPath">;
 
@@ -49,21 +50,14 @@ export function buildPiAgentAcpSpawnInput(
 }
 
 export const makePiAgentAcpRuntime = (
-  input: PiAgentAcpRuntimeInput,
+  _input: PiAgentAcpRuntimeInput,
 ): Effect.Effect<AcpSessionRuntimeShape, EffectAcpErrors.AcpError, Scope.Scope> =>
-  Effect.gen(function* () {
-    const acpContext = yield* Layer.build(
-      AcpSessionRuntime.layer({
-        ...input,
-        spawn: buildPiAgentAcpSpawnInput(input.piAgentSettings, input.cwd, input.environment),
-      }).pipe(
-        Layer.provide(
-          Layer.succeed(ChildProcessSpawner.ChildProcessSpawner, input.childProcessSpawner),
-        ),
-      ),
-    );
-    return yield* Effect.service(AcpSessionRuntime).pipe(Effect.provide(acpContext));
-  });
+  Effect.fail(
+    new AcpTransportError({
+      detail: PI_AGENT_ACP_UNSUPPORTED_DETAIL,
+      cause: PI_AGENT_ACP_UNSUPPORTED_DETAIL,
+    }),
+  );
 
 export function resolvePiAgentAcpBaseModelId(model: string | null | undefined): string {
   const trimmed = model?.trim();

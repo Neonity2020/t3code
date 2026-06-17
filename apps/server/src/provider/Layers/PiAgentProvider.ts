@@ -33,6 +33,7 @@ import {
   type ProviderMaintenanceCapabilities,
 } from "../providerMaintenance.ts";
 import { resolvePiAgentCommandPath } from "../PiAgentCommand.ts";
+import { PI_AGENT_ACP_UNSUPPORTED_DETAIL } from "../acp/PiAgentAcpSupport.ts";
 
 const PI_AGENT_PRESENTATION = {
   displayName: "Pi Agent",
@@ -383,8 +384,9 @@ export const checkPiAgentProviderStatus = Effect.fn("checkPiAgentProviderStatus"
     probe: {
       installed: true,
       version,
-      status: "ready",
+      status: "warning",
       auth: { status: "unknown" },
+      message: PI_AGENT_ACP_UNSUPPORTED_DETAIL,
     },
   });
 });
