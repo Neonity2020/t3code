@@ -32,7 +32,7 @@ import {
   enrichProviderSnapshotWithVersionAdvisory,
   type ProviderMaintenanceCapabilities,
 } from "../providerMaintenance.ts";
-import { expandHomePath } from "../../pathExpansion.ts";
+import { resolvePiAgentCommandPath } from "../PiAgentCommand.ts";
 
 const PI_AGENT_PRESENTATION = {
   displayName: "Pi Agent",
@@ -79,10 +79,6 @@ function piAgentModelsFromSettings(
     customModels ?? [],
     EMPTY_CAPABILITIES,
   );
-}
-
-function resolvePiAgentCommand(piAgentSettings: PiAgentSettings): string {
-  return piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
 }
 
 export function buildInitialPiAgentProviderSnapshot(
@@ -176,7 +172,7 @@ const discoverPiAgentModelsViaRpc = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = resolvePiAgentCommand(piAgentSettings);
+    const command = resolvePiAgentCommandPath(piAgentSettings);
     const args = ["--mode", "rpc", "--no-session"] as const;
     const spawnCommand = yield* resolveSpawnCommand(command, args, {
       env: environment,
@@ -234,7 +230,7 @@ const runPiAgentVersionCommand = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = resolvePiAgentCommand(piAgentSettings);
+    const command = resolvePiAgentCommandPath(piAgentSettings);
     const spawnCommand = yield* resolveSpawnCommand(command, ["--version"], {
       env: environment,
     });
@@ -253,7 +249,7 @@ export const checkPiAgentProviderStatus = Effect.fn("checkPiAgentProviderStatus"
 ): Effect.fn.Return<ServerProviderDraft, never, ChildProcessSpawner.ChildProcessSpawner> {
   const checkedAt = DateTime.formatIso(yield* DateTime.now);
   const fallbackModels = piAgentModelsFromSettings(piAgentSettings.customModels);
-  const command = resolvePiAgentCommand(piAgentSettings);
+  const command = resolvePiAgentCommandPath(piAgentSettings);
 
   if (!piAgentSettings.enabled) {
     return buildServerProvider({
