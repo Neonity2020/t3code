@@ -81,6 +81,10 @@ function piAgentModelsFromSettings(
   );
 }
 
+function resolvePiAgentCommand(piAgentSettings: PiAgentSettings): string {
+  return piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
+}
+
 export function buildInitialPiAgentProviderSnapshot(
   piAgentSettings: PiAgentSettings,
 ): Effect.Effect<ServerProviderDraft> {
@@ -172,7 +176,7 @@ const discoverPiAgentModelsViaRpc = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
+    const command = resolvePiAgentCommand(piAgentSettings);
     const args = ["--mode", "rpc", "--no-session"] as const;
     const spawnCommand = yield* resolveSpawnCommand(command, args, {
       env: environment,
@@ -230,7 +234,7 @@ const runPiAgentVersionCommand = (
   environment: NodeJS.ProcessEnv = process.env,
 ) =>
   Effect.gen(function* () {
-    const command = piAgentSettings.binaryPath ? expandHomePath(piAgentSettings.binaryPath) : "pi";
+    const command = resolvePiAgentCommand(piAgentSettings);
     const spawnCommand = yield* resolveSpawnCommand(command, ["--version"], {
       env: environment,
     });
@@ -249,6 +253,7 @@ export const checkPiAgentProviderStatus = Effect.fn("checkPiAgentProviderStatus"
 ): Effect.fn.Return<ServerProviderDraft, never, ChildProcessSpawner.ChildProcessSpawner> {
   const checkedAt = DateTime.formatIso(yield* DateTime.now);
   const fallbackModels = piAgentModelsFromSettings(piAgentSettings.customModels);
+  const command = resolvePiAgentCommand(piAgentSettings);
 
   if (!piAgentSettings.enabled) {
     return buildServerProvider({
@@ -284,7 +289,7 @@ export const checkPiAgentProviderStatus = Effect.fn("checkPiAgentProviderStatus"
         status: "error",
         auth: { status: "unknown" },
         message: isCommandMissingCause(error)
-          ? "Pi Agent (`pi`) is not installed or not on PATH."
+          ? `Pi Agent (\`${command}\`) is not installed or not on PATH.`
           : `Failed to execute Pi Agent health check: ${error instanceof Error ? error.message : String(error)}.`,
       },
     });
@@ -301,7 +306,7 @@ export const checkPiAgentProviderStatus = Effect.fn("checkPiAgentProviderStatus"
         version: null,
         status: "ready",
         auth: { status: "unknown" },
-        message: "Pi Agent is installed but timed out while running `pi --version`.",
+        message: `Pi Agent is installed but timed out while running \`${command} --version\`.`,
       },
     });
   }
