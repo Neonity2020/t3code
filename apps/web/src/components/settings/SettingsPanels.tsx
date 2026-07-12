@@ -36,6 +36,7 @@ import { ProviderModelPicker } from "../chat/ProviderModelPicker";
 import { TraitsPicker } from "../chat/TraitsPicker";
 import { isElectron } from "../../env";
 import { buildHostedChannelSelectionUrl, type HostedAppChannel } from "../../hostedPairing";
+import { isLanguage, useLanguage } from "../../hooks/useLanguage";
 import { useTheme } from "../../hooks/useTheme";
 import { usePrimarySettings, useUpdatePrimarySettings } from "../../hooks/useSettings";
 import { useThreadActions } from "../../hooks/useThreadActions";
@@ -374,6 +375,7 @@ function AboutVersionSection() {
 
 export function useSettingsRestore(onRestored?: () => void) {
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
   const settings = usePrimarySettings();
   const updateSettings = useUpdatePrimarySettings();
 
@@ -385,6 +387,7 @@ export function useSettingsRestore(onRestored?: () => void) {
   const changedSettingLabels = useMemo(
     () => [
       ...(theme !== "system" ? ["Theme"] : []),
+      ...(language !== "en" ? ["Language"] : []),
       ...(settings.timestampFormat !== DEFAULT_UNIFIED_SETTINGS.timestampFormat
         ? ["Time format"]
         : []),
@@ -438,6 +441,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       settings.timestampFormat,
       settings.wordWrap,
       theme,
+      language,
     ],
   );
 
@@ -452,6 +456,7 @@ export function useSettingsRestore(onRestored?: () => void) {
     if (!confirmed) return;
 
     setTheme("system");
+    setLanguage("en");
     updateSettings({
       timestampFormat: DEFAULT_UNIFIED_SETTINGS.timestampFormat,
       wordWrap: DEFAULT_UNIFIED_SETTINGS.wordWrap,
@@ -468,7 +473,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       textGenerationModelSelection: DEFAULT_UNIFIED_SETTINGS.textGenerationModelSelection,
     });
     onRestored?.();
-  }, [changedSettingLabels, onRestored, setTheme, updateSettings]);
+  }, [changedSettingLabels, onRestored, setLanguage, setTheme, updateSettings]);
 
   return {
     changedSettingLabels,
@@ -478,6 +483,7 @@ export function useSettingsRestore(onRestored?: () => void) {
 
 export function GeneralSettingsPanel() {
   const { theme, setTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
   const settings = usePrimarySettings();
   const updateSettings = useUpdatePrimarySettings();
   const observability = useAtomValue(primaryServerObservabilityAtom);
@@ -515,10 +521,49 @@ export function GeneralSettingsPanel() {
 
   return (
     <SettingsPageContainer>
-      <SettingsSection title="General">
+      <SettingsSection title={language === "zh-CN" ? "常规" : "General"}>
         <SettingsRow
-          title="Theme"
-          description="Choose how T3 Code looks across the app."
+          title={language === "zh-CN" ? "界面语言" : "Language"}
+          description={
+            language === "zh-CN"
+              ? "选择 T3 Code 界面显示的语言。"
+              : "Choose the language used in the T3 Code interface."
+          }
+          resetAction={
+            language !== "en" ? (
+              <SettingResetButton label="language" onClick={() => setLanguage("en")} />
+            ) : null
+          }
+          control={
+            <Select
+              value={language}
+              onValueChange={(value) => {
+                if (isLanguage(value)) {
+                  setLanguage(value);
+                }
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-40" aria-label="Interface language">
+                <SelectValue>{language === "zh-CN" ? "简体中文" : "English"}</SelectValue>
+              </SelectTrigger>
+              <SelectPopup align="end" alignItemWithTrigger={false}>
+                <SelectItem hideIndicator value="en">
+                  English
+                </SelectItem>
+                <SelectItem hideIndicator value="zh-CN">
+                  简体中文
+                </SelectItem>
+              </SelectPopup>
+            </Select>
+          }
+        />
+        <SettingsRow
+          title={language === "zh-CN" ? "主题" : "Theme"}
+          description={
+            language === "zh-CN"
+              ? "选择 T3 Code 的界面外观。"
+              : "Choose how T3 Code looks across the app."
+          }
           resetAction={
             theme !== "system" ? (
               <SettingResetButton label="theme" onClick={() => setTheme("system")} />

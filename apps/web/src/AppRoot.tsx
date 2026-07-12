@@ -2,6 +2,7 @@ import { RouterProvider } from "@tanstack/react-router";
 
 import { ElectronBrowserHost } from "./browser/ElectronBrowserHost";
 import { PreviewAutomationHosts } from "./components/preview/PreviewAutomationHosts";
+import { useLanguage } from "./hooks/useLanguage";
 import { AppAtomRegistryProvider } from "./rpc/atomRegistry";
 import type { AppRouter } from "./router";
 
@@ -11,6 +12,8 @@ import type { AppRouter } from "./router";
  * share the same atom registry as routed UI.
  */
 export function AppRoot({ router }: { readonly router: AppRouter }) {
+  useLanguage();
+
   return (
     <AppAtomRegistryProvider>
       <RouterProvider router={router} />

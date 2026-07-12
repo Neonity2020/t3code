@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 import { useSettingsRestore } from "../components/settings/SettingsPanels";
+import { useLanguage } from "../hooks/useLanguage";
 import { Button } from "../components/ui/button";
 import { SidebarInset } from "../components/ui/sidebar";
 import { isElectron } from "../env";
@@ -33,6 +34,7 @@ function RestoreDefaultsButton({ onRestored }: { onRestored: () => void }) {
 }
 
 function SettingsContentLayout() {
+  const { language } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
@@ -73,7 +75,9 @@ function SettingsContentLayout() {
             )}
           >
             <div className="flex min-h-7 items-center gap-2 sm:min-h-6">
-              <span className="text-sm font-medium text-foreground">Settings</span>
+              <span className="text-sm font-medium text-foreground">
+                {language === "zh-CN" ? "设置" : "Settings"}
+              </span>
               {showRestoreDefaults ? (
                 <div className="ms-auto flex items-center gap-2">
                   <RestoreDefaultsButton onRestored={handleRestored} />
@@ -91,7 +95,7 @@ function SettingsContentLayout() {
             )}
           >
             <span className="text-xs font-medium tracking-wide text-muted-foreground/70">
-              Settings
+              {language === "zh-CN" ? "设置" : "Settings"}
             </span>
             {showRestoreDefaults ? (
               <div className="ms-auto flex items-center gap-2">

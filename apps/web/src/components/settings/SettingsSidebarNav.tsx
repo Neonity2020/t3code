@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useCanGoBack, useNavigate } from "@tanstack/react-router";
 
+import { useLanguage } from "../../hooks/useLanguage";
 import {
   SidebarContent,
   SidebarFooter,
@@ -43,7 +44,17 @@ export const SETTINGS_NAV_ITEMS: ReadonlyArray<{
   { label: "Archive", to: "/settings/archived", icon: ArchiveIcon },
 ];
 
+const CHINESE_SETTINGS_NAV_LABELS: Readonly<Record<string, string>> = {
+  General: "常规",
+  Keybindings: "快捷键",
+  Providers: "服务提供商",
+  "Source Control": "源代码管理",
+  Connections: "连接",
+  Archive: "归档",
+};
+
 export function SettingsSidebarNav({ pathname }: { pathname: string }) {
+  const { language } = useLanguage();
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -94,7 +105,11 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                           : "size-4 shrink-0 text-muted-foreground/60"
                       }
                     />
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate">
+                      {language === "zh-CN"
+                        ? (CHINESE_SETTINGS_NAV_LABELS[item.label] ?? item.label)
+                        : item.label}
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
@@ -115,7 +130,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                 onClick={handleBackClick}
               >
                 <ArrowLeftIcon className="size-4" />
-                <span>Back</span>
+                <span>{language === "zh-CN" ? "返回" : "Back"}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
