@@ -32,6 +32,7 @@ import { projectEnvironment } from "~/state/projects";
 import { stackedThreadToast, toastManager } from "./ui/toast";
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
 import { useAtomCommand } from "~/state/use-atom-command";
+import { useTranslation } from "../hooks/useLanguage";
 
 function stepStatusIcon(status: string): React.ReactNode {
   if (status === "completed") {
@@ -78,6 +79,7 @@ const PlanSidebar = memo(function PlanSidebar({
   timestampFormat,
   mode = "sidebar",
 }: PlanSidebarProps) {
+  const { t } = useTranslation();
   const [proposedPlanExpanded, setProposedPlanExpanded] = useState(false);
   const [isSavingToWorkspace, setIsSavingToWorkspace] = useState(false);
   const writeProjectFile = useAtomCommand(projectEnvironment.writeFile, {
@@ -117,7 +119,7 @@ const PlanSidebar = memo(function PlanSidebar({
       if (result._tag === "Success") {
         toastManager.add({
           type: "success",
-          title: "Plan saved",
+          title: t("planSaved"),
           description: result.value.relativePath,
         });
         return;
@@ -127,13 +129,13 @@ const PlanSidebar = memo(function PlanSidebar({
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not save plan",
-            description: error instanceof Error ? error.message : "An error occurred.",
+            title: t("couldNotSavePlan"),
+            description: error instanceof Error ? error.message : t("unexpectedError"),
           }),
         );
       }
     })();
-  }, [environmentId, planMarkdown, workspaceRoot, writeProjectFile]);
+  }, [environmentId, planMarkdown, t, workspaceRoot, writeProjectFile]);
 
   return (
     <div
@@ -169,7 +171,7 @@ const PlanSidebar = memo(function PlanSidebar({
                     size="icon-xs"
                     variant="ghost"
                     className="text-muted-foreground/50 hover:text-foreground/70"
-                    aria-label="Plan actions"
+                    aria-label={t("planActions")}
                   />
                 }
               >
@@ -177,14 +179,14 @@ const PlanSidebar = memo(function PlanSidebar({
               </MenuTrigger>
               <MenuPopup align="end">
                 <MenuItem onClick={handleCopyPlan}>
-                  {isCopied ? "Copied!" : "Copy to clipboard"}
+                  {isCopied ? t("copied") : t("copyToClipboard")}
                 </MenuItem>
-                <MenuItem onClick={handleDownload}>Download as markdown</MenuItem>
+                <MenuItem onClick={handleDownload}>{t("downloadMarkdown")}</MenuItem>
                 <MenuItem
                   onClick={handleSaveToWorkspace}
                   disabled={!workspaceRoot || isSavingToWorkspace}
                 >
-                  Save to workspace
+                  {t("saveToWorkspace")}
                 </MenuItem>
               </MenuPopup>
             </Menu>
@@ -206,7 +208,7 @@ const PlanSidebar = memo(function PlanSidebar({
           {activePlan && activePlan.steps.length > 0 ? (
             <div className="space-y-1">
               <p className="mb-2 text-[10px] font-semibold tracking-widest text-muted-foreground/40 uppercase">
-                Steps
+                {t("steps")}
               </p>
               {activePlan.steps.map((step) => (
                 <div
@@ -249,7 +251,7 @@ const PlanSidebar = memo(function PlanSidebar({
                   <ChevronRightIcon className="size-3 shrink-0 text-muted-foreground/40 transition-transform" />
                 )}
                 <span className="text-[10px] font-semibold tracking-widest text-muted-foreground/40 uppercase group-hover:text-muted-foreground/60">
-                  {planTitle ?? "Full Plan"}
+                  {planTitle ?? t("fullPlan")}
                 </span>
               </button>
               {proposedPlanExpanded ? (

@@ -123,6 +123,7 @@ import {
 } from "../../lib/contextWindow";
 import { formatProviderSkillDisplayName } from "../../providerSkillPresentation";
 import { searchProviderSkills } from "../../providerSkillSearch";
+import { useTranslation } from "../../hooks/useLanguage";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import type { ReviewCommentContext } from "../../reviewCommentContext";
 
@@ -201,15 +202,14 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
   onRuntimeModeChange: (mode: RuntimeMode) => void;
   onTogglePlanSidebar: () => void;
 }) {
+  const { t } = useTranslation();
   const runtimeModeOption = runtimeModeConfig[props.runtimeMode];
   const RuntimeModeIcon = runtimeModeOption.icon;
   const interactionModeTooltip =
-    props.interactionMode === "plan"
-      ? "Plan mode — click to return to normal build mode"
-      : "Default mode — click to enter plan mode";
+    props.interactionMode === "plan" ? t("planModeHint") : t("buildModeHint");
   const planSidebarTooltip = props.planSidebarOpen
-    ? `Hide ${props.planSidebarLabel.toLowerCase()} sidebar`
-    : `Show ${props.planSidebarLabel.toLowerCase()} sidebar`;
+    ? t("hideSidebar", { label: props.planSidebarLabel.toLowerCase() })
+    : t("showSidebar", { label: props.planSidebarLabel.toLowerCase() });
 
   const interactionModeToggle = props.showInteractionModeToggle ? (
     <>
@@ -238,7 +238,7 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
             <BotIcon />
           )}
           <span className="sr-only sm:not-sr-only">
-            {props.interactionMode === "plan" ? "Plan" : "Build"}
+            {props.interactionMode === "plan" ? t("plan") : t("build")}
           </span>
         </TooltipTrigger>
         <TooltipPopup side="top">{interactionModeTooltip}</TooltipPopup>
@@ -261,7 +261,7 @@ const ComposerFooterModeControls = memo(function ComposerFooterModeControls(prop
                 variant="ghost"
                 size="sm"
                 className="font-medium"
-                aria-label="Runtime mode"
+                aria-label={t("runtimeMode")}
               />
             }
           >
@@ -351,6 +351,7 @@ const ComposerFooterPrimaryActions = memo(function ComposerFooterPrimaryActions(
   onInterrupt: () => void;
   onImplementPlanInNewThread: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <>
       {props.activeContextWindow ? (
@@ -360,7 +361,7 @@ const ComposerFooterPrimaryActions = memo(function ComposerFooterPrimaryActions(
         />
       ) : null}
       {props.isPreparingWorktree ? (
-        <span className="text-muted-foreground/70 text-xs">Preparing worktree...</span>
+        <span className="text-muted-foreground/70 text-xs">{t("preparingWorktree")}</span>
       ) : null}
       <ComposerPrimaryActions
         compact={props.compact}
@@ -541,6 +542,7 @@ export interface ChatComposerProps {
 // --------------------------------------------------------------------------
 
 export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps) {
+  const { t } = useTranslation();
   const {
     composerDraftTarget,
     environmentId,
@@ -1136,7 +1138,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
   );
   const collapsedComposerPrimaryActionDisabled =
     phase === "running" || isSendBusy || isConnecting || !composerSendState.hasSendableContent;
-  const collapsedComposerPrimaryActionLabel = "Send message";
+  const collapsedComposerPrimaryActionLabel = t("sendMessage");
   const showMobilePendingAnswerActions =
     isMobileViewport && !isComposerCollapsedMobile && pendingPrimaryAction !== null;
 
@@ -1765,7 +1767,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     if (pendingUserInputs.length > 0) {
       toastManager.add({
         type: "error",
-        title: "Attach images after answering plan questions.",
+        title: t("attachAfterPlan"),
       });
       return;
     }
@@ -1774,15 +1776,15 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     let error: string | null = null;
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
-        error = `Unsupported file type for '${file.name}'. Please attach image files only.`;
+        error = t("unsupportedImage", { name: file.name });
         continue;
       }
       if (file.size > PROVIDER_SEND_TURN_MAX_IMAGE_BYTES) {
-        error = `'${file.name}' exceeds the ${IMAGE_SIZE_LIMIT_LABEL} attachment limit.`;
+        error = t("imageTooLarge", { name: file.name, limit: IMAGE_SIZE_LIMIT_LABEL });
         continue;
       }
       if (nextImageCount >= PROVIDER_SEND_TURN_MAX_ATTACHMENTS) {
-        error = `You can attach up to ${PROVIDER_SEND_TURN_MAX_ATTACHMENTS} images per message.`;
+        error = t("tooManyImages", { count: PROVIDER_SEND_TURN_MAX_ATTACHMENTS });
         break;
       }
       const previewUrl = URL.createObjectURL(file);
@@ -2162,9 +2164,9 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                     )}
                     onPointerDown={(event) => event.preventDefault()}
                     onClick={expandMobileComposer}
-                    aria-label="Write custom answer"
+                    aria-label={t("writeCustomAnswer")}
                   >
-                    {activePendingProgress?.customAnswer || "Write custom answer"}
+                    {activePendingProgress?.customAnswer || t("writeCustomAnswer")}
                   </button>
                   {activePendingProgress?.activeQuestion?.multiSelect ? (
                     <ComposerPrimaryActions
@@ -2201,12 +2203,11 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                 )}
                 onPointerDown={(event) => event.preventDefault()}
                 onClick={expandMobileComposer}
-                aria-label="Expand composer"
+                aria-label={t("expandComposer")}
               >
                 {activePendingProgress
-                  ? activePendingProgress.customAnswer ||
-                    "Type your own answer, or leave this blank to use the selected option"
-                  : prompt.trim() || "Ask anything..."}
+                  ? activePendingProgress.customAnswer || t("typeOwnAnswer")
+                  : prompt.trim() || t("composerPlaceholder")}
               </button>
               <button
                 type="button"
@@ -2404,18 +2405,18 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                 onPaste={onComposerPaste}
                 placeholder={
                   isComposerApprovalState
-                    ? (activePendingApproval?.detail ?? "Resolve this approval request to continue")
+                    ? (activePendingApproval?.detail ?? t("resolveApproval"))
                     : activePendingProgress
-                      ? "Type your own answer, or leave this blank to use the selected option"
+                      ? t("typeOwnAnswer")
                       : showPlanFollowUpPrompt && activeProposedPlan
-                        ? "Add feedback to refine the plan, or leave this blank to implement it"
+                        ? t("refinePlan")
                         : environmentUnavailable
                           ? `${environmentUnavailable.label}: ${connectionStatusText(
                               environmentUnavailable.connection,
                             )}`
                           : phase === "disconnected"
-                            ? "Ask for follow-up changes or attach images"
-                            : "Ask anything, @tag files/folders, $use skills, or / for commands"
+                            ? t("followUpOrAttach")
+                            : t("composerPlaceholder")
                 }
                 disabled={
                   isConnecting ||

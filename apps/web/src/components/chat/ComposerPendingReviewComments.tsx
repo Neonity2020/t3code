@@ -9,6 +9,7 @@ import {
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
 import type { ReviewCommentContext } from "~/reviewCommentContext";
 import { cn } from "~/lib/utils";
+import { useTranslation } from "../../hooks/useLanguage";
 
 interface ComposerPendingReviewCommentsProps {
   comments: ReadonlyArray<ReviewCommentContext>;
@@ -21,6 +22,7 @@ export function ComposerPendingReviewComments({
   onRemove,
   className,
 }: ComposerPendingReviewCommentsProps) {
+  const { t } = useTranslation();
   if (comments.length === 0) return null;
 
   return (
@@ -36,7 +38,7 @@ export function ComposerPendingReviewComments({
                   <span className={COMPOSER_INLINE_CHIP_LABEL_CLASS_NAME}>{label}</span>
                   <button
                     type="button"
-                    aria-label={`Remove comment on ${label}`}
+                    aria-label={t("removeReviewComment", { label })}
                     className={COMPOSER_INLINE_CHIP_DISMISS_BUTTON_CLASS_NAME}
                     onClick={(event) => {
                       event.preventDefault();

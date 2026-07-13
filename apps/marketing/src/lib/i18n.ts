@@ -10,6 +10,13 @@ export function isMarketingLanguage(value: unknown): value is MarketingLanguage 
 export const marketingMessages: Record<MarketingLanguage, Record<string, string>> = {
   en: {
     languageSwitch: "切换到简体中文",
+    homeAria: "T3 Code home",
+    githubStarsAria: "Star T3 Code on GitHub — {stars} stars",
+    tweetAria: "Read {handle}'s post on X",
+    homePageTitle: "T3 Code — The open-source control plane for coding agents",
+    homePageDescription: "T3 Code — The open-source control plane for coding agents.",
+    downloadPageTitle: "Download — T3 Code",
+    downloadPageDescription: "Download T3 Code for macOS, Windows, or Linux.",
     githubStars: "GitHub stars",
     download: "Download",
     footerLicense: "MIT licensed",
@@ -67,6 +74,13 @@ export const marketingMessages: Record<MarketingLanguage, Record<string, string>
   },
   "zh-CN": {
     languageSwitch: "Switch to English",
+    homeAria: "T3 Code 首页",
+    githubStarsAria: "在 GitHub 上为 T3 Code 点星 — {stars} 个星标",
+    tweetAria: "在 X 上阅读 {handle} 的帖子",
+    homePageTitle: "T3 Code — 编码智能体的开源控制平面",
+    homePageDescription: "T3 Code — 编码智能体的开源控制平面。",
+    downloadPageTitle: "下载 — T3 Code",
+    downloadPageDescription: "下载适用于 macOS、Windows 或 Linux 的 T3 Code。",
     githubStars: "GitHub 星标",
     download: "下载",
     footerLicense: "采用 MIT 许可证",

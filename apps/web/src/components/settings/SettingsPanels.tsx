@@ -36,7 +36,7 @@ import { ProviderModelPicker } from "../chat/ProviderModelPicker";
 import { TraitsPicker } from "../chat/TraitsPicker";
 import { isElectron } from "../../env";
 import { buildHostedChannelSelectionUrl, type HostedAppChannel } from "../../hostedPairing";
-import { isLanguage, useLanguage } from "../../hooks/useLanguage";
+import { isLanguage, useLanguage, useTranslation } from "../../hooks/useLanguage";
 import { useTheme } from "../../hooks/useTheme";
 import { usePrimarySettings, useUpdatePrimarySettings } from "../../hooks/useSettings";
 import { useThreadActions } from "../../hooks/useThreadActions";
@@ -156,15 +156,17 @@ function ProviderLastChecked({ lastCheckedAt }: { lastCheckedAt: string | null }
 }
 
 function AboutVersionTitle() {
+  const { t } = useTranslation();
   return (
     <span className="inline-flex items-center gap-2">
-      <span>Version</span>
+      <span>{t("version")}</span>
       <code className="text-[11px] font-medium text-muted-foreground">{APP_VERSION}</code>
     </span>
   );
 }
 
 function AboutVersionSection() {
+  const { t } = useTranslation();
   const updateState = useDesktopUpdateState();
   const [isChangingUpdateChannel, setIsChangingUpdateChannel] = useState(false);
 
@@ -190,8 +192,8 @@ function AboutVersionSection() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not change update track",
-              description: error instanceof Error ? error.message : "Update track change failed.",
+              title: t("couldNotChangeUpdateTrack"),
+              description: error instanceof Error ? error.message : t("updateTrackChangeFailed"),
             }),
           );
         })
@@ -199,7 +201,7 @@ function AboutVersionSection() {
           setIsChangingUpdateChannel(false);
         });
     },
-    [selectedUpdateChannel],
+    [selectedUpdateChannel, t],
   );
 
   const handleButtonClick = useCallback(() => {
@@ -213,8 +215,8 @@ function AboutVersionSection() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not download update",
-            description: error instanceof Error ? error.message : "Download failed.",
+            title: t("couldNotDownloadUpdate"),
+            description: error instanceof Error ? error.message : t("downloadFailed"),
           }),
         );
       });
@@ -232,8 +234,8 @@ function AboutVersionSection() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not install update",
-            description: error instanceof Error ? error.message : "Install failed.",
+            title: t("couldNotInstallUpdate"),
+            description: error instanceof Error ? error.message : t("installFailed"),
           }),
         );
       });
@@ -248,9 +250,8 @@ function AboutVersionSection() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Could not check for updates",
-              description:
-                result.state.message ?? "Automatic updates are not available in this build.",
+              title: t("couldNotCheckUpdates"),
+              description: result.state.message ?? t("automaticUpdatesUnavailable"),
             }),
           );
         }
@@ -259,12 +260,12 @@ function AboutVersionSection() {
         toastManager.add(
           stackedThreadToast({
             type: "error",
-            title: "Could not check for updates",
-            description: error instanceof Error ? error.message : "Update check failed.",
+            title: t("couldNotCheckUpdates"),
+            description: error instanceof Error ? error.message : t("updateCheckFailed"),
           }),
         );
       });
-  }, [updateState]);
+  }, [t, updateState]);
 
   const action = updateState ? resolveDesktopUpdateButtonAction(updateState) : "none";
   const buttonTooltip = updateState ? getDesktopUpdateButtonTooltip(updateState) : null;
@@ -273,18 +274,18 @@ function AboutVersionSection() {
       ? !canCheckForUpdate(updateState)
       : isDesktopUpdateButtonDisabled(updateState);
 
-  const actionLabel: Record<string, string> = { download: "Download", install: "Install" };
+  const actionLabel: Record<string, string> = { download: t("download"), install: t("install") };
   const statusLabel: Record<string, string> = {
-    checking: "Checking…",
-    downloading: "Downloading…",
-    "up-to-date": "Up to Date",
+    checking: t("checkingForUpdates"),
+    downloading: t("downloadingUpdate"),
+    "up-to-date": t("upToDate"),
   };
   const buttonLabel =
-    actionLabel[action] ?? statusLabel[updateState?.status ?? ""] ?? "Check for Updates";
+    actionLabel[action] ?? statusLabel[updateState?.status ?? ""] ?? t("checkForUpdates");
   const description =
     action === "download" || action === "install"
-      ? "Update available."
-      : "Current version of the application.";
+      ? t("updateAvailableDescription")
+      : t("currentVersionDescription");
 
   return (
     <>
@@ -311,8 +312,8 @@ function AboutVersionSection() {
       />
       {hasDesktopBridge ? (
         <SettingsRow
-          title="Update track"
-          description="Stable follows full releases. Nightly follows the nightly desktop channel and can switch back to stable immediately."
+          title={t("updateTrack")}
+          description={t("updateTrackDescription")}
           control={
             <Select
               value={selectedUpdateChannel}
@@ -322,19 +323,19 @@ function AboutVersionSection() {
             >
               <SelectTrigger
                 className="w-full sm:w-40"
-                aria-label="Update track"
+                aria-label={t("updateTrack")}
                 disabled={isChangingUpdateChannel}
               >
                 <SelectValue>
-                  {selectedUpdateChannel === "nightly" ? "Nightly" : "Stable"}
+                  {selectedUpdateChannel === "nightly" ? t("nightly") : t("stable")}
                 </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="latest">
-                  Stable
+                  {t("stable")}
                 </SelectItem>
                 <SelectItem hideIndicator value="nightly">
-                  Nightly
+                  {t("nightly")}
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -342,8 +343,8 @@ function AboutVersionSection() {
         />
       ) : selectedHostedAppChannel ? (
         <SettingsRow
-          title="Update track"
-          description="Switches the hosted app release channel."
+          title={t("updateTrack")}
+          description={t("hostedUpdateTrackDescription")}
           control={
             <Select
               value={selectedHostedAppChannel}
@@ -354,15 +355,15 @@ function AboutVersionSection() {
                 );
               }}
             >
-              <SelectTrigger className="w-full sm:w-40" aria-label="Update track">
+              <SelectTrigger className="w-full sm:w-40" aria-label={t("updateTrack")}>
                 <SelectValue>{HOSTED_APP_CHANNEL_LABEL}</SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="latest">
-                  Latest
+                  {t("latest")}
                 </SelectItem>
                 <SelectItem hideIndicator value="nightly">
-                  Nightly
+                  {t("nightly")}
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -484,6 +485,7 @@ export function useSettingsRestore(onRestored?: () => void) {
 export function GeneralSettingsPanel() {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
   const settings = usePrimarySettings();
   const updateSettings = useUpdatePrimarySettings();
   const observability = useAtomValue(primaryServerObservabilityAtom);
@@ -595,8 +597,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Time format"
-          description="System default follows your browser or OS clock preference."
+          title={t("timeFormat")}
+          description={t("systemClockPreference")}
           resetAction={
             settings.timestampFormat !== DEFAULT_UNIFIED_SETTINGS.timestampFormat ? (
               <SettingResetButton
@@ -637,8 +639,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Word wrap"
-          description="Wrap long lines in code blocks, tables, diffs, and file previews by default."
+          title={t("wordWrap")}
+          description={t("wordWrapDescription")}
           resetAction={
             settings.wordWrap !== DEFAULT_UNIFIED_SETTINGS.wordWrap ? (
               <SettingResetButton
@@ -661,8 +663,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Hide whitespace changes"
-          description="Set whether the diff panel ignores whitespace-only edits by default."
+          title={t("hideWhitespaceChanges")}
+          description={t("hideWhitespaceDescription")}
           resetAction={
             settings.diffIgnoreWhitespace !== DEFAULT_UNIFIED_SETTINGS.diffIgnoreWhitespace ? (
               <SettingResetButton
@@ -687,8 +689,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Assistant output"
-          description="Show token-by-token output while a response is in progress."
+          title={t("assistantOutput")}
+          description={t("assistantOutputDescription")}
           resetAction={
             settings.enableAssistantStreaming !==
             DEFAULT_UNIFIED_SETTINGS.enableAssistantStreaming ? (
@@ -714,8 +716,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Provider update checks"
-          description="Check installed provider CLIs for newer available versions."
+          title={t("providerUpdateChecks")}
+          description={t("providerUpdateDescription")}
           resetAction={
             settings.enableProviderUpdateChecks !==
             DEFAULT_UNIFIED_SETTINGS.enableProviderUpdateChecks ? (
@@ -741,8 +743,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Auto-open task panel"
-          description="Open the right-side plan and task panel automatically when steps appear."
+          title={t("autoOpenTaskPanel")}
+          description={t("autoOpenTaskDescription")}
           resetAction={
             settings.autoOpenPlanSidebar !== DEFAULT_UNIFIED_SETTINGS.autoOpenPlanSidebar ? (
               <SettingResetButton
@@ -767,8 +769,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="New threads"
-          description="Pick the default workspace mode for newly created draft threads."
+          title={t("newThreads")}
+          description={t("newThreadsDescription")}
           resetAction={
             settings.defaultThreadEnvMode !== DEFAULT_UNIFIED_SETTINGS.defaultThreadEnvMode ||
             settings.newWorktreesStartFromOrigin !==
@@ -796,15 +798,15 @@ export function GeneralSettingsPanel() {
             >
               <SelectTrigger className="w-full sm:w-44" aria-label="Default thread mode">
                 <SelectValue>
-                  {settings.defaultThreadEnvMode === "worktree" ? "New worktree" : "Local"}
+                  {settings.defaultThreadEnvMode === "worktree" ? t("newWorktree") : t("local")}
                 </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="local">
-                  Local
+                  {t("local")}
                 </SelectItem>
                 <SelectItem hideIndicator value="worktree">
-                  New worktree
+                  {t("newWorktree")}
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -814,13 +816,13 @@ export function GeneralSettingsPanel() {
         {settings.defaultThreadEnvMode === "worktree" ? (
           <SettingsRow
             className="bg-muted/20 sm:pl-9"
-            title="Start from origin"
-            description="Creates the worktree from the latest matching branch on origin instead of your local branch."
+            title={t("startFromOrigin")}
+            description={t("startFromOriginDescription")}
             resetAction={
               settings.newWorktreesStartFromOrigin !==
               DEFAULT_UNIFIED_SETTINGS.newWorktreesStartFromOrigin ? (
                 <SettingResetButton
-                  label="new worktrees start from origin"
+                  label={t("newWorktreesStartFromOrigin")}
                   onClick={() =>
                     updateSettings({
                       newWorktreesStartFromOrigin:
@@ -836,20 +838,20 @@ export function GeneralSettingsPanel() {
                 onCheckedChange={(checked) =>
                   updateSettings({ newWorktreesStartFromOrigin: Boolean(checked) })
                 }
-                aria-label="Start new worktrees from origin by default"
+                aria-label={t("startNewWorktreesFromOrigin")}
               />
             }
           />
         ) : null}
 
         <SettingsRow
-          title="Add project starts in"
-          description='Leave empty to use "~/" when the Add Project browser opens.'
+          title={t("addProjectStartsIn")}
+          description={t("addProjectBaseDirectoryDescription")}
           resetAction={
             settings.addProjectBaseDirectory !==
             DEFAULT_UNIFIED_SETTINGS.addProjectBaseDirectory ? (
               <SettingResetButton
-                label="add project base directory"
+                label={t("addProjectBaseDirectory")}
                 onClick={() =>
                   updateSettings({
                     addProjectBaseDirectory: DEFAULT_UNIFIED_SETTINGS.addProjectBaseDirectory,
@@ -865,14 +867,14 @@ export function GeneralSettingsPanel() {
               onCommit={(next) => updateSettings({ addProjectBaseDirectory: next })}
               placeholder="~/"
               spellCheck={false}
-              aria-label="Add project base directory"
+              aria-label={t("addProjectBaseDirectory")}
             />
           }
         />
 
         <SettingsRow
-          title="Archive confirmation"
-          description="Require a second click on the inline archive action before a thread is archived."
+          title={t("archiveConfirmation")}
+          description={t("archiveConfirmationDescription")}
           resetAction={
             settings.confirmThreadArchive !== DEFAULT_UNIFIED_SETTINGS.confirmThreadArchive ? (
               <SettingResetButton
@@ -897,8 +899,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Delete confirmation"
-          description="Ask before deleting a thread and its chat history."
+          title={t("deleteConfirmation")}
+          description={t("deleteConfirmationDescription")}
           resetAction={
             settings.confirmThreadDelete !== DEFAULT_UNIFIED_SETTINGS.confirmThreadDelete ? (
               <SettingResetButton
@@ -923,12 +925,12 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Text generation model"
-          description="Configure the model used for generated commit messages, PR titles, and similar Git text."
+          title={t("textGenerationModel")}
+          description={t("textGenerationModelDescription")}
           resetAction={
             isGitWritingModelDirty ? (
               <SettingResetButton
-                label="text generation model"
+                label={t("textGenerationModel")}
                 onClick={() =>
                   updateSettings({
                     textGenerationModelSelection:
@@ -997,21 +999,18 @@ export function GeneralSettingsPanel() {
         />
       </SettingsSection>
 
-      <SettingsSection title="About">
+      <SettingsSection title={t("about")}>
         {isElectron || HOSTED_APP_CHANNEL ? (
           <AboutVersionSection />
         ) : (
-          <SettingsRow
-            title={<AboutVersionTitle />}
-            description="Current version of the application."
-          />
+          <SettingsRow title={<AboutVersionTitle />} description={t("currentVersionDescription")} />
         )}
         <SettingsRow
-          title="Diagnostics"
+          title={t("diagnostics")}
           description={diagnosticsDescription}
           control={
             <Button render={<Link to="/settings/diagnostics" />} size="xs" variant="outline">
-              View diagnostics
+              {t("viewDiagnostics")}
             </Button>
           }
         />
@@ -1021,6 +1020,7 @@ export function GeneralSettingsPanel() {
 }
 
 export function ProviderSettingsPanel() {
+  const { t } = useTranslation();
   const settings = usePrimarySettings();
   const updateSettings = useUpdatePrimarySettings();
   const serverProviders = useAtomValue(primaryServerProvidersAtom);
@@ -1314,7 +1314,7 @@ export function ProviderSettingsPanel() {
   return (
     <SettingsPageContainer>
       <SettingsSection
-        title="Providers"
+        title={t("providers")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <ProviderLastChecked lastCheckedAt={lastCheckedAt} />
@@ -1326,13 +1326,13 @@ export function ProviderSettingsPanel() {
                     variant="ghost"
                     className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
                     onClick={() => setIsAddInstanceDialogOpen(true)}
-                    aria-label="Add provider instance"
+                    aria-label={t("addProviderInstance")}
                   >
                     <PlusIcon className="size-3" />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Add provider instance</TooltipPopup>
+              <TooltipPopup side="top">{t("addProviderInstance")}</TooltipPopup>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
@@ -1343,7 +1343,7 @@ export function ProviderSettingsPanel() {
                     className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
                     disabled={isRefreshingProviders}
                     onClick={() => void refreshProviders()}
-                    aria-label="Refresh provider status"
+                    aria-label={t("refreshProviderStatus")}
                   >
                     {isRefreshingProviders ? (
                       <LoaderIcon className="size-3 animate-spin" />
@@ -1353,7 +1353,7 @@ export function ProviderSettingsPanel() {
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Refresh provider status</TooltipPopup>
+              <TooltipPopup side="top">{t("refreshProviderStatus")}</TooltipPopup>
             </Tooltip>
           </div>
         }
@@ -1391,7 +1391,7 @@ export function ProviderSettingsPanel() {
           const headerAction =
             row.isDefault && row.isDirty ? (
               <SettingResetButton
-                label={`${resetLabel} provider settings`}
+                label={t("providerSettings", { name: resetLabel })}
                 onClick={() => resetDefaultInstance(row.driver)}
               />
             ) : null;
@@ -1466,6 +1466,7 @@ export function ProviderSettingsPanel() {
 }
 
 export function ArchivedThreadsPanel() {
+  const { t } = useTranslation();
   const projects = useProjects();
   const { unarchiveThread, confirmAndDeleteThread } = useThreadActions();
   const environmentIds = useMemo(
@@ -1535,8 +1536,8 @@ export function ArchivedThreadsPanel() {
       if (!api) return;
       const clicked = await api.contextMenu.show(
         [
-          { id: "unarchive", label: "Unarchive" },
-          { id: "delete", label: "Delete", destructive: true },
+          { id: "unarchive", label: t("unarchive") },
+          { id: "delete", label: t("delete"), destructive: true },
         ],
         position,
       );
@@ -1550,8 +1551,8 @@ export function ArchivedThreadsPanel() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Failed to unarchive thread",
-              description: error instanceof Error ? error.message : "An error occurred.",
+              title: t("failedUnarchiveThread"),
+              description: error instanceof Error ? error.message : t("errorOccurred"),
             }),
           );
         }
@@ -1567,20 +1568,20 @@ export function ArchivedThreadsPanel() {
           toastManager.add(
             stackedThreadToast({
               type: "error",
-              title: "Failed to delete thread",
-              description: error instanceof Error ? error.message : "An error occurred.",
+              title: t("failedDeleteThread"),
+              description: error instanceof Error ? error.message : t("errorOccurred"),
             }),
           );
         }
       }
     },
-    [confirmAndDeleteThread, refreshArchivedThreads, unarchiveThread],
+    [confirmAndDeleteThread, refreshArchivedThreads, t, unarchiveThread],
   );
 
   return (
     <SettingsPageContainer>
       {archivedGroups.length === 0 ? (
-        <SettingsSection title="Archived threads">
+        <SettingsSection title={t("archivedThreads")}>
           <SettingsRow
             title={
               <span className="inline-flex items-center gap-2">
@@ -1590,16 +1591,16 @@ export function ArchivedThreadsPanel() {
                   <ArchiveIcon className="size-3.5 text-muted-foreground" />
                 )}
                 {isLoadingArchive
-                  ? "Loading archived threads"
+                  ? t("loadingArchivedThreads")
                   : archiveError
-                    ? "Could not load archived threads"
-                    : "No archived threads"}
+                    ? t("couldNotLoadArchivedThreads")
+                    : t("noArchivedThreads")}
               </span>
             }
             description={
               isLoadingArchive
-                ? "Checking connected environments."
-                : (archiveError ?? "Archived threads will appear here.")
+                ? t("checkingConnectedEnvironments")
+                : (archiveError ?? t("archivedThreadsEmpty"))
             }
           />
         </SettingsSection>
@@ -1630,9 +1631,8 @@ export function ArchivedThreadsPanel() {
                       toastManager.add(
                         stackedThreadToast({
                           type: "error",
-                          title: "Archived thread action failed",
-                          description:
-                            error instanceof Error ? error.message : "An error occurred.",
+                          title: t("archivedThreadActionFailed"),
+                          description: error instanceof Error ? error.message : t("errorOccurred"),
                         }),
                       );
                     }
@@ -1641,9 +1641,11 @@ export function ArchivedThreadsPanel() {
                 title={thread.title}
                 description={
                   <>
-                    Archived {formatRelativeTimeLabel(thread.archivedAt ?? thread.createdAt)}
-                    {" \u00b7 Created "}
-                    {formatRelativeTimeLabel(thread.createdAt)}
+                    {t("archivedAt", {
+                      time: formatRelativeTimeLabel(thread.archivedAt ?? thread.createdAt),
+                    })}
+                    {" · "}
+                    {t("createdAt", { time: formatRelativeTimeLabel(thread.createdAt) })}
                   </>
                 }
                 control={
@@ -1666,9 +1668,9 @@ export function ArchivedThreadsPanel() {
                           toastManager.add(
                             stackedThreadToast({
                               type: "error",
-                              title: "Failed to unarchive thread",
+                              title: t("failedUnarchiveThread"),
                               description:
-                                error instanceof Error ? error.message : "An error occurred.",
+                                error instanceof Error ? error.message : t("errorOccurred"),
                             }),
                           );
                         }
@@ -1676,7 +1678,7 @@ export function ArchivedThreadsPanel() {
                     }}
                   >
                     <ArchiveX className="size-3.5" />
-                    <span>Unarchive</span>
+                    <span>{t("unarchive")}</span>
                   </Button>
                 }
               />

@@ -4,15 +4,17 @@ import { GITHUB_REPOSITORY_URL, MARKETING_STATS } from "../lib/site";
 interface Props {
   title?: string;
   description?: string;
+  page?: "home" | "download";
 }
 
 const {
   title = "T3 Code",
   description = "T3 Code — The open-source control plane for coding agents.",
+  page = "home",
 } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" data-marketing-page={page}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,7 +35,7 @@ const {
     <div class="page">
       <nav class="nav">
         <div class="nav-inner">
-          <a href="/" class="nav-brand" aria-label="T3 Code home">
+          <a href="/" class="nav-brand" aria-label="T3 Code home" data-i18n-aria-label="homeAria">
             <span class="nav-brand-name">T3 Code</span>
           </a>
           <div class="nav-right">
@@ -46,6 +48,8 @@ const {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Star T3 Code on GitHub — ${MARKETING_STATS.githubStars} stars`}
+              data-i18n-aria-label="githubStarsAria"
+              data-stars={MARKETING_STATS.githubStars}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2.3l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.12l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.3z"/>
@@ -109,7 +113,10 @@ const {
           element.innerHTML = translate(element.dataset.i18nHtml ?? "", element.dataset);
         });
         document.querySelectorAll<HTMLElement>("[data-i18n-aria-label]").forEach((element) => {
-          element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel ?? ""));
+          element.setAttribute(
+            "aria-label",
+            translate(element.dataset.i18nAriaLabel ?? "", element.dataset),
+          );
         });
         document.querySelectorAll<HTMLElement>("[data-i18n-alt]").forEach((element) => {
           element.setAttribute("alt", translate(element.dataset.i18nAlt ?? ""));
@@ -119,6 +126,11 @@ const {
           switchButton.textContent = language === "zh-CN" ? "EN" : "简";
           switchButton.setAttribute("aria-label", translate("languageSwitch"));
         }
+        const page = document.documentElement.dataset.marketingPage;
+        const titleKey = page === "download" ? "downloadPageTitle" : "homePageTitle";
+        const descriptionKey = page === "download" ? "downloadPageDescription" : "homePageDescription";
+        document.title = translate(titleKey);
+        document.querySelector('meta[name="description"]')?.setAttribute("content", translate(descriptionKey));
         window.dispatchEvent(new CustomEvent("t3code:languagechange", { detail: language }));
       };
 

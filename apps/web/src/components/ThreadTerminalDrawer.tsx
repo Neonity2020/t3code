@@ -31,6 +31,7 @@ import {
   useState,
 } from "react";
 import { Popover, PopoverPopup, PopoverTrigger } from "~/components/ui/popover";
+import { useTranslation } from "~/hooks/useLanguage";
 import { cn } from "~/lib/utils";
 import { type TerminalContextSelection } from "~/lib/terminalContext";
 import { useOpenInPreferredEditor } from "../editorPreferences";
@@ -892,6 +893,7 @@ export default function ThreadTerminalDrawer({
   terminalLabelsById,
   terminalLaunchLocationsById,
 }: ThreadTerminalDrawerProps) {
+  const { t } = useTranslation();
   const isPanel = mode === "panel";
   const controlledDrawerHeight = clampDrawerHeight(height);
   const [drawerHeightState, setDrawerHeightState] = useState(() => ({
@@ -1061,22 +1063,30 @@ export default function ThreadTerminalDrawer({
     },
     [cwd, runtimeEnv, terminalLaunchLocationsById, worktreePath],
   );
+  const splitTerminalAction = t("splitTerminalHorizontally");
   const splitTerminalActionLabel = hasReachedSplitLimit
-    ? `Split Terminal Horizontally (max ${MAX_TERMINALS_PER_GROUP} per group)`
+    ? t("terminalSplitLimit", { action: splitTerminalAction, count: MAX_TERMINALS_PER_GROUP })
     : splitShortcutLabel
-      ? `Split Terminal Horizontally (${splitShortcutLabel})`
-      : "Split Terminal Horizontally";
+      ? t("terminalWithShortcut", { action: splitTerminalAction, shortcut: splitShortcutLabel })
+      : splitTerminalAction;
+  const splitTerminalVerticalAction = t("splitTerminalVertically");
   const splitTerminalVerticalActionLabel = hasReachedSplitLimit
-    ? `Split Terminal Vertically (max ${MAX_TERMINALS_PER_GROUP} per group)`
+    ? t("terminalSplitLimit", {
+        action: splitTerminalVerticalAction,
+        count: MAX_TERMINALS_PER_GROUP,
+      })
     : splitVerticalShortcutLabel
-      ? `Split Terminal Vertically (${splitVerticalShortcutLabel})`
-      : "Split Terminal Vertically";
+      ? t("terminalWithShortcut", {
+          action: splitTerminalVerticalAction,
+          shortcut: splitVerticalShortcutLabel,
+        })
+      : splitTerminalVerticalAction;
   const newTerminalActionLabel = newShortcutLabel
-    ? `New Terminal (${newShortcutLabel})`
-    : "New Terminal";
+    ? t("terminalWithShortcut", { action: t("newTerminal"), shortcut: newShortcutLabel })
+    : t("newTerminal");
   const closeTerminalActionLabel = closeShortcutLabel
-    ? `Close Terminal (${closeShortcutLabel})`
-    : "Close Terminal";
+    ? t("terminalWithShortcut", { action: t("closeTerminal"), shortcut: closeShortcutLabel })
+    : t("closeTerminal");
   const onSplitTerminalAction = useCallback(() => {
     if (hasReachedSplitLimit) return;
     onSplitTerminal();
@@ -1211,7 +1221,7 @@ export default function ThreadTerminalDrawer({
           />
         ) : null}
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>No terminal sessions for this thread yet.</p>
+          <p>{t("noTerminalSessions")}</p>
           <button
             type="button"
             className="rounded-md border border-border/80 bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
@@ -1443,7 +1453,7 @@ export default function ThreadTerminalDrawer({
                           }`}
                           onClick={() => onActiveTerminalChange(groupActiveTerminalId)}
                         >
-                          Group {groupIndex + 1}
+                          {t("terminalGroup", { count: groupIndex + 1 })}
                         </button>
                       )}
 

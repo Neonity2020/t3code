@@ -26,6 +26,7 @@ import {
   decodeProjectScriptKeybindingRule,
 } from "~/lib/projectScriptKeybindings";
 import { keybindingFromKeyboardEvent } from "~/components/settings/KeybindingsSettings.logic";
+import { useTranslation } from "~/hooks/useLanguage";
 import {
   commandForProjectScript,
   nextProjectScriptId,
@@ -120,6 +121,7 @@ export default function ProjectScriptsControl({
   onUpdateScript,
   onDeleteScript,
 }: ProjectScriptsControlProps) {
+  const { t } = useTranslation();
   const addScriptFormId = React.useId();
   const [editingScriptId, setEditingScriptId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -162,11 +164,11 @@ export default function ProjectScriptsControl({
     const trimmedName = name.trim();
     const trimmedCommand = command.trim();
     if (trimmedName.length === 0) {
-      setValidationError("Name is required.");
+      setValidationError(t("nameRequired"));
       return;
     }
     if (trimmedCommand.length === 0) {
-      setValidationError("Command is required.");
+      setValidationError(t("commandRequired"));
       return;
     }
 
@@ -194,7 +196,7 @@ export default function ProjectScriptsControl({
         autoOpenPreview: trimmedPreviewUrl.length > 0 ? autoOpenPreview : false,
       } satisfies NewProjectScriptInput;
     } catch (error) {
-      setValidationError(error instanceof Error ? error.message : "Failed to save action.");
+      setValidationError(error instanceof Error ? error.message : t("failedToSaveAction"));
       return;
     }
 
@@ -204,7 +206,7 @@ export default function ProjectScriptsControl({
     if (result._tag === "Failure") {
       if (!isAtomCommandInterrupted(result)) {
         const error = squashAtomCommandFailure(result);
-        setValidationError(error instanceof Error ? error.message : "Failed to save action.");
+        setValidationError(error instanceof Error ? error.message : t("failedToSaveAction"));
       }
       return;
     }
@@ -250,14 +252,14 @@ export default function ProjectScriptsControl({
   return (
     <>
       {primaryScript ? (
-        <Group aria-label="Project scripts">
+        <Group aria-label={t("projectScripts")}>
           <Tooltip>
             <TooltipTrigger
               render={
                 <Button
                   size="xs"
                   variant="outline"
-                  aria-label={`Run ${primaryScript.name}`}
+                  aria-label={t("runAction", { name: primaryScript.name })}
                   onClick={() => onRunScript(primaryScript)}
                 />
               }
@@ -267,12 +269,12 @@ export default function ProjectScriptsControl({
                 {primaryScript.name}
               </span>
             </TooltipTrigger>
-            <TooltipPopup side="top">Run {primaryScript.name}</TooltipPopup>
+            <TooltipPopup side="top">{t("runAction", { name: primaryScript.name })}</TooltipPopup>
           </Tooltip>
           <GroupSeparator className="hidden @3xl/header-actions:block" />
           <Menu highlightItemOnHover={false}>
             <MenuTrigger
-              render={<Button size="icon-xs" variant="outline" aria-label="Script actions" />}
+              render={<Button size="icon-xs" variant="outline" aria-label={t("scriptActions")} />}
             >
               <ChevronDownIcon className="size-4" />
             </MenuTrigger>
@@ -290,7 +292,7 @@ export default function ProjectScriptsControl({
                   >
                     <ScriptIcon icon={script.icon} className="size-4" />
                     <span className="truncate">
-                      {script.runOnWorktreeCreate ? `${script.name} (setup)` : script.name}
+                      {script.runOnWorktreeCreate ? `${script.name} (${t("setup")})` : script.name}
                     </span>
                     <span className="relative ms-auto flex h-6 min-w-6 items-center justify-end">
                       {shortcutLabel && (
@@ -303,7 +305,7 @@ export default function ProjectScriptsControl({
                         variant="ghost"
                         size="icon-xs"
                         className="absolute right-0 top-1/2 size-6 -translate-y-1/2 opacity-0 pointer-events-none transition-opacity group-hover:opacity-100 group-hover:pointer-events-auto group-focus-visible:opacity-100 group-focus-visible:pointer-events-auto"
-                        aria-label={`Edit ${script.name}`}
+                        aria-label={t("editAction", { name: script.name })}
                         onPointerDown={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
@@ -322,7 +324,7 @@ export default function ProjectScriptsControl({
               })}
               <MenuItem className={dropdownItemClassName} onClick={openAddDialog}>
                 <PlusIcon className="size-4" />
-                Add action
+                {t("addAction")}
               </MenuItem>
             </MenuPopup>
           </Menu>
@@ -331,15 +333,20 @@ export default function ProjectScriptsControl({
         <Tooltip>
           <TooltipTrigger
             render={
-              <Button size="xs" variant="outline" aria-label="Add action" onClick={openAddDialog} />
+              <Button
+                size="xs"
+                variant="outline"
+                aria-label={t("addAction")}
+                onClick={openAddDialog}
+              />
             }
           >
             <PlusIcon className="size-3.5" />
             <span className="sr-only @3xl/header-actions:not-sr-only @3xl/header-actions:ml-0.5">
-              Add action
+              {t("addAction")}
             </span>
           </TooltipTrigger>
-          <TooltipPopup side="top">Add action</TooltipPopup>
+          <TooltipPopup side="top">{t("addAction")}</TooltipPopup>
         </Tooltip>
       )}
 
@@ -366,15 +373,13 @@ export default function ProjectScriptsControl({
       >
         <DialogPopup>
           <DialogHeader>
-            <DialogTitle>{isEditing ? "Edit Action" : "Add Action"}</DialogTitle>
-            <DialogDescription>
-              Actions are project-scoped commands you can run from the top bar or keybindings.
-            </DialogDescription>
+            <DialogTitle>{isEditing ? t("editActionTitle") : t("addActionTitle")}</DialogTitle>
+            <DialogDescription>{t("actionsDescription")}</DialogDescription>
           </DialogHeader>
           <DialogPanel>
             <form id={addScriptFormId} className="space-y-4" onSubmit={submitAddScript}>
               <div className="space-y-1.5">
-                <Label htmlFor="script-name">Name</Label>
+                <Label htmlFor="script-name">{t("name")}</Label>
                 <div className="flex items-center gap-2">
                   <Popover onOpenChange={setIconPickerOpen} open={iconPickerOpen}>
                     <PopoverTrigger
@@ -383,7 +388,7 @@ export default function ProjectScriptsControl({
                           type="button"
                           variant="outline"
                           className="size-9 shrink-0 hover:bg-popover active:bg-popover data-pressed:bg-popover data-pressed:shadow-xs/5 data-pressed:before:shadow-[0_1px_--theme(--color-black/4%)] dark:data-pressed:before:shadow-[0_-1px_--theme(--color-white/6%)]"
-                          aria-label="Choose icon"
+                          aria-label={t("chooseIcon")}
                         />
                       }
                     >
@@ -425,20 +430,18 @@ export default function ProjectScriptsControl({
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="script-keybinding">Keybinding</Label>
+                <Label htmlFor="script-keybinding">{t("keybinding")}</Label>
                 <Input
                   id="script-keybinding"
-                  placeholder="Press shortcut"
+                  placeholder={t("pressShortcut")}
                   value={keybinding}
                   readOnly
                   onKeyDown={captureKeybinding}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Press a shortcut. Use <code>Backspace</code> to clear.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("pressShortcutHelp")}</p>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="script-command">Command</Label>
+                <Label htmlFor="script-command">{t("command")}</Label>
                 <Textarea
                   id="script-command"
                   placeholder="bun test"
@@ -447,19 +450,17 @@ export default function ProjectScriptsControl({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="script-preview-url">Preview URL (optional)</Label>
+                <Label htmlFor="script-preview-url">{t("previewUrlOptional")}</Label>
                 <Input
                   id="script-preview-url"
                   placeholder="http://localhost:5173"
                   value={previewUrl}
                   onChange={(event) => setPreviewUrl(event.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Open this URL in the in-app preview when this action runs.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("openPreviewWhenRun")}</p>
               </div>
               <label className="flex items-center justify-between gap-3 rounded-md border border-border/70 px-3 py-2 text-sm">
-                <span>Run automatically on worktree creation</span>
+                <span>{t("runOnWorktreeCreate")}</span>
                 <Switch
                   checked={runOnWorktreeCreate}
                   onCheckedChange={(checked) => setRunOnWorktreeCreate(Boolean(checked))}
@@ -470,7 +471,7 @@ export default function ProjectScriptsControl({
                   previewUrl.trim().length === 0 ? "opacity-60" : ""
                 }`}
               >
-                <span>Open preview automatically when this action runs</span>
+                <span>{t("autoOpenPreview")}</span>
                 <Switch
                   checked={autoOpenPreview}
                   disabled={previewUrl.trim().length === 0}
@@ -488,7 +489,7 @@ export default function ProjectScriptsControl({
                 className="mr-auto"
                 onClick={() => setDeleteConfirmOpen(true)}
               >
-                Delete
+                {t("deleteAction")}
               </Button>
             )}
             <Button
@@ -501,7 +502,7 @@ export default function ProjectScriptsControl({
               Cancel
             </Button>
             <Button form={addScriptFormId} type="submit">
-              {isEditing ? "Save changes" : "Save action"}
+              {isEditing ? t("saveChanges") : t("saveAction")}
             </Button>
           </DialogFooter>
         </DialogPopup>
@@ -510,13 +511,13 @@ export default function ProjectScriptsControl({
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogPopup>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete action "{name}"?</AlertDialogTitle>
-            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>{t("deleteActionConfirm", { name })}</AlertDialogTitle>
+            <AlertDialogDescription>{t("cannotUndo")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogClose render={<Button variant="outline" />}>Cancel</AlertDialogClose>
             <Button variant="destructive" onClick={confirmDeleteScript}>
-              Delete action
+              {t("deleteAction")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogPopup>

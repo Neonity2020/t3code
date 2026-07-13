@@ -32,6 +32,7 @@ import {
   WebStormIcon,
 } from "../JetBrainsIcons";
 import { isMacPlatform, isWindowsPlatform } from "~/lib/utils";
+import { useTranslation } from "~/hooks/useLanguage";
 import { shellEnvironment } from "~/state/shell";
 import { useAtomCommand } from "~/state/use-atom-command";
 
@@ -166,6 +167,7 @@ export const OpenInPicker = memo(function OpenInPicker({
   compact?: boolean;
   enableShortcut?: boolean;
 }) {
+  const { t } = useTranslation();
   const openInEditorMutation = useAtomCommand(shellEnvironment.openInEditor, "open in editor");
   const [preferredEditor, setPreferredEditor] = usePreferredEditor(availableEditors);
   const options = useMemo(
@@ -225,9 +227,9 @@ export const OpenInPicker = memo(function OpenInPicker({
   ]);
 
   return (
-    <Group aria-label="Open in editor">
+    <Group aria-label={t("openInEditor")}>
       <Button
-        aria-label={compact ? "Open file in preferred editor" : undefined}
+        aria-label={compact ? t("openFileInPreferredEditor") : undefined}
         size="xs"
         variant="outline"
         disabled={!preferredEditor || !openInCwd}
@@ -241,7 +243,7 @@ export const OpenInPicker = memo(function OpenInPicker({
               : "sr-only @3xl/header-actions:not-sr-only @3xl/header-actions:ml-0.5"
           }
         >
-          Open
+          {t("open")}
         </span>
       </Button>
       <GroupSeparator {...(!compact ? { className: "hidden @3xl/header-actions:block" } : {})} />
@@ -249,7 +251,7 @@ export const OpenInPicker = memo(function OpenInPicker({
         <MenuTrigger
           render={
             <Button
-              aria-label={compact ? "Choose editor" : "Copy options"}
+              aria-label={compact ? t("chooseEditor") : t("openInEditor")}
               size="icon-xs"
               variant="outline"
             />
@@ -258,7 +260,7 @@ export const OpenInPicker = memo(function OpenInPicker({
           <ChevronDownIcon aria-hidden="true" className="size-4" />
         </MenuTrigger>
         <MenuPopup align="end">
-          {options.length === 0 && <MenuItem disabled>No installed editors found</MenuItem>}
+          {options.length === 0 && <MenuItem disabled>{t("noInstalledEditors")}</MenuItem>}
           {options.map(({ label, Icon, value }) => (
             <MenuItem key={value} onClick={() => openInEditor(value)}>
               <Icon aria-hidden="true" className="text-muted-foreground" />

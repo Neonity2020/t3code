@@ -4,6 +4,7 @@ import { RefreshCw, Search } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 
 import { useTheme } from "~/hooks/useTheme";
+import { useTranslation } from "~/hooks/useLanguage";
 import { cn } from "~/lib/utils";
 import { T3_PIERRE_ICONS } from "~/pierre-icons";
 
@@ -38,6 +39,7 @@ export default function FileBrowserPanel({
   projectName,
   onOpenFile,
 }: FileBrowserPanelProps) {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const entriesQuery = useProjectEntriesQuery(environmentId, cwd);
   const entries = entriesQuery.data?.entries ?? [];
@@ -88,15 +90,15 @@ export default function FileBrowserPanel({
           <div className="truncate text-xs font-medium text-foreground">{projectName}</div>
           <div className="truncate text-[10px] leading-none text-muted-foreground">
             {entriesQuery.isPending && entriesQuery.data === null
-              ? "Indexing…"
-              : `${fileCount.toLocaleString()} files`}
-            {entriesQuery.data?.truncated ? " · partial" : ""}
+              ? t("indexing")
+              : t("fileCount", { count: fileCount.toLocaleString() })}
+            {entriesQuery.data?.truncated ? ` · ${t("partial")}` : ""}
           </div>
         </div>
         <button
           type="button"
           className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Search workspace files"
+          aria-label={t("searchWorkspaceFiles")}
           onClick={() => model.openSearch()}
         >
           <Search className="size-3.5" />
@@ -104,7 +106,7 @@ export default function FileBrowserPanel({
         <button
           type="button"
           className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label="Refresh workspace files"
+          aria-label={t("refreshWorkspaceFiles")}
           onClick={entriesQuery.refresh}
         >
           <RefreshCw className={cn("size-3.5", entriesQuery.isPending && "animate-spin")} />
@@ -115,7 +117,7 @@ export default function FileBrowserPanel({
       ) : (
         <FileTree
           model={model}
-          aria-label={`${projectName} files`}
+          aria-label={t("projectFiles", { project: projectName })}
           className="min-h-0 flex-1 overflow-hidden"
           style={{
             colorScheme: resolvedTheme,

@@ -3,6 +3,7 @@ import { useEffect, type CSSProperties, type ReactNode } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { isElectron } from "../env";
+import { useTranslation } from "../hooks/useLanguage";
 import { resolveShortcutCommand, shortcutLabelForCommand } from "../keybindings";
 import { isMacPlatform } from "../lib/utils";
 import { primaryServerKeybindingsAtom } from "../state/server";
@@ -16,6 +17,7 @@ const THREAD_MAIN_CONTENT_MIN_WIDTH = 40 * 16;
 const MACOS_TRAFFIC_LIGHTS_LEFT_INSET = "90px";
 
 function SidebarControl() {
+  const { t } = useTranslation();
   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
   const { toggleSidebar } = useSidebar();
   const shortcutLabel = shortcutLabelForCommand(keybindings, "sidebar.toggle");
@@ -42,11 +44,13 @@ function SidebarControl() {
       <Tooltip>
         <TooltipTrigger
           render={
-            <SidebarTrigger className="pointer-events-auto" aria-label="Toggle main sidebar" />
+            <SidebarTrigger className="pointer-events-auto" aria-label={t("toggleMainSidebar")} />
           }
         />
         <TooltipPopup side="bottom">
-          Toggle main sidebar{shortcutLabel ? ` (${shortcutLabel})` : ""}
+          {shortcutLabel
+            ? t("toggleMainSidebarShortcut", { shortcut: shortcutLabel })
+            : t("toggleMainSidebar")}
         </TooltipPopup>
       </Tooltip>
     </div>

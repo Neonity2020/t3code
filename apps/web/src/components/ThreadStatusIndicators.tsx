@@ -13,6 +13,7 @@ import { useThreadRunningTerminalIds } from "../state/terminalSessions";
 import { vcsEnvironment } from "../state/vcs";
 import { useUiStateStore } from "../uiStateStore";
 import { resolveChangeRequestPresentation } from "../sourceControlPresentation";
+import { useTranslation } from "../hooks/useLanguage";
 import { resolveThreadStatusPill, type ThreadStatusPill } from "./Sidebar.logic";
 import type { SidebarThreadSummary } from "../types";
 import { formatWorktreePathForDisplay } from "../worktreeCleanup";
@@ -100,6 +101,7 @@ export function ThreadWorktreeIndicator({
 }: {
   thread: Pick<SidebarThreadSummary, "id" | "branch" | "worktreePath">;
 }) {
+  const { t } = useTranslation();
   const worktreePath = thread.worktreePath?.trim();
   if (!worktreePath) {
     return null;
@@ -107,8 +109,8 @@ export function ThreadWorktreeIndicator({
 
   const displayPath = formatWorktreePathForDisplay(worktreePath);
   const tooltip = thread.branch
-    ? `Worktree: ${displayPath} (${thread.branch})`
-    : `Worktree: ${displayPath}`;
+    ? t("worktreeLocationBranch", { path: displayPath, branch: thread.branch })
+    : t("worktreeLocation", { path: displayPath });
 
   return (
     <Tooltip>
@@ -247,6 +249,7 @@ export function ThreadRowLeadingStatus({ thread }: { thread: SidebarThreadSummar
  * environment indicator, matching the sidebar's trailing indicators.
  */
 export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSummary }) {
+  const { t } = useTranslation();
   const runningTerminalIds = useThreadRunningTerminalIds({
     environmentId: thread.environmentId,
     threadId: thread.id,
@@ -256,7 +259,7 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
   const isRemoteThread =
     primaryEnvironmentId !== null && thread.environmentId !== primaryEnvironmentId;
   const remoteEnvLabel = environment?.label ?? null;
-  const threadEnvironmentLabel = isRemoteThread ? (remoteEnvLabel ?? "Remote") : null;
+  const threadEnvironmentLabel = isRemoteThread ? (remoteEnvLabel ?? t("remote")) : null;
   const terminalStatus = terminalStatusFromRunningIds(runningTerminalIds);
 
   if (!terminalStatus && !isRemoteThread) {
@@ -271,14 +274,14 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
             render={
               <span
                 role="img"
-                aria-label={terminalStatus.label}
+                aria-label={t("terminalProcessRunning")}
                 className={`inline-flex items-center justify-center ${terminalStatus.colorClass}`}
               />
             }
           >
             <TerminalIcon className={`size-3 ${terminalStatus.pulse ? "animate-pulse" : ""}`} />
           </TooltipTrigger>
-          <TooltipPopup side="top">{terminalStatus.label}</TooltipPopup>
+          <TooltipPopup side="top">{t("terminalProcessRunning")}</TooltipPopup>
         </Tooltip>
       ) : null}
       {isRemoteThread ? (
@@ -286,7 +289,7 @@ export function ThreadRowTrailingStatus({ thread }: { thread: SidebarThreadSumma
           <TooltipTrigger
             render={
               <span
-                aria-label={threadEnvironmentLabel ?? "Remote"}
+                aria-label={threadEnvironmentLabel ?? t("remote")}
                 className="inline-flex items-center justify-center"
               />
             }

@@ -20,6 +20,7 @@ import { SshPasswordPromptDialog } from "../components/desktop/SshPasswordPrompt
 import { ProviderUpdateLaunchNotification } from "../components/ProviderUpdateLaunchNotification";
 import { SlowRpcRequestToastCoordinator } from "../components/SlowRpcRequestToastCoordinator";
 import { Button } from "../components/ui/button";
+import { useTranslation } from "../hooks/useLanguage";
 import {
   AnchoredToastProvider,
   stackedThreadToast,
@@ -187,6 +188,7 @@ function HostedStaticEnvironmentBootstrap() {
 }
 
 function RootRouteErrorView({ error, reset }: ErrorComponentProps) {
+  const { t } = useTranslation();
   const message = errorMessage(error);
   const details = errorDetails(error);
 
@@ -202,23 +204,23 @@ function RootRouteErrorView({ error, reset }: ErrorComponentProps) {
           {APP_DISPLAY_NAME}
         </p>
         <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-          Something went wrong.
+          {t("somethingWentWrong")}
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{message}</p>
 
         <div className="mt-5 flex flex-wrap gap-2">
           <Button size="sm" onClick={() => reset()}>
-            Try again
+            {t("tryAgain")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => window.location.reload()}>
-            Reload app
+            {t("reloadApp")}
           </Button>
         </div>
 
         <details className="group mt-5 overflow-hidden rounded-lg border border-border/70 bg-background/55">
           <summary className="cursor-pointer list-none px-3 py-2 text-xs font-medium text-muted-foreground">
-            <span className="group-open:hidden">Show error details</span>
-            <span className="hidden group-open:inline">Hide error details</span>
+            <span className="group-open:hidden">{t("showErrorDetails")}</span>
+            <span className="hidden group-open:inline">{t("hideErrorDetails")}</span>
           </summary>
           <pre className="max-h-56 overflow-auto border-t border-border/70 bg-background/80 px-3 py-2 text-xs text-foreground/85">
             {details}

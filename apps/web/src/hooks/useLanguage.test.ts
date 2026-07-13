@@ -20,6 +20,14 @@ afterEach(() => {
 });
 
 describe("language preference", () => {
+  it("formats localized UI messages with dynamic values", async () => {
+    const { translate } = await import("./useLanguage");
+
+    expect(translate("zh-CN", "newThread")).toBe("新建线程");
+    expect(translate("zh-CN", "tooManyImages", { count: 4 })).toBe("每条消息最多可附加 4 张图片。");
+    expect(translate("en", "newThread")).toBe("New thread");
+  });
+
   it("uses English for an absent or unsupported preference", async () => {
     const storage = createStorage();
     vi.stubGlobal("window", { localStorage: storage });

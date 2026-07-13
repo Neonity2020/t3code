@@ -1,4 +1,7 @@
 import type { ServerProvider, ServerProviderVersionAdvisory } from "@t3tools/contracts";
+import type { TranslationKey } from "../../hooks/useLanguage";
+
+type Translate = (key: TranslationKey, values?: Record<string, string | number>) => string;
 
 /**
  * Visual treatment for each server-reported provider status. Centralized so
@@ -28,55 +31,53 @@ export type ProviderStatusKey = keyof typeof PROVIDER_STATUS_STYLES;
  * state — which happens before the first probe or when an instance names a
  * driver this build does not ship.
  */
-export function getProviderSummary(provider: ServerProvider | undefined) {
+export function getProviderSummary(provider: ServerProvider | undefined, t: Translate) {
   if (!provider) {
     return {
-      headline: "Checking provider status",
-      detail: "Waiting for the server to report installation and authentication details.",
+      headline: t("checkingProviderStatus"),
+      detail: t("waitingProviderStatus"),
     };
   }
   if (!provider.enabled) {
     return {
-      headline: "Disabled",
-      detail:
-        provider.message ?? "This provider is installed but disabled for new sessions in T3 Code.",
+      headline: t("disabled"),
+      detail: provider.message ?? t("providerDisabledDescription"),
     };
   }
   if (!provider.installed) {
     return {
-      headline: "Not found",
-      detail: provider.message ?? "CLI not detected on PATH.",
+      headline: t("notFound"),
+      detail: provider.message ?? t("cliNotDetected"),
     };
   }
   if (provider.auth.status === "authenticated") {
     const authLabel = provider.auth.label ?? provider.auth.type;
     return {
-      headline: authLabel ? `Authenticated · ${authLabel}` : "Authenticated",
+      headline: authLabel ? t("authenticatedWithLabel", { label: authLabel }) : t("authenticated"),
       detail: provider.message ?? null,
     };
   }
   if (provider.auth.status === "unauthenticated") {
     return {
-      headline: "Not authenticated",
+      headline: t("notAuthenticated"),
       detail: provider.message ?? null,
     };
   }
   if (provider.status === "warning") {
     return {
-      headline: "Needs attention",
-      detail:
-        provider.message ?? "The provider is installed, but the server could not fully verify it.",
+      headline: t("needsAttention"),
+      detail: provider.message ?? t("providerWarningDescription"),
     };
   }
   if (provider.status === "error") {
     return {
-      headline: "Unavailable",
-      detail: provider.message ?? "The provider failed its startup checks.",
+      headline: t("unavailable"),
+      detail: provider.message ?? t("providerUnavailableDescription"),
     };
   }
   return {
-    headline: "Available",
-    detail: provider.message ?? "Installed and ready, but authentication could not be verified.",
+    headline: t("available"),
+    detail: provider.message ?? t("providerAvailableDescription"),
   };
 }
 
@@ -92,6 +93,7 @@ export function getProviderVersionLabel(version: string | null | undefined) {
 
 export function getProviderVersionAdvisoryPresentation(
   advisory: ServerProviderVersionAdvisory | undefined,
+  t: Translate,
 ): {
   readonly detail: string;
   readonly updateCommand: string | null;
@@ -101,7 +103,6 @@ export function getProviderVersionAdvisoryPresentation(
     return null;
   }
 
-  const label = "Update available";
   const version = advisory.latestVersion;
   const versionLabel = getProviderVersionLabel(version);
 
@@ -109,8 +110,8 @@ export function getProviderVersionAdvisoryPresentation(
     detail:
       advisory.message ??
       (versionLabel
-        ? `${label}: install ${versionLabel}.`
-        : `${label}: install the latest provider version.`),
+        ? t("updateAvailableVersion", { version: versionLabel })
+        : t("updateAvailableLatest")),
     updateCommand: advisory.updateCommand,
     emphasis: "normal" as const,
   };

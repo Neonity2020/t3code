@@ -11,6 +11,7 @@ import {
 import { cn } from "~/lib/utils";
 import { parsePullRequestReference } from "~/pullRequestReference";
 import { getSourceControlPresentation } from "~/sourceControlPresentation";
+import { useTranslation } from "~/hooks/useLanguage";
 import { useEnvironmentQuery } from "~/state/query";
 import { vcsEnvironment } from "~/state/vcs";
 import { Button } from "./ui/button";
@@ -45,6 +46,7 @@ export function PullRequestThreadDialog({
   onOpenChange,
   onPrepared,
 }: PullRequestThreadDialogProps) {
+  const { t } = useTranslation();
   const referenceInputRef = useRef<HTMLInputElement>(null);
   const [reference, setReference] = useState(initialReference ?? "");
   const [referenceDirty, setReferenceDirty] = useState(false);
@@ -171,9 +173,9 @@ export function PullRequestThreadDialog({
   const validationMessage = !referenceDirty
     ? null
     : reference.trim().length === 0
-      ? `Paste a ${terminology.singular} URL, checkout command, or enter 123 / #123.`
+      ? t("referenceInputHint", { name: terminology.singular })
       : parsedReference === null
-        ? `Use a ${terminology.singular} URL, checkout command, 123, or #123.`
+        ? t("referenceInputInvalid", { name: terminology.singular })
         : null;
   const errorMessage =
     validationMessage ??
@@ -182,7 +184,7 @@ export function PullRequestThreadDialog({
       : preparePullRequestThreadAction.error instanceof Error
         ? preparePullRequestThreadAction.error.message
         : preparePullRequestThreadAction.error
-          ? `Failed to prepare ${terminology.singular} thread.`
+          ? t("failedToPrepareThread", { name: terminology.singular })
           : null);
 
   return (
@@ -198,11 +200,13 @@ export function PullRequestThreadDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <SourceControlIcon className="size-4" />
-            Checkout {terminology.singular}
+            {t("checkoutReference", { name: terminology.singular })}
           </DialogTitle>
           <DialogDescription>
-            Resolve a {sourceControlPresentation.providerName} {terminology.singular}, then create
-            the draft thread in the main repo or in a dedicated worktree.
+            {t("checkoutReferenceDescription", {
+              provider: sourceControlPresentation.providerName,
+              name: terminology.singular,
+            })}
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="space-y-4">
@@ -212,7 +216,7 @@ export function PullRequestThreadDialog({
             </span>
             <Input
               ref={referenceInputRef}
-              placeholder={`${terminology.shortLabel} URL, checkout command, or #42`}
+              placeholder={t("referencePlaceholder", { name: terminology.shortLabel })}
               value={reference}
               onChange={(event) => {
                 setReferenceDirty(true);
@@ -236,8 +240,11 @@ export function PullRequestThreadDialog({
                 <div className="min-w-0">
                   <p className="truncate font-medium text-sm">{resolvedPullRequest.title}</p>
                   <p className="truncate text-muted-foreground text-xs">
-                    #{resolvedPullRequest.number} · {resolvedPullRequest.headBranch} to{" "}
-                    {resolvedPullRequest.baseBranch}
+                    #{resolvedPullRequest.number} ·{" "}
+                    {t("branchTo", {
+                      head: resolvedPullRequest.headBranch,
+                      base: resolvedPullRequest.baseBranch,
+                    })}
                   </p>
                 </div>
                 <span className={cn("shrink-0 text-xs capitalize", statusTone)}>
@@ -250,7 +257,7 @@ export function PullRequestThreadDialog({
           {isResolving ? (
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <Spinner className="size-3.5" />
-              Resolving {terminology.singular}...
+              {t("resolvingReference", { name: terminology.singular })}
             </div>
           ) : null}
 
@@ -280,7 +287,7 @@ export function PullRequestThreadDialog({
               preparePullRequestThreadAction.isPending
             }
           >
-            {preparingMode === "local" ? "Preparing local..." : "Local"}
+            {preparingMode === "local" ? t("preparingLocal") : t("local")}
           </Button>
           <Button
             type="button"
@@ -295,7 +302,7 @@ export function PullRequestThreadDialog({
               preparePullRequestThreadAction.isPending
             }
           >
-            {preparingMode === "worktree" ? "Preparing worktree..." : "Worktree"}
+            {preparingMode === "worktree" ? t("preparingWorktree") : t("worktree")}
           </Button>
         </DialogFooter>
       </DialogPopup>

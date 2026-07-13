@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Button } from "~/components/ui/button";
+import { useTranslation } from "~/hooks/useLanguage";
 
 import { describePreviewError } from "./errorCodeMessages";
 
@@ -15,9 +16,10 @@ interface Props {
 
 /** Theme-aware tailwind port of Chromium's "This site can't be reached" page. */
 export function PreviewUnreachable({ url, code, description, onReload }: Props) {
+  const { language, t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
   const host = safeHost(url) ?? url;
-  const friendly = describePreviewError(code, description);
+  const friendly = describePreviewError(code, description, language);
   const errorLabel = description.length > 0 ? description : `ERR_${Math.abs(code) || "FAILED"}`;
 
   return (
@@ -25,19 +27,19 @@ export function PreviewUnreachable({ url, code, description, onReload }: Props) 
       <div className="mx-auto flex w-full max-w-xl flex-1 flex-col px-8 py-12 sm:py-16">
         <ErrorIcon className="mb-6 size-12 text-muted-foreground/70" />
         <h1 className="mb-3 text-2xl font-semibold leading-tight text-foreground">
-          This site can&rsquo;t be reached
+          {t("siteUnreachable")}
         </h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          <span className="font-semibold text-foreground">{host}</span>: {friendly}.
+          {t("previewConnectionIssue", { host, reason: friendly })}
         </p>
 
         {showDetails ? (
           <div className="mt-6 rounded-lg border border-border bg-muted/40 p-4 text-sm">
-            <p className="mb-2 font-medium text-foreground">Try:</p>
+            <p className="mb-2 font-medium text-foreground">{t("try")}</p>
             <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-              <li>Checking your connection</li>
-              <li>Confirming the dev server is running</li>
-              <li>Checking the proxy and the firewall</li>
+              <li>{t("checkConnection")}</li>
+              <li>{t("confirmDevServer")}</li>
+              <li>{t("checkProxyFirewall")}</li>
             </ul>
           </div>
         ) : null}
@@ -53,11 +55,11 @@ export function PreviewUnreachable({ url, code, description, onReload }: Props) 
             size="sm"
             onClick={() => setShowDetails((value) => !value)}
           >
-            {showDetails ? "Hide details" : "Details"}
+            {showDetails ? t("hideDetails") : t("details")}
           </Button>
           <div className="flex-1" />
           <Button type="button" size="sm" onClick={onReload}>
-            Reload
+            {t("reload")}
           </Button>
         </div>
       </div>

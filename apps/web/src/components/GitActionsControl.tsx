@@ -70,6 +70,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { stackedThreadToast, toastManager, type ThreadToastData } from "~/components/ui/toast";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "~/components/ui/tooltip";
 import { useOpenInPreferredEditor } from "~/editorPreferences";
+import { useTranslation } from "~/hooks/useLanguage";
 import {
   useGitStackedAction,
   useSourceControlActionRunning,
@@ -972,6 +973,7 @@ export default function GitActionsControl({
   activeThreadRef,
   draftId,
 }: GitActionsControlProps) {
+  const { t } = useTranslation();
   const updateThreadMetadata = useAtomCommand(
     threadEnvironment.updateMetadata,
     "thread branch metadata update",
@@ -1683,7 +1685,7 @@ export default function GitActionsControl({
           </span>
         </Button>
       ) : (
-        <Group aria-label="Git actions" className="shrink-0">
+        <Group aria-label={t("gitActions")} className="shrink-0">
           {quickActionDisabledReason ? (
             <Popover>
               <PopoverTrigger
@@ -1731,7 +1733,9 @@ export default function GitActionsControl({
             }}
           >
             <MenuTrigger
-              render={<Button aria-label="Git action options" size="icon-xs" variant="outline" />}
+              render={
+                <Button aria-label={t("gitActionOptions")} size="icon-xs" variant="outline" />
+              }
               disabled={isGitActionRunning}
             >
               <ChevronDownIcon aria-hidden="true" className="size-4" />
@@ -1788,23 +1792,18 @@ export default function GitActionsControl({
                   }}
                 >
                   <CloudUploadIcon />
-                  Publish repository...
+                  {t("publishRepository")}
                 </MenuItem>
               ) : null}
               {gitStatusForActions?.refName === null && (
-                <p className="px-2 py-1.5 text-xs text-warning">
-                  Detached HEAD: create and checkout a refName to enable push and pull request
-                  actions.
-                </p>
+                <p className="px-2 py-1.5 text-xs text-warning">{t("detachedHeadWarning")}</p>
               )}
               {gitStatusForActions &&
                 gitStatusForActions.refName !== null &&
                 !gitStatusForActions.hasWorkingTreeChanges &&
                 gitStatusForActions.behindCount > 0 &&
                 gitStatusForActions.aheadCount === 0 && (
-                  <p className="px-2 py-1.5 text-xs text-warning">
-                    Behind upstream. Pull/rebase first.
-                  </p>
+                  <p className="px-2 py-1.5 text-xs text-warning">{t("behindUpstreamWarning")}</p>
                 )}
               {gitStatusError && (
                 <p className="px-2 py-1.5 text-xs text-destructive">{gitStatusError}</p>
@@ -1833,14 +1832,14 @@ export default function GitActionsControl({
           <DialogPanel className="space-y-4">
             <div className="space-y-3 rounded-lg border border-input bg-muted/40 p-3 text-xs">
               <div className="grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1">
-                <span className="text-muted-foreground">Branch</span>
+                <span className="text-muted-foreground">{t("branch")}</span>
                 <span className="flex items-center justify-between gap-2">
                   <span className="font-medium">
-                    {gitStatusForActions?.refName ?? "(detached HEAD)"}
+                    {gitStatusForActions?.refName ?? t("detachedHead")}
                   </span>
                   {isDefaultRef && (
                     <span className="text-right text-warning text-xs">
-                      Warning: default refName
+                      {t("defaultBranchWarning")}
                     </span>
                   )}
                 </span>
@@ -1859,10 +1858,13 @@ export default function GitActionsControl({
                         }}
                       />
                     )}
-                    <span className="text-muted-foreground">Files</span>
+                    <span className="text-muted-foreground">{t("files")}</span>
                     {!allSelected && !isEditingFiles && (
                       <span className="text-muted-foreground">
-                        ({selectedFiles.length} of {allFiles.length})
+                        {t("filesSelected", {
+                          selected: selectedFiles.length,
+                          total: allFiles.length,
+                        })}
                       </span>
                     )}
                   </div>
@@ -1872,12 +1874,12 @@ export default function GitActionsControl({
                       size="xs"
                       onClick={() => setIsEditingFiles((prev) => !prev)}
                     >
-                      {isEditingFiles ? "Done" : "Edit"}
+                      {isEditingFiles ? t("done") : t("edit")}
                     </Button>
                   )}
                 </div>
                 {!gitStatusForActions || allFiles.length === 0 ? (
-                  <p className="font-medium">none</p>
+                  <p className="font-medium">{t("none")}</p>
                 ) : (
                   <div className="space-y-2">
                     <ScrollArea className="h-44 rounded-md border border-input bg-background">
@@ -1917,7 +1919,7 @@ export default function GitActionsControl({
                                 </span>
                                 <span className="shrink-0">
                                   {isExcluded ? (
-                                    <span className="text-muted-foreground">Excluded</span>
+                                    <span className="text-muted-foreground">{t("excluded")}</span>
                                   ) : (
                                     <>
                                       <span className="text-success">+{file.insertions}</span>
@@ -1946,11 +1948,11 @@ export default function GitActionsControl({
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-xs font-medium">Commit message (optional)</p>
+              <p className="text-xs font-medium">{t("commitMessageOptional")}</p>
               <Textarea
                 value={dialogCommitMessage}
                 onChange={(event) => setDialogCommitMessage(event.target.value)}
-                placeholder="Leave empty to auto-generate"
+                placeholder={t("autoGenerateCommitMessage")}
                 size="sm"
               />
             </div>
@@ -1966,7 +1968,7 @@ export default function GitActionsControl({
                 setIsEditingFiles(false);
               }}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               variant="outline"
@@ -1974,10 +1976,10 @@ export default function GitActionsControl({
               disabled={noneSelected}
               onClick={runDialogActionOnNewBranch}
             >
-              Commit on new refName
+              {t("commitOnNewBranch")}
             </Button>
             <Button size="sm" disabled={noneSelected} onClick={runDialogAction}>
-              Commit
+              {t("commit")}
             </Button>
           </DialogFooter>
         </DialogPopup>
@@ -2001,7 +2003,7 @@ export default function GitActionsControl({
         <DialogPopup className="max-w-xl">
           <DialogHeader>
             <DialogTitle>
-              {pendingDefaultBranchActionCopy?.title ?? "Run action on default refName?"}
+              {pendingDefaultBranchActionCopy?.title ?? t("runOnDefaultBranch")}
             </DialogTitle>
             <DialogDescription>{pendingDefaultBranchActionCopy?.description}</DialogDescription>
           </DialogHeader>
@@ -2012,7 +2014,7 @@ export default function GitActionsControl({
               size="sm"
               onClick={() => setPendingDefaultBranchAction(null)}
             >
-              Abort
+              {t("abort")}
             </Button>
             <Button
               className="min-h-8 w-full max-w-full whitespace-normal py-1.5 leading-snug sm:min-h-7 sm:w-auto"
@@ -2020,14 +2022,14 @@ export default function GitActionsControl({
               size="sm"
               onClick={continuePendingDefaultBranchAction}
             >
-              {pendingDefaultBranchActionCopy?.continueLabel ?? "Continue"}
+              {pendingDefaultBranchActionCopy?.continueLabel ?? t("continue")}
             </Button>
             <Button
               className="min-h-8 w-full max-w-full whitespace-normal py-1.5 leading-snug sm:min-h-7 sm:w-auto"
               size="sm"
               onClick={checkoutFeatureBranchAndContinuePendingAction}
             >
-              Checkout feature branch & continue
+              {t("checkoutFeatureAndContinue")}
             </Button>
           </DialogFooter>
         </DialogPopup>

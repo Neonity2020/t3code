@@ -15,7 +15,7 @@ const mobileEndorsementRows = [
 ];
 ---
 
-<Layout>
+<Layout page="home">
   <!-- ── Hero ──────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-grid" aria-hidden="true"></div>
@@ -106,6 +106,8 @@ const mobileEndorsementRows = [
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Read ${tweet.handle}'s post on X`}
+                        data-i18n-aria-label="tweetAria"
+                        data-handle={tweet.handle}
                         tabindex={groupIndex === 1 ? "-1" : undefined}
                       >
                         <div class="endorsement-author">
@@ -144,6 +146,8 @@ const mobileEndorsementRows = [
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`Read ${tweet.handle}'s post on X`}
+                        data-i18n-aria-label="tweetAria"
+                        data-handle={tweet.handle}
                         tabindex={groupIndex === 1 ? "-1" : undefined}
                       >
                         <div class="endorsement-author">

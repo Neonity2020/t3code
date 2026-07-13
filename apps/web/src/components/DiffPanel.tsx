@@ -25,6 +25,7 @@ import { useCheckpointDiff } from "~/lib/checkpointDiffState";
 import { cn } from "~/lib/utils";
 import { selectThreadDiffPanelSelection, useDiffPanelStore } from "../diffPanelStore";
 import { useTheme } from "../hooks/useTheme";
+import { useTranslation } from "../hooks/useLanguage";
 import {
   buildFileDiffRenderKey,
   getDiffCollapseIconClassName,
@@ -183,6 +184,7 @@ interface DiffPanelProps {
 export { DiffWorkerPoolProvider } from "./DiffWorkerPoolProvider";
 
 export default function DiffPanel({ mode = "inline", composerDraftTarget }: DiffPanelProps) {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const settings = useClientSettings();
   const [diffRenderMode, setDiffRenderMode] = useState<DiffRenderMode>("stacked");
@@ -273,10 +275,10 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
   const selectedScopeLabel =
     selectedTurnId === null
       ? selectedGitScope === "unstaged"
-        ? "Working tree"
-        : "Branch changes"
+        ? t("workingTree")
+        : t("branchChanges")
       : selectedTurn?.turnId === latestTurn?.turnId
-        ? "Latest turn"
+        ? t("latestTurn")
         : `Turn ${selectedCheckpointTurnCount ?? "?"}`;
   const reviewSectionId = selectedTurn ? `turn:${selectedTurn.turnId}` : selectedGitScope;
   const collapseScopeKey = routeThreadRef
@@ -289,8 +291,8 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
   const reviewSectionTitle = selectedTurn
     ? `Turn ${selectedCheckpointTurnCount ?? "?"}`
     : selectedGitScope === "unstaged"
-      ? "Working tree"
-      : "Branch changes";
+      ? t("workingTree")
+      : t("branchChanges");
   const selectedCheckpointRange = useMemo(
     () =>
       typeof selectedCheckpointTurnCount === "number"
@@ -512,13 +514,13 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-60">
             <DropdownMenuItem onClick={() => selectGitScope("unstaged")}>
-              <span>Working tree</span>
+              <span>{t("workingTree")}</span>
               {selectedTurnId === null && selectedGitScope === "unstaged" && (
                 <CheckIcon className="ml-auto" />
               )}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => selectGitScope("branch")}>
-              <span>Branch changes</span>
+              <span>{t("branchChanges")}</span>
               {selectedTurnId === null && selectedGitScope === "branch" && (
                 <CheckIcon className="ml-auto" />
               )}
@@ -528,7 +530,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
                 if (latestTurn) selectTurn(latestTurn.turnId);
               }}
             >
-              <span>Latest turn</span>
+              <span>{t("latestTurn")}</span>
               {selectedTurnId !== null && selectedTurn?.turnId === latestTurn?.turnId && (
                 <CheckIcon className="ml-auto" />
               )}
@@ -598,7 +600,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
                     <ComboboxInput
                       className="[&_input]:h-6.5 [&_input]:ps-5 [&_input]:font-sans [&_input]:leading-6.5"
                       inputClassName="rounded-none bg-transparent text-sm"
-                      placeholder="Search refs..."
+                      placeholder={t("searchRefs")}
                       showTrigger={false}
                       size="sm"
                       unstyled
@@ -685,10 +687,10 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
             }
           }}
         >
-          <Toggle aria-label="Stacked diff view" value="stacked">
+          <Toggle aria-label={t("stackedDiff")} value="stacked">
             <Rows3Icon className="size-3" />
           </Toggle>
-          <Toggle aria-label="Split diff view" value="split">
+          <Toggle aria-label={t("splitDiff")} value="split">
             <Columns2Icon className="size-3" />
           </Toggle>
         </ToggleGroup>
@@ -696,7 +698,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
           <TooltipTrigger
             render={
               <Toggle
-                aria-label={wordWrap ? "Disable diff line wrapping" : "Enable diff line wrapping"}
+                aria-label={wordWrap ? t("disableLineWrapping") : t("enableLineWrapping")}
                 variant="outline"
                 size="xs"
                 pressed={wordWrap}
@@ -709,7 +711,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
             <TextWrapIcon className="size-3" />
           </TooltipTrigger>
           <TooltipPopup side="top">
-            {wordWrap ? "Disable line wrapping" : "Enable line wrapping"}
+            {wordWrap ? t("disableLineWrapping") : t("enableLineWrapping")}
           </TooltipPopup>
         </Tooltip>
         <Tooltip>
@@ -717,7 +719,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
             render={
               <Toggle
                 aria-label={
-                  diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes"
+                  diffIgnoreWhitespace ? t("showWhitespaceChanges") : t("hideWhitespaceChanges")
                 }
                 variant="outline"
                 size="xs"
@@ -731,7 +733,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
             <PilcrowIcon className="size-3" />
           </TooltipTrigger>
           <TooltipPopup side="top">
-            {diffIgnoreWhitespace ? "Show whitespace changes" : "Hide whitespace changes"}
+            {diffIgnoreWhitespace ? t("showWhitespaceChanges") : t("hideWhitespaceChanges")}
           </TooltipPopup>
         </Tooltip>
       </div>
@@ -771,19 +773,15 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
                 <DiffPanelLoadingState
                   label={
                     selectedTurn
-                      ? "Loading checkpoint diff..."
+                      ? t("loadingDiff")
                       : selectedGitScope === "unstaged"
-                        ? "Loading working tree diff..."
-                        : "Loading branch diff..."
+                        ? t("loadingDiff")
+                        : t("loadingDiff")
                   }
                 />
               ) : (
                 <div className="flex h-full items-center justify-center px-3 py-2 text-xs text-muted-foreground/70">
-                  <p>
-                    {hasNoNetChanges
-                      ? "No net changes in this selection."
-                      : "No patch available for this selection."}
-                  </p>
+                  <p>{hasNoNetChanges ? t("noNetChanges") : t("noPatchAvailable")}</p>
                 </div>
               )
             ) : renderablePatch.kind === "files" ? (
@@ -835,7 +833,7 @@ export default function DiffPanel({ mode = "inline", composerDraftTarget }: Diff
                           )}
                         </TooltipTrigger>
                         <TooltipPopup side="top">
-                          {collapsed ? "Expand diff" : "Collapse diff"}
+                          {collapsed ? t("expandDiff") : t("collapseDiff")}
                         </TooltipPopup>
                       </Tooltip>
                     );

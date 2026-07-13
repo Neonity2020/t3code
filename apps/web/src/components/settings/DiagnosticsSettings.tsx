@@ -33,6 +33,7 @@ import {
 import { shellEnvironment } from "../../state/shell";
 import { usePrimaryEnvironment } from "../../state/environments";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { useTranslation } from "../../hooks/useLanguage";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "../ui/tooltip";
@@ -805,6 +806,7 @@ function DiagnosticsRefreshButton({
 }
 
 export function DiagnosticsSettingsPanel() {
+  const { t } = useTranslation();
   const observability = useAtomValue(primaryServerObservabilityAtom);
   const availableEditors = useAtomValue(primaryServerAvailableEditorsAtom);
   const primaryEnvironment = usePrimaryEnvironment();
@@ -956,13 +958,13 @@ export function DiagnosticsSettingsPanel() {
   return (
     <SettingsPageContainer>
       <SettingsSection
-        title="Live Processes"
+        title={t("liveProcesses")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <DiagnosticsLastChecked checkedAt={processData?.readAt ?? null} />
             <DiagnosticsRefreshButton
               isPending={isProcessPending}
-              label="Refresh process diagnostics"
+              label={t("refreshProcessDiagnostics")}
               onClick={refreshProcesses}
             />
           </div>
@@ -970,7 +972,7 @@ export function DiagnosticsSettingsPanel() {
       >
         <StatsGrid>
           <StatBlock
-            label="Child Processes"
+            label={t("childProcesses")}
             value={processData ? formatCount(processData.processCount) : "..."}
           />
           <StatBlock
@@ -979,12 +981,12 @@ export function DiagnosticsSettingsPanel() {
             tooltip="Total CPU across live child processes of the current server process. The desktop shell and other parent processes are not included."
           />
           <StatBlock
-            label="Memory"
+            label={t("memory")}
             value={processData ? formatBytes(processData.totalRssBytes) : "..."}
             tooltip="Total resident memory across live child processes of the current server process. The desktop shell and other parent processes are not included."
           />
           <StatBlock
-            label="Server PID"
+            label={t("serverPid")}
             value={processData ? String(processData.serverPid) : "..."}
           />
         </StatsGrid>
@@ -1008,16 +1010,12 @@ export function DiagnosticsSettingsPanel() {
           processes={processData?.processes ?? []}
           signalingPid={signalingPid}
           onSignal={signalProcess}
-          emptyLabel={
-            isProcessInitialLoading
-              ? "Loading live processes..."
-              : "No live descendant processes found."
-          }
+          emptyLabel={isProcessInitialLoading ? t("loadingLiveProcesses") : t("noLiveProcesses")}
         />
       </SettingsSection>
 
       <SettingsSection
-        title="Resource History"
+        title={t("resourceHistory")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <ResourceHistoryWindowSelector
@@ -1027,7 +1025,7 @@ export function DiagnosticsSettingsPanel() {
             <DiagnosticsLastChecked checkedAt={resourceData?.readAt ?? null} />
             <DiagnosticsRefreshButton
               isPending={isResourcePending}
-              label="Refresh resource history"
+              label={t("refreshResourceHistory")}
               onClick={refreshResources}
             />
           </div>
@@ -1074,14 +1072,14 @@ export function DiagnosticsSettingsPanel() {
           processes={resourceData?.topProcesses ?? []}
           emptyLabel={
             isResourcePending && resourceData === null
-              ? "Collecting process resource samples..."
-              : "No process resource samples found for this window."
+              ? t("collectingResourceSamples")
+              : t("noResourceSamples")
           }
         />
       </SettingsSection>
 
       <SettingsSection
-        title="Trace Diagnostics"
+        title={t("traceDiagnostics")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <DiagnosticsLastChecked checkedAt={data?.readAt ?? null} />
@@ -1094,17 +1092,17 @@ export function DiagnosticsSettingsPanel() {
                     className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
                     disabled={!observability?.logsDirectoryPath || isOpeningLogsDirectory}
                     onClick={openLogsDirectory}
-                    aria-label="Open logs folder"
+                    aria-label={t("openLogsFolder")}
                   >
                     <FolderOpenIcon className="size-3" />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Open logs folder</TooltipPopup>
+              <TooltipPopup side="top">{t("openLogsFolder")}</TooltipPopup>
             </Tooltip>
             <DiagnosticsRefreshButton
               isPending={isPending}
-              label="Refresh trace diagnostics"
+              label={t("refreshTraceDiagnostics")}
               onClick={refresh}
             />
           </div>
@@ -1113,12 +1111,12 @@ export function DiagnosticsSettingsPanel() {
         <StatsGrid>
           <StatBlock label="Spans" value={data ? formatCount(data.recordCount) : "..."} />
           <StatBlock
-            label="Failures"
+            label={t("failures")}
             value={data ? formatCount(data.failureCount) : "..."}
             tone={data && data.failureCount > 0 ? "danger" : "default"}
           />
           <StatBlock
-            label="Slow Spans"
+            label={t("slowSpans")}
             value={data ? formatCount(data.slowSpanCount) : "..."}
             tooltip={
               data
@@ -1128,7 +1126,7 @@ export function DiagnosticsSettingsPanel() {
             tone={data && data.slowSpanCount > 0 ? "warning" : "default"}
           />
           <StatBlock
-            label="Parse Errors"
+            label={t("parseErrors")}
             value={data ? formatCount(data.parseErrorCount) : "..."}
             tone={data && data.parseErrorCount > 0 ? "warning" : "default"}
           />

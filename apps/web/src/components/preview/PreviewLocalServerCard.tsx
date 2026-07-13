@@ -1,5 +1,6 @@
 import { BrowserMockup } from "./BrowserMockup";
 import type { PreviewableServer } from "./useDiscoveredLocalServers";
+import { useTranslation } from "~/hooks/useLanguage";
 
 interface Props {
   server: PreviewableServer;
@@ -7,7 +8,8 @@ interface Props {
 }
 
 export function PreviewLocalServerCard({ server, onOpen }: Props) {
-  const subtitle = describeServer(server);
+  const { t } = useTranslation();
+  const subtitle = describeServer(server, t);
   return (
     <button
       type="button"
@@ -21,32 +23,36 @@ export function PreviewLocalServerCard({ server, onOpen }: Props) {
           {server.host}:{server.port}
         </span>
       </div>
-      {server.listening ? <PulsingDot /> : <DimDot />}
+      {server.listening ? (
+        <PulsingDot label={t("listening")} />
+      ) : (
+        <DimDot label={t("notListening")} />
+      )}
     </button>
   );
 }
 
-function describeServer(server: PreviewableServer): string {
+function describeServer(
+  server: PreviewableServer,
+  t: ReturnType<typeof useTranslation>["t"],
+): string {
   if (server.processName) return server.processName;
-  if (server.listening) return "Listening";
-  if (server.source === "configured") return "Configured";
-  return "Recently seen";
+  if (server.listening) return t("listening");
+  if (server.source === "configured") return t("configured");
+  return t("recentlySeen");
 }
 
-function PulsingDot() {
+function PulsingDot({ label }: { label: string }) {
   return (
-    <span aria-label="Listening" className="relative inline-flex size-2 shrink-0">
+    <span aria-label={label} className="relative inline-flex size-2 shrink-0">
       <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-60" />
       <span className="relative inline-flex size-2 rounded-full bg-success" />
     </span>
   );
 }
 
-function DimDot() {
+function DimDot({ label }: { label: string }) {
   return (
-    <span
-      aria-label="Not currently listening"
-      className="size-2 shrink-0 rounded-full bg-muted-foreground/40"
-    />
+    <span aria-label={label} className="size-2 shrink-0 rounded-full bg-muted-foreground/40" />
   );
 }

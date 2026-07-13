@@ -10,6 +10,7 @@ import type {
 } from "@t3tools/contracts";
 
 import { cn } from "../../lib/utils";
+import { type TranslationKey, useTranslation } from "../../hooks/useLanguage";
 import { DraftInput } from "../ui/draft-input";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
@@ -25,6 +26,18 @@ export interface ProviderSettingsFieldModel {
   readonly clearWhenEmpty: "omit" | "persist";
   readonly defaultBooleanValue?: boolean | undefined;
 }
+
+const PROVIDER_FIELD_TRANSLATIONS: Partial<
+  Record<string, { readonly label: TranslationKey; readonly description: TranslationKey }>
+> = {
+  binaryPath: { label: "binaryPath", description: "binaryPathDescription" },
+  homePath: { label: "homePath", description: "homePathDescription" },
+  shadowHomePath: { label: "shadowHomePath", description: "shadowHomePathDescription" },
+  launchArgs: { label: "launchArguments", description: "launchArgumentsDescription" },
+  apiEndpoint: { label: "apiEndpoint", description: "apiEndpointDescription" },
+  serverUrl: { label: "serverUrl", description: "serverUrlDescription" },
+  serverPassword: { label: "serverPassword", description: "serverPasswordDescription" },
+};
 
 function titleizeFieldKey(key: string): string {
   return key
@@ -281,6 +294,7 @@ export function ProviderSettingsForm({
   variant,
   onChange,
 }: ProviderSettingsFormProps) {
+  const { t } = useTranslation();
   const fields = useMemo(() => deriveProviderSettingsFields(definition), [definition]);
 
   if (fields.length === 0) {
@@ -289,16 +303,22 @@ export function ProviderSettingsForm({
 
   return (
     <>
-      {fields.map((field) => (
-        <ProviderSettingsFieldRow
-          key={field.key}
-          field={field}
-          value={value}
-          idPrefix={idPrefix}
-          variant={variant}
-          onChange={onChange}
-        />
-      ))}
+      {fields.map((field) => {
+        const translation = PROVIDER_FIELD_TRANSLATIONS[field.key];
+        const localizedField = translation
+          ? { ...field, label: t(translation.label), description: t(translation.description) }
+          : field;
+        return (
+          <ProviderSettingsFieldRow
+            key={field.key}
+            field={localizedField}
+            value={value}
+            idPrefix={idPrefix}
+            variant={variant}
+            onChange={onChange}
+          />
+        );
+      })}
     </>
   );
 }

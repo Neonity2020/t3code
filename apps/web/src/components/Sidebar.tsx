@@ -110,6 +110,7 @@ import { useShortcutModifierState } from "../shortcutModifierState";
 import { readLocalApi } from "../localApi";
 import { useComposerDraftStore } from "../composerDraftStore";
 import { useNewThreadHandler } from "../hooks/useHandleNewThread";
+import { useTranslation } from "../hooks/useLanguage";
 import { useDesktopUpdateState } from "../state/desktopUpdate";
 
 import { useThreadActions } from "../hooks/useThreadActions";
@@ -1081,6 +1082,7 @@ interface SidebarProjectItemProps {
 }
 
 const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjectItemProps) {
+  const { t } = useTranslation();
   const {
     project,
     isThreadListExpanded,
@@ -2248,7 +2250,7 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
             </span>
             {project.groupedProjectCount > 1 ? (
               <span className="shrink-0 text-[10px] text-muted-foreground/60">
-                {project.groupedProjectCount} projects
+                {project.groupedProjectCount} {t("groupedProjects")}
               </span>
             ) : null}
           </span>
@@ -2289,7 +2291,7 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
               <div className="pointer-events-none absolute top-[calc(50%+1px)] right-0.5 -translate-y-1/2 opacity-0 transition-opacity duration-150 max-sm:pointer-events-auto max-sm:opacity-100 group-hover/project-header:pointer-events-auto group-hover/project-header:opacity-100 group-focus-within/project-header:pointer-events-auto group-focus-within/project-header:opacity-100">
                 <button
                   type="button"
-                  aria-label={`Create new thread in ${project.displayName}`}
+                  aria-label={`${t("newThread")}：${project.displayName}`}
                   data-testid="new-thread-button"
                   className={SIDEBAR_ICON_ACTION_BUTTON_CLASS}
                   onClick={handleCreateThreadClick}
@@ -2300,7 +2302,9 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
             }
           />
           <TooltipPopup side="top">
-            {newThreadShortcutLabel ? `New thread (${newThreadShortcutLabel})` : "New thread"}
+            {newThreadShortcutLabel
+              ? `${t("newThread")} (${newThreadShortcutLabel})`
+              : t("newThread")}
           </TooltipPopup>
         </Tooltip>
       </div>
@@ -2570,6 +2574,7 @@ function ProjectSortMenu({
   onProjectGroupingModeChange: (mode: SidebarProjectGroupingMode) => void;
   onThreadPreviewCountChange: (count: SidebarThreadPreviewCount) => void;
 }) {
+  const { t } = useTranslation();
   const handleThreadPreviewCountChange = useCallback(
     (nextValue: number | null) => {
       if (nextValue === null) {
@@ -2594,12 +2599,12 @@ function ProjectSortMenu({
         >
           <ArrowUpDownIcon className="size-3.5" />
         </TooltipTrigger>
-        <TooltipPopup side="right">Sidebar options</TooltipPopup>
+        <TooltipPopup side="right">{t("sidebarOptions")}</TooltipPopup>
       </Tooltip>
       <MenuPopup align="end" side="bottom" className="min-w-52">
         <MenuGroup>
           <div className="px-2 py-1 sm:text-xs font-medium text-muted-foreground">
-            Sort projects
+            {t("sortProjects")}
           </div>
           <MenuRadioGroup
             value={projectSortOrder}
@@ -2618,7 +2623,7 @@ function ProjectSortMenu({
         </MenuGroup>
         <MenuGroup>
           <div className="px-2 pt-2 pb-1 sm:text-xs font-medium text-muted-foreground">
-            Sort threads
+            {t("sortThreads")}
           </div>
           <MenuRadioGroup
             value={threadSortOrder}
@@ -2637,11 +2642,11 @@ function ProjectSortMenu({
         </MenuGroup>
         <MenuGroup>
           <div className="px-2 pt-2 pb-1 text-muted-foreground sm:text-xs font-medium">
-            Visible threads
+            {t("visibleThreads")}
           </div>
           <div className="px-2 py-1">
             <NumberField
-              aria-label="Visible thread count"
+              aria-label={t("visibleThreadCount")}
               className="w-28 gap-0"
               max={MAX_SIDEBAR_THREAD_PREVIEW_COUNT}
               min={MIN_SIDEBAR_THREAD_PREVIEW_COUNT}
@@ -2652,11 +2657,11 @@ function ProjectSortMenu({
             >
               <NumberFieldGroup className="h-7 rounded-md sm:h-6.5">
                 <NumberFieldDecrement
-                  aria-label="Decrease visible thread count"
+                  aria-label={t("decreaseVisibleThreadCount")}
                   className="px-2 sm:px-2 [&_svg]:size-3.5"
                 />
                 <NumberFieldInput
-                  aria-label="Visible thread count"
+                  aria-label={t("visibleThreadCount")}
                   className="h-7 w-9 grow-0 px-0 text-xs leading-7 sm:h-6.5 sm:leading-6.5"
                   inputMode="numeric"
                   onKeyDownCapture={(event) => {
@@ -2664,7 +2669,7 @@ function ProjectSortMenu({
                   }}
                 />
                 <NumberFieldIncrement
-                  aria-label="Increase visible thread count"
+                  aria-label={t("increaseVisibleThreadCount")}
                   className="px-2 sm:px-2 [&_svg]:size-3.5"
                 />
               </NumberFieldGroup>
@@ -2674,7 +2679,7 @@ function ProjectSortMenu({
         <MenuSeparator />
         <MenuGroup>
           <div className="px-2 pt-2 pb-1 font-medium text-muted-foreground sm:text-xs">
-            Group projects
+            {t("groupProjects")}
           </div>
           <MenuRadioGroup
             value={projectGroupingMode}
@@ -2872,6 +2877,7 @@ interface SidebarProjectsContentProps {
 const SidebarProjectsContent = memo(function SidebarProjectsContent(
   props: SidebarProjectsContentProps,
 ) {
+  const { t } = useTranslation();
   const {
     showArm64IntelBuildWarning,
     arm64IntelBuildWarningDescription,
@@ -2950,7 +2956,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
               }
             >
               <SearchIcon className="size-3.5 text-muted-foreground/70" />
-              <span className="flex-1 truncate text-left text-xs">Search</span>
+              <span className="flex-1 truncate text-left text-xs">{t("search")}</span>
               {commandPaletteShortcutLabel ? (
                 <Kbd className="h-4 min-w-0 rounded-sm px-1.5 text-[10px]">
                   {commandPaletteShortcutLabel}
@@ -2987,7 +2993,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
       <SidebarGroup className="px-2 py-2">
         <div className="mb-1 flex items-center justify-between pl-2 pr-1.5">
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60">
-            Projects
+            {t("projects")}
           </span>
           <div className="flex items-center gap-1">
             <ProjectSortMenu
@@ -3005,7 +3011,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
                 render={
                   <button
                     type="button"
-                    aria-label="Add project"
+                    aria-label={t("addProject")}
                     data-testid="sidebar-add-project-trigger"
                     className="inline-flex h-6 min-w-6 cursor-pointer items-center justify-center rounded-md px-[calc(--spacing(1)-1px)] text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
                     onClick={openAddProject}
@@ -3014,7 +3020,7 @@ const SidebarProjectsContent = memo(function SidebarProjectsContent(
               >
                 <FolderPlusIcon className="size-3.5" />
               </TooltipTrigger>
-              <TooltipPopup side="right">Add project</TooltipPopup>
+              <TooltipPopup side="right">{t("addProject")}</TooltipPopup>
             </Tooltip>
           </div>
         </div>

@@ -35,6 +35,7 @@ import {
 
 import { isElectron } from "../../env";
 import { useOpenInPreferredEditor } from "../../editorPreferences";
+import { useTranslation } from "../../hooks/useLanguage";
 import { formatShortcutLabel } from "../../keybindings";
 import { cn } from "../../lib/utils";
 import {
@@ -1080,6 +1081,7 @@ function NewKeybindingTableRow({
 }
 
 export function KeybindingsSettingsPanel() {
+  const { t } = useTranslation();
   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
   const keybindingsConfigPath = useAtomValue(primaryServerKeybindingsConfigPathAtom);
   const availableEditors = useAtomValue(primaryServerAvailableEditorsAtom);
@@ -1220,15 +1222,14 @@ export function KeybindingsSettingsPanel() {
 
   const bindingsCount = (
     <span className="text-[11px] text-muted-foreground">
-      {rows.length + (isAddingBinding ? 1 : 0)}{" "}
-      {rows.length + (isAddingBinding ? 1 : 0) === 1 ? "binding" : "bindings"}
+      {t("bindingCount", { count: rows.length + (isAddingBinding ? 1 : 0) })}
     </span>
   );
 
   return (
     <SettingsPageContainer className="max-w-5xl">
       <SettingsSection
-        title="Keybindings"
+        title={t("keybindings")}
         headerAction={
           <div className="flex items-center gap-1.5">
             <ExpandableHeaderSearch
@@ -1248,13 +1249,13 @@ export function KeybindingsSettingsPanel() {
                     variant="ghost"
                     className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
                     onClick={() => setIsAddingBinding(true)}
-                    aria-label="Add keybinding"
+                    aria-label={t("addKeybinding")}
                   >
                     <PlusIcon className="size-3" />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Add keybinding</TooltipPopup>
+              <TooltipPopup side="top">{t("addKeybinding")}</TooltipPopup>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
@@ -1266,13 +1267,13 @@ export function KeybindingsSettingsPanel() {
                     className="size-5 rounded-sm p-0 text-muted-foreground hover:text-foreground"
                     disabled={!keybindingsConfigPath}
                     onClick={openKeybindingsFile}
-                    aria-label="Open keybindings.json"
+                    aria-label={t("openKeybindingsFile")}
                   >
                     <FileJsonIcon className="size-3" />
                   </Button>
                 }
               />
-              <TooltipPopup side="top">Open keybindings.json</TooltipPopup>
+              <TooltipPopup side="top">{t("openKeybindingsFile")}</TooltipPopup>
             </Tooltip>
           </div>
         }
@@ -1280,10 +1281,7 @@ export function KeybindingsSettingsPanel() {
         {!isElectron ? (
           <div className="flex items-start gap-2 border-b border-warning/20 bg-warning/5 px-3 py-2.5 text-[12px] leading-relaxed text-muted-foreground sm:px-4">
             <InfoIcon className="mt-0.5 size-3.5 shrink-0 text-warning" />
-            <p>
-              Some shortcuts may be claimed by the browser before T3 Code sees them. Use the desktop
-              app for better keybinding support.
-            </p>
+            <p>{t("browserShortcutWarning")}</p>
           </div>
         ) : null}
 
@@ -1294,10 +1292,10 @@ export function KeybindingsSettingsPanel() {
           className="w-full max-w-full rounded-none"
         >
           <div className="grid min-w-[680px] grid-cols-[minmax(190px,1.1fr)_minmax(220px,0.85fr)_minmax(210px,1fr)_60px] border-b border-border/70 bg-muted/25 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
-            <div>Command</div>
-            <div>Keybinding</div>
-            <div>When</div>
-            <div>Status</div>
+            <div>{t("command")}</div>
+            <div>{t("keybinding")}</div>
+            <div>{t("when")}</div>
+            <div>{t("status")}</div>
           </div>
           <div className="min-w-[680px] divide-y divide-border/60">
             {isAddingBinding ? (
@@ -1324,7 +1322,7 @@ export function KeybindingsSettingsPanel() {
             ))}
             {rows.length === 0 && !isAddingBinding ? (
               <div className="px-4 py-12 text-center text-sm text-muted-foreground">
-                No keybindings match your search.
+                {t("noMatchingKeybindings")}
               </div>
             ) : null}
           </div>
