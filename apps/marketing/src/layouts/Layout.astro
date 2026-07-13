@@ -37,6 +37,9 @@ const {
             <span class="nav-brand-name">T3 Code</span>
           </a>
           <div class="nav-right">
+            <button class="language-switch" type="button" data-language-switch aria-label="切换到简体中文">
+              简
+            </button>
             <a
               class="nav-stars"
               href={GITHUB_REPOSITORY_URL}
@@ -47,7 +50,7 @@ const {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2.3l2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.12l-5.8 3.05 1.11-6.47-4.7-4.58 6.49-.94L12 2.3z"/>
               </svg>
-              <span><strong>{MARKETING_STATS.githubStars}</strong> GitHub stars</span>
+              <span><strong>{MARKETING_STATS.githubStars}</strong> <span data-i18n="githubStars">GitHub stars</span></span>
             </a>
           </div>
         </div>
@@ -61,18 +64,76 @@ const {
         <div class="footer-inner">
           <div class="footer-brand">
             <img src="/icon.webp" alt="" />
-            <span>&copy; {new Date().getFullYear()} T3 Tools Inc · MIT licensed</span>
+            <span>&copy; {new Date().getFullYear()} T3 Tools Inc · <span data-i18n="footerLicense">MIT licensed</span></span>
           </div>
           <div class="footer-links">
             <a href={GITHUB_REPOSITORY_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="https://discord.gg/jn4EGJjrvv" target="_blank" rel="noopener noreferrer">Discord</a>
-            <a href="/download">Download</a>
+            <a href="/download" data-i18n="download">Download</a>
           </div>
         </div>
       </footer>
     </div>
 
     <script>
+      import {
+        MARKETING_LANGUAGE_STORAGE_KEY,
+        isMarketingLanguage,
+        marketingMessages,
+        type MarketingLanguage,
+      } from "../lib/i18n";
+
+      const defaultLanguage: MarketingLanguage = navigator.language.toLowerCase().startsWith("zh")
+        ? "zh-CN"
+        : "en";
+      let language: MarketingLanguage;
+      try {
+        const storedLanguage = window.localStorage.getItem(MARKETING_LANGUAGE_STORAGE_KEY);
+        language = isMarketingLanguage(storedLanguage) ? storedLanguage : defaultLanguage;
+      } catch {
+        language = defaultLanguage;
+      }
+
+      const translate = (key: string, values: Record<string, string | undefined> = {}) => {
+        const template = marketingMessages[language][key] ?? key;
+        return template.replace(/\{(\w+)\}/g, (_, name) => values[name] ?? "");
+      };
+
+      const applyLanguage = (nextLanguage: MarketingLanguage) => {
+        language = nextLanguage;
+        document.documentElement.lang = language;
+        document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
+          element.textContent = translate(element.dataset.i18n ?? "", element.dataset);
+        });
+        document.querySelectorAll<HTMLElement>("[data-i18n-html]").forEach((element) => {
+          element.innerHTML = translate(element.dataset.i18nHtml ?? "", element.dataset);
+        });
+        document.querySelectorAll<HTMLElement>("[data-i18n-aria-label]").forEach((element) => {
+          element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel ?? ""));
+        });
+        document.querySelectorAll<HTMLElement>("[data-i18n-alt]").forEach((element) => {
+          element.setAttribute("alt", translate(element.dataset.i18nAlt ?? ""));
+        });
+        const switchButton = document.querySelector<HTMLButtonElement>("[data-language-switch]");
+        if (switchButton) {
+          switchButton.textContent = language === "zh-CN" ? "EN" : "简";
+          switchButton.setAttribute("aria-label", translate("languageSwitch"));
+        }
+        window.dispatchEvent(new CustomEvent("t3code:languagechange", { detail: language }));
+      };
+
+      document.querySelector<HTMLButtonElement>("[data-language-switch]")?.addEventListener("click", () => {
+        const nextLanguage: MarketingLanguage = language === "zh-CN" ? "en" : "zh-CN";
+        try {
+          window.localStorage.setItem(MARKETING_LANGUAGE_STORAGE_KEY, nextLanguage);
+        } catch {
+          // Continue without persistence when storage is unavailable.
+        }
+        applyLanguage(nextLanguage);
+      });
+
+      applyLanguage(language);
+
       const nav = document.querySelector(".nav");
       const onScroll = () => {
         if (!nav) return;
@@ -329,6 +390,24 @@ const {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .language-switch {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 7px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .language-switch:hover {
+    color: var(--fg);
+    border-color: var(--border-strong);
+    background: rgba(255, 255, 255, 0.04);
   }
 
   .nav-stars {

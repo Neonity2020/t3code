@@ -5,10 +5,10 @@ import { RELEASES_URL } from "../lib/releases";
 
 <Layout title="Download — T3 Code" description="Download T3 Code for macOS, Windows, or Linux.">
   <div class="download-page">
-  <h1 class="heading">Download T3 Code</h1>
+  <h1 class="heading" data-i18n="downloadTitle">Download T3 Code</h1>
   <p class="subheading">
-    <span id="version-label">Loading latest release&hellip;</span>
-    <a id="changelog-link" class="changelog-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none">View changelog<span aria-hidden="true"> &#8599;</span></a>
+    <span id="version-label" data-i18n="loadingRelease">Loading latest release&hellip;</span>
+    <a id="changelog-link" class="changelog-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none"><span data-i18n="viewChangelog">View changelog</span><span aria-hidden="true"> &#8599;</span></a>
   </p>
 
   <div class="platforms" id="platforms">
@@ -20,7 +20,7 @@ import { RELEASES_URL } from "../lib/releases";
       </div>
       <div class="download-cards">
         <a class="download-card" data-asset="arm64.dmg" href={RELEASES_URL}>
-          <span class="card-arch">Apple Silicon (arm64)</span>
+          <span class="card-arch" data-i18n="appleSilicon">Apple Silicon (arm64)</span>
           <span class="card-format">.dmg</span>
         </a>
         <a class="download-card" data-asset="x64.dmg" href={RELEASES_URL}>
@@ -60,9 +60,9 @@ import { RELEASES_URL } from "../lib/releases";
   </div>
 
   <p class="releases-link">
-    Looking for older versions? Check the
+    <span data-i18n="olderVersions">Looking for older versions? Check the</span>
     <a href="https://github.com/pingdotgg/t3code/releases" target="_blank" rel="noopener noreferrer">
-      GitHub releases page<span aria-hidden="true"> &#8599;</span>
+      <span data-i18n="releasesPage">GitHub releases page</span><span aria-hidden="true"> &#8599;</span>
     </a>
   </p>
   </div>
@@ -70,6 +70,20 @@ import { RELEASES_URL } from "../lib/releases";
 
 <script>
   import { fetchLatestRelease, RELEASES_URL } from "../lib/releases";
+
+  let currentVersion: string | null = null;
+  let releaseLoadFailed = false;
+
+  function updateVersionLabel() {
+    const versionLabel = document.getElementById("version-label");
+    if (!versionLabel) return;
+    const isChinese = document.documentElement.lang === "zh-CN";
+    if (releaseLoadFailed) {
+      versionLabel.textContent = isChinese ? "无法加载版本信息。" : "Could not load release info.";
+    } else if (currentVersion) {
+      versionLabel.textContent = isChinese ? `最新版 (${currentVersion})` : `Latest (${currentVersion})`;
+    }
+  }
 
   async function init() {
     const versionLabel = document.getElementById("version-label");
@@ -79,7 +93,8 @@ import { RELEASES_URL } from "../lib/releases";
       const release = await fetchLatestRelease();
 
       if (versionLabel && release.tag_name) {
-        versionLabel.textContent = `Latest (${release.tag_name})`;
+        currentVersion = release.tag_name;
+        updateVersionLabel();
       }
 
       const changelogLink = document.getElementById("changelog-link") as HTMLAnchorElement | null;
@@ -100,8 +115,9 @@ import { RELEASES_URL } from "../lib/releases";
         }
       });
     } catch {
+      releaseLoadFailed = true;
       if (versionLabel) {
-        versionLabel.textContent = "Could not load release info.";
+        updateVersionLabel();
       }
       cards.forEach((card) => {
         card.href = RELEASES_URL;
@@ -109,6 +125,7 @@ import { RELEASES_URL } from "../lib/releases";
     }
   }
 
+  window.addEventListener("t3code:languagechange", updateVersionLabel);
   init();
 </script>
 
