@@ -32,3 +32,7 @@ node_modules/
 *.log
 .env*
 !.env.example
+
+# Local-only caches / indices (machine-specific, not for VCS)
+.codebase-memory/
+.pnpm-store/
