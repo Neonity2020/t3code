@@ -87,6 +87,14 @@ html[data-mobile-composer-route-transition="true"]::view-transition-old(t3-mobil
   --workspace-titlebar-control-gap: 0.75rem;
 }
 
+html[data-ui-font-size="small"] {
+  font-size: 14px;
+}
+
+html[data-ui-font-size="large"] {
+  font-size: 18px;
+}
+
 [data-slot="sidebar-wrapper"] {
   --workspace-titlebar-content-left: calc(
     var(--workspace-controls-left) + var(--workspace-titlebar-control-size) +

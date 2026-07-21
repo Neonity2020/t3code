@@ -31,6 +31,12 @@ describe("ClientSettings word wrap", () => {
   });
 });
 
+describe("ClientSettings UI font size", () => {
+  it("defaults to medium", () => {
+    expect(decodeClientSettings({}).uiFontSize).toBe("medium");
+  });
+});
+
 describe("ServerSettings.providerInstances (slice-2 invariant)", () => {
   it("defaults to an empty record so legacy configs without the key still decode", () => {
     expect(DEFAULT_SERVER_SETTINGS.providerInstances).toEqual({});

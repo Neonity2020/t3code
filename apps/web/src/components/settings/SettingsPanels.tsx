@@ -110,6 +110,12 @@ const TIMESTAMP_FORMAT_LABELS = {
   "24-hour": "24 小时制",
 } as const;
 
+const UI_FONT_SIZE_LABELS = {
+  small: "小",
+  medium: "中",
+  large: "大",
+} as const;
+
 const DEFAULT_DRIVER_KIND = ProviderDriverKind.make("codex");
 
 function withoutProviderInstanceKey<V>(
@@ -392,6 +398,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       ...(settings.timestampFormat !== DEFAULT_UNIFIED_SETTINGS.timestampFormat
         ? ["Time format"]
         : []),
+      ...(settings.uiFontSize !== DEFAULT_UNIFIED_SETTINGS.uiFontSize ? ["UI font size"] : []),
       ...(settings.sidebarThreadPreviewCount !== DEFAULT_UNIFIED_SETTINGS.sidebarThreadPreviewCount
         ? ["Visible threads"]
         : []),
@@ -445,6 +452,7 @@ export function useSettingsRestore(onRestored?: () => void) {
       settings.enableProviderUpdateChecks,
       settings.sidebarThreadPreviewCount,
       settings.timestampFormat,
+      settings.uiFontSize,
       settings.wordWrap,
       theme,
     ],
@@ -463,6 +471,7 @@ export function useSettingsRestore(onRestored?: () => void) {
     setTheme("system");
     updateSettings({
       timestampFormat: DEFAULT_UNIFIED_SETTINGS.timestampFormat,
+      uiFontSize: DEFAULT_UNIFIED_SETTINGS.uiFontSize,
       wordWrap: DEFAULT_UNIFIED_SETTINGS.wordWrap,
       diffIgnoreWhitespace: DEFAULT_UNIFIED_SETTINGS.diffIgnoreWhitespace,
       sidebarThreadPreviewCount: DEFAULT_UNIFIED_SETTINGS.sidebarThreadPreviewCount,
@@ -596,6 +605,40 @@ export function GeneralSettingsPanel() {
                 <SelectItem hideIndicator value="24-hour">
                   {TIMESTAMP_FORMAT_LABELS["24-hour"]}
                 </SelectItem>
+              </SelectPopup>
+            </Select>
+          }
+        />
+
+        <SettingsRow
+          title="界面字体大小"
+          description="调整应用界面中的文字大小。"
+          resetAction={
+            settings.uiFontSize !== DEFAULT_UNIFIED_SETTINGS.uiFontSize ? (
+              <SettingResetButton
+                label="UI font size"
+                onClick={() => updateSettings({ uiFontSize: DEFAULT_UNIFIED_SETTINGS.uiFontSize })}
+              />
+            ) : null
+          }
+          control={
+            <Select
+              value={settings.uiFontSize}
+              onValueChange={(value) => {
+                if (value === "small" || value === "medium" || value === "large") {
+                  updateSettings({ uiFontSize: value });
+                }
+              }}
+            >
+              <SelectTrigger className="w-full sm:w-40" aria-label="界面字体大小">
+                <SelectValue>{UI_FONT_SIZE_LABELS[settings.uiFontSize]}</SelectValue>
+              </SelectTrigger>
+              <SelectPopup align="end" alignItemWithTrigger={false}>
+                {Object.entries(UI_FONT_SIZE_LABELS).map(([value, label]) => (
+                  <SelectItem hideIndicator key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectPopup>
             </Select>
           }
