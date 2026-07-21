@@ -27,7 +27,7 @@ function RestoreDefaultsButton({ onRestored }: { onRestored: () => void }) {
       onClick={() => void restoreDefaults()}
     >
       <RotateCcwIcon className="mx-1 size-3.5" />
-      Restore defaults
+      恢复默认设置
     </Button>
   );
 }
@@ -73,7 +73,7 @@ function SettingsContentLayout() {
             )}
           >
             <div className="flex min-h-7 items-center gap-2 sm:min-h-6">
-              <span className="text-sm font-medium text-foreground">Settings</span>
+              <span className="text-sm font-medium text-foreground">设置</span>
               {showRestoreDefaults ? (
                 <div className="ms-auto flex items-center gap-2">
                   <RestoreDefaultsButton onRestored={handleRestored} />
@@ -91,7 +91,7 @@ function SettingsContentLayout() {
             )}
           >
             <span className="text-xs font-medium tracking-wide text-muted-foreground/70">
-              Settings
+              设置
             </span>
             {showRestoreDefaults ? (
               <div className="ms-auto flex items-center gap-2">

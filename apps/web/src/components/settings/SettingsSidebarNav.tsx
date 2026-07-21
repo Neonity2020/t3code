@@ -35,12 +35,12 @@ export const SETTINGS_NAV_ITEMS: ReadonlyArray<{
   to: SettingsSectionPath;
   icon: ComponentType<{ className?: string }>;
 }> = [
-  { label: "General", to: "/settings/general", icon: Settings2Icon },
-  { label: "Keybindings", to: "/settings/keybindings", icon: KeyboardIcon },
-  { label: "Providers", to: "/settings/providers", icon: BotIcon },
-  { label: "Source Control", to: "/settings/source-control", icon: GitBranchIcon },
-  { label: "Connections", to: "/settings/connections", icon: Link2Icon },
-  { label: "Archive", to: "/settings/archived", icon: ArchiveIcon },
+  { label: "通用", to: "/settings/general", icon: Settings2Icon },
+  { label: "快捷键", to: "/settings/keybindings", icon: KeyboardIcon },
+  { label: "服务提供商", to: "/settings/providers", icon: BotIcon },
+  { label: "源代码管理", to: "/settings/source-control", icon: GitBranchIcon },
+  { label: "连接", to: "/settings/connections", icon: Link2Icon },
+  { label: "归档", to: "/settings/archived", icon: ArchiveIcon },
 ];
 
 export function SettingsSidebarNav({ pathname }: { pathname: string }) {
@@ -115,7 +115,7 @@ export function SettingsSidebarNav({ pathname }: { pathname: string }) {
                 onClick={handleBackClick}
               >
                 <ArrowLeftIcon className="size-4" />
-                <span>Back</span>
+                <span>返回</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

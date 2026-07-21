@@ -92,22 +92,22 @@ import { useAtomCommand } from "../../state/use-atom-command";
 const THEME_OPTIONS = [
   {
     value: "system",
-    label: "System",
+    label: "跟随系统",
   },
   {
     value: "light",
-    label: "Light",
+    label: "浅色",
   },
   {
     value: "dark",
-    label: "Dark",
+    label: "深色",
   },
 ] as const;
 
 const TIMESTAMP_FORMAT_LABELS = {
-  locale: "System default",
-  "12-hour": "12-hour",
-  "24-hour": "24-hour",
+  locale: "跟随系统",
+  "12-hour": "12 小时制",
+  "24-hour": "24 小时制",
 } as const;
 
 const DEFAULT_DRIVER_KIND = ProviderDriverKind.make("codex");
@@ -525,10 +525,10 @@ export function GeneralSettingsPanel() {
 
   return (
     <SettingsPageContainer>
-      <SettingsSection title="General">
+      <SettingsSection title="通用">
         <SettingsRow
-          title="Theme"
-          description="Choose how T3 Code looks across the app."
+          title="主题"
+          description="选择 T3 Code 的界面外观。"
           resetAction={
             theme !== "system" ? (
               <SettingResetButton label="theme" onClick={() => setTheme("system")} />
@@ -545,7 +545,7 @@ export function GeneralSettingsPanel() {
             >
               <SelectTrigger className="w-full sm:w-40" aria-label="Theme preference">
                 <SelectValue>
-                  {THEME_OPTIONS.find((option) => option.value === theme)?.label ?? "System"}
+                  {THEME_OPTIONS.find((option) => option.value === theme)?.label ?? "跟随系统"}
                 </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
@@ -560,8 +560,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Time format"
-          description="System default follows your browser or OS clock preference."
+          title="时间格式"
+          description="跟随系统会使用浏览器或操作系统的时间偏好。"
           resetAction={
             settings.timestampFormat !== DEFAULT_UNIFIED_SETTINGS.timestampFormat ? (
               <SettingResetButton
@@ -602,8 +602,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Word wrap"
-          description="Wrap long lines in code blocks, tables, diffs, and file previews by default."
+          title="自动换行"
+          description="默认在代码块、表格、差异和文件预览中换行显示长内容。"
           resetAction={
             settings.wordWrap !== DEFAULT_UNIFIED_SETTINGS.wordWrap ? (
               <SettingResetButton
@@ -626,8 +626,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Hide whitespace changes"
-          description="Set whether the diff panel ignores whitespace-only edits by default."
+          title="隐藏空白更改"
+          description="默认让差异面板忽略仅包含空白的修改。"
           resetAction={
             settings.diffIgnoreWhitespace !== DEFAULT_UNIFIED_SETTINGS.diffIgnoreWhitespace ? (
               <SettingResetButton
@@ -652,8 +652,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Assistant output"
-          description="Show token-by-token output while a response is in progress."
+          title="助手输出"
+          description="在生成回复时逐词显示输出。"
           resetAction={
             settings.enableAssistantStreaming !==
             DEFAULT_UNIFIED_SETTINGS.enableAssistantStreaming ? (
@@ -679,8 +679,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Provider update checks"
-          description="Check installed provider CLIs for newer available versions."
+          title="检查服务提供商更新"
+          description="检查已安装的提供商 CLI 是否有可用更新。"
           resetAction={
             settings.enableProviderUpdateChecks !==
             DEFAULT_UNIFIED_SETTINGS.enableProviderUpdateChecks ? (
@@ -706,8 +706,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Auto-open task panel"
-          description="Open the right-side plan and task panel automatically when steps appear."
+          title="自动打开任务面板"
+          description="出现步骤时自动打开右侧计划与任务面板。"
           resetAction={
             settings.autoOpenPlanSidebar !== DEFAULT_UNIFIED_SETTINGS.autoOpenPlanSidebar ? (
               <SettingResetButton
@@ -732,8 +732,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="New threads"
-          description="Pick the default workspace mode for newly created draft threads."
+          title="新对话"
+          description="选择新建草稿对话的默认工作区模式。"
           resetAction={
             settings.defaultThreadEnvMode !== DEFAULT_UNIFIED_SETTINGS.defaultThreadEnvMode ||
             settings.newWorktreesStartFromOrigin !==
@@ -761,15 +761,15 @@ export function GeneralSettingsPanel() {
             >
               <SelectTrigger className="w-full sm:w-44" aria-label="Default thread mode">
                 <SelectValue>
-                  {settings.defaultThreadEnvMode === "worktree" ? "New worktree" : "Local"}
+                  {settings.defaultThreadEnvMode === "worktree" ? "新建工作树" : "本地"}
                 </SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value="local">
-                  Local
+                  本地
                 </SelectItem>
                 <SelectItem hideIndicator value="worktree">
-                  New worktree
+                  新建工作树
                 </SelectItem>
               </SelectPopup>
             </Select>
@@ -779,8 +779,8 @@ export function GeneralSettingsPanel() {
         {settings.defaultThreadEnvMode === "worktree" ? (
           <SettingsRow
             className="bg-muted/20 sm:pl-9"
-            title="Start from origin"
-            description="Creates the worktree from the latest matching branch on origin instead of your local branch."
+            title="从 origin 开始"
+            description="从 origin 上最新的匹配分支创建工作树，而不是从本地分支创建。"
             resetAction={
               settings.newWorktreesStartFromOrigin !==
               DEFAULT_UNIFIED_SETTINGS.newWorktreesStartFromOrigin ? (
@@ -808,8 +808,8 @@ export function GeneralSettingsPanel() {
         ) : null}
 
         <SettingsRow
-          title="Add project starts in"
-          description='Leave empty to use "~/" when the Add Project browser opens.'
+          title="添加项目的初始目录"
+          description='留空时，添加项目浏览器将从 "~/" 打开。'
           resetAction={
             settings.addProjectBaseDirectory !==
             DEFAULT_UNIFIED_SETTINGS.addProjectBaseDirectory ? (
@@ -836,8 +836,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Archive confirmation"
-          description="Require a second click on the inline archive action before a thread is archived."
+          title="归档确认"
+          description="归档对话前，需要再次点击内联归档操作。"
           resetAction={
             settings.confirmThreadArchive !== DEFAULT_UNIFIED_SETTINGS.confirmThreadArchive ? (
               <SettingResetButton
@@ -862,8 +862,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Delete confirmation"
-          description="Ask before deleting a thread and its chat history."
+          title="删除确认"
+          description="删除对话及其聊天记录前询问。"
           resetAction={
             settings.confirmThreadDelete !== DEFAULT_UNIFIED_SETTINGS.confirmThreadDelete ? (
               <SettingResetButton
@@ -888,8 +888,8 @@ export function GeneralSettingsPanel() {
         />
 
         <SettingsRow
-          title="Text generation model"
-          description="Configure the model used for generated commit messages, PR titles, and similar Git text."
+          title="文本生成模型"
+          description="配置用于生成提交信息、PR 标题和类似 Git 文本的模型。"
           resetAction={
             isGitWritingModelDirty ? (
               <SettingResetButton
@@ -962,21 +962,21 @@ export function GeneralSettingsPanel() {
         />
       </SettingsSection>
 
-      <SettingsSection title="About">
+      <SettingsSection title="关于">
         {isElectron || HOSTED_APP_CHANNEL ? (
           <AboutVersionSection />
         ) : (
           <SettingsRow
             title={<AboutVersionTitle />}
-            description="Current version of the application."
+            description="应用当前版本。"
           />
         )}
         <SettingsRow
-          title="Diagnostics"
+          title="诊断"
           description={diagnosticsDescription}
           control={
             <Button render={<Link to="/settings/diagnostics" />} size="xs" variant="outline">
-              View diagnostics
+              查看诊断信息
             </Button>
           }
         />
