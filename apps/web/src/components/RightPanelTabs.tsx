@@ -295,23 +295,23 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
 
       const items: ContextMenuItem<TabContextMenuAction>[] = [];
       if (surface.kind === "file") {
-        items.push({ id: "copy-path", label: "Copy path" });
+        items.push({ id: "copy-path", label: t("contextMenu.copyPath") });
       }
       items.push(
-        { id: "close", label: "Close" },
+        { id: "close", label: t("contextMenu.close") },
         {
           id: "close-others",
-          label: "Close others",
+          label: t("contextMenu.closeOthers"),
           disabled: props.surfaces.length <= 1,
         },
         {
           id: "close-to-right",
-          label: "Close to the right",
+          label: t("contextMenu.closeToRight"),
           disabled: surfaceIndex >= props.surfaces.length - 1,
         },
         {
           id: "close-all",
-          label: "Close all",
+          label: t("contextMenu.closeAll"),
           disabled: props.surfaces.length === 0,
         },
       );
@@ -337,7 +337,7 @@ export function RightPanelTabs(props: RightPanelTabsProps) {
           break;
       }
     },
-    [props],
+    [props, t],
   );
   const handleTabMouseDown = useCallback((event: ReactMouseEvent) => {
     if (event.button !== 1) return;

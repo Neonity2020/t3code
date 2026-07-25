@@ -1656,10 +1656,10 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
 
         const clicked = await api.contextMenu.show(
           [
-            buildTargetedItem("rename", "Rename"),
-            buildTargetedItem("grouping", "Group into..."),
-            buildTargetedItem("copy-path", "Copy Path"),
-            buildTargetedItem("delete", "Remove", {
+            buildTargetedItem("rename", t("contextMenu.rename")),
+            buildTargetedItem("grouping", t("contextMenu.groupInto")),
+            buildTargetedItem("copy-path", t("contextMenu.copyPath")),
+            buildTargetedItem("delete", t("contextMenu.remove"), {
               destructive: true,
             }),
           ],
@@ -1684,6 +1684,7 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       project.groupedProjectCount,
       project.memberProjects,
       suppressProjectClickForContextMenuRef,
+      t,
     ],
   );
 
@@ -1775,7 +1776,15 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       );
 
       const clicked = await api.contextMenu.show(
-        buildMultiSelectThreadContextMenuItems({ count, hasRunningThread }),
+        buildMultiSelectThreadContextMenuItems({
+          count,
+          hasRunningThread,
+          labels: {
+            markUnread: t("contextMenu.markUnreadCount").replace("{count}", String(count)),
+            archive: t("contextMenu.archiveCount").replace("{count}", String(count)),
+            delete: t("contextMenu.deleteCount").replace("{count}", String(count)),
+          },
+        }),
         position,
       );
 
@@ -1869,6 +1878,7 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       deleteThread,
       markThreadUnread,
       removeFromSelection,
+      t,
     ],
   );
 
@@ -2117,13 +2127,18 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       const clicked = await api.contextMenu.show(
         [
           ...(thread.branch
-            ? [{ id: "new-thread-on-branch", label: `New thread on ${thread.branch}` }]
+            ? [
+                {
+                  id: "new-thread-on-branch",
+                  label: t("contextMenu.newThreadOnBranch").replace("{branch}", thread.branch),
+                },
+              ]
             : []),
-          { id: "rename", label: "Rename thread" },
-          { id: "mark-unread", label: "Mark unread" },
-          { id: "copy-path", label: "Copy Path" },
-          { id: "copy-thread-id", label: "Copy Thread ID" },
-          { id: "delete", label: "Delete", destructive: true, icon: "trash" },
+          { id: "rename", label: t("contextMenu.renameThread") },
+          { id: "mark-unread", label: t("contextMenu.markUnread") },
+          { id: "copy-path", label: t("contextMenu.copyPath") },
+          { id: "copy-thread-id", label: t("contextMenu.copyThreadId") },
+          { id: "delete", label: t("contextMenu.delete"), destructive: true, icon: "trash" },
         ],
         position,
       );
@@ -2213,6 +2228,7 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
       memberProjectByScopedKey,
       project.workspaceRoot,
       startThreadRename,
+      t,
     ],
   );
 
