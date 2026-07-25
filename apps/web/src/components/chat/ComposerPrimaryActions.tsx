@@ -6,6 +6,7 @@ import { StageBackdropButtonArt, useSidebarStageBackdropVariant } from "../Sideb
 import { Button } from "../ui/button";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "../ui/menu";
 import { Spinner } from "../ui/spinner";
+import { useTranslation } from "~/i18n";
 
 interface PendingActionState {
   questionIndex: number;
@@ -72,6 +73,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
   onInterrupt,
   onImplementPlanInNewThread,
 }: ComposerPrimaryActionsProps) {
+  const { t } = useTranslation();
   const pointerFocusProps = preserveComposerFocusOnPointerDown
     ? { onPointerDown: preventPointerFocus }
     : undefined;
@@ -194,7 +196,7 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
               disabled={isSendBusy || isSendDisabled || isConnecting || isEnvironmentUnavailable}
               onClick={() => void onImplementPlanInNewThread()}
             >
-              Implement in a new thread
+              {t("composer.implementInNewThread")}
             </MenuItem>
           </MenuPopup>
         </Menu>
@@ -221,16 +223,16 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
       }
       aria-label={
         isEnvironmentUnavailable
-          ? "Environment disconnected"
+          ? t("composer.environmentDisconnected")
           : sendDisabledReason
             ? sendDisabledReason
             : isConnecting
-              ? "Connecting"
+            ? t("composer.connecting")
               : isPreparingWorktree
-                ? "Preparing worktree"
+              ? t("composer.preparingWorktree")
                 : isSendBusy
-                  ? "Sending"
-                  : "Send message"
+                ? t("composer.sending")
+                : t("composer.send")
       }
     >
       {stageBackdropVariant ? (
