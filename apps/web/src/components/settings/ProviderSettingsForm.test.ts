@@ -37,6 +37,15 @@ describe("ProviderSettingsForm helpers", () => {
     });
   });
 
+  it("exposes Pi Agent as a configurable provider", () => {
+    const piAgent = DRIVER_OPTION_BY_VALUE[ProviderDriverKind.make("piAgent")];
+
+    expect(piAgent?.label).toBe("Pi Agent");
+    expect(deriveProviderSettingsFields(piAgent!).map((field) => field.key)).toEqual([
+      "binaryPath",
+    ]);
+  });
+
   it("preserves unknown config keys while omitting empty configurable fields", () => {
     const opencode = DRIVER_OPTION_BY_VALUE[ProviderDriverKind.make("opencode")];
     expect(opencode).toBeDefined();

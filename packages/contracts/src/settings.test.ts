@@ -120,6 +120,19 @@ describe("ClientSettings sidebar v2", () => {
 });
 
 describe("ServerSettings.providerInstances (slice-2 invariant)", () => {
+  it("hydrates Pi Agent's local RPC settings with the pi executable", () => {
+    const decoded = decodeServerSettings({});
+
+    expect(decoded.providers.piAgent).toMatchObject({
+      enabled: true,
+      binaryPath: "pi",
+      customModels: [],
+    });
+    expect(
+      decodeServerSettingsPatch({ providers: { piAgent: { binaryPath: "custom-pi" } } }),
+    ).toEqual({ providers: { piAgent: { binaryPath: "custom-pi" } } });
+  });
+
   it("defaults to an empty record so legacy configs without the key still decode", () => {
     expect(DEFAULT_SERVER_SETTINGS.providerInstances).toEqual({});
   });
