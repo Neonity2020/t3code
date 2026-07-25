@@ -189,13 +189,21 @@ describe("buildBulkTitleRegenerationContextMenuItem", () => {
 describe("buildMultiSelectThreadContextMenuItems", () => {
   it("offers bulk archive with the selected count", () => {
     expect(
-      buildMultiSelectThreadContextMenuItems({ count: 3, hasRunningThread: false }),
+      buildMultiSelectThreadContextMenuItems({
+        count: 3,
+        hasRunningThread: false,
+        labels: { markUnread: "Mark unread (3)", archive: "Archive (3)", delete: "Delete (3)" },
+      }),
     ).toContainEqual({ id: "archive", label: "Archive (3)", disabled: false });
   });
 
   it("disables bulk archive when a selected thread is running", () => {
     expect(
-      buildMultiSelectThreadContextMenuItems({ count: 2, hasRunningThread: true }),
+      buildMultiSelectThreadContextMenuItems({
+        count: 2,
+        hasRunningThread: true,
+        labels: { markUnread: "Mark unread (2)", archive: "Archive (2)", delete: "Delete (2)" },
+      }),
     ).toContainEqual({ id: "archive", label: "Archive (2)", disabled: true });
   });
 });

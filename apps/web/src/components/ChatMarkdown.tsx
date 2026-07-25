@@ -53,6 +53,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "./ui/menu";
 import { stackedThreadToast, toastManager } from "./ui/toast";
 import { useOpenInPreferredEditor } from "../editorPreferences";
+import { useTranslation } from "../i18n";
 import { resolveDiffThemeName, type DiffThemeName } from "../lib/diffRendering";
 import { fnv1a32 } from "../lib/diffRendering";
 import { LRUCache } from "../lib/lruCache";
@@ -1029,6 +1030,7 @@ const MarkdownFileLink = memo(function MarkdownFileLink({
   onOpenInBrowser,
   className,
 }: MarkdownFileLinkProps) {
+  const { t } = useTranslation();
   const handleOpenInEditor = useCallback(() => {
     void (async () => {
       try {
@@ -1160,12 +1162,14 @@ const MarkdownFileLink = memo(function MarkdownFileLink({
       try {
         const clicked = await api.contextMenu.show(
           [
-            { id: "open", label: "Open in editor" },
+            { id: "open", label: t("contextMenu.openInEditor") },
             ...(onOpenInBrowser
-              ? ([{ id: "open-in-browser", label: "Open in integrated browser" }] as const)
+              ? ([
+                  { id: "open-in-browser", label: t("contextMenu.openInIntegratedBrowser") },
+                ] as const)
               : []),
-            { id: "copy-relative", label: "Copy relative path" },
-            { id: "copy-full", label: "Copy full path" },
+            { id: "copy-relative", label: t("contextMenu.copyRelativePath") },
+            { id: "copy-full", label: t("contextMenu.copyFullPath") },
           ] as const,
           { x: event.clientX, y: event.clientY },
         );
@@ -1192,7 +1196,15 @@ const MarkdownFileLink = memo(function MarkdownFileLink({
         );
       }
     },
-    [displayPath, handleCopy, handleOpenInBrowser, handleOpenInEditor, onOpenInBrowser, targetPath],
+    [
+      displayPath,
+      handleCopy,
+      handleOpenInBrowser,
+      handleOpenInEditor,
+      onOpenInBrowser,
+      targetPath,
+      t,
+    ],
   );
 
   return (
@@ -1262,6 +1274,7 @@ function ChatMarkdown({
   lineBreaks = false,
 }: ChatMarkdownProps) {
   const { resolvedTheme } = useTheme();
+  const { t } = useTranslation();
   const createAssetUrl = useAtomQueryRunner(assetEnvironment.createUrl, {
     reportFailure: false,
   });
@@ -1477,6 +1490,11 @@ function ChatMarkdown({
                 void showExternalLinkContextMenu({
                   href,
                   position: { x: event.clientX, y: event.clientY },
+                  labels: {
+                    openInPreview: t("contextMenu.openInIntegratedBrowser"),
+                    openExternal: t("contextMenu.openInSystemBrowser"),
+                    copyLink: t("contextMenu.copyLink"),
+                  },
                   showContextMenu: (items, position) => api.contextMenu.show(items, position),
                   openInPreview: async (target) => {
                     const result = await openExternalLinkInPreview(target);

@@ -2,6 +2,12 @@ import { describe, expect, it, vi } from "vite-plus/test";
 
 import { resolveExternalWebLinkHost, showExternalLinkContextMenu } from "./externalLinkContextMenu";
 
+const LABELS = {
+  openInPreview: "Open in integrated browser",
+  openExternal: "Open in system browser",
+  copyLink: "Copy Link",
+} as const;
+
 function createHarness(selection: "open-in-preview" | "open-external" | "copy-link" | null) {
   const showContextMenu = vi.fn().mockResolvedValue(selection);
   const openInPreview = vi.fn().mockResolvedValue(undefined);
@@ -25,6 +31,7 @@ describe("external chat link context menu", () => {
     await showExternalLinkContextMenu({
       href: "https://example.com/docs?topic=menus#copy",
       position: { x: 12, y: 24 },
+      labels: LABELS,
       ...harness,
     });
 
@@ -45,7 +52,12 @@ describe("external chat link context menu", () => {
     const harness = createHarness("copy-link");
     const href = "https://example.com/docs?topic=menus#copy";
 
-    await showExternalLinkContextMenu({ href, position: { x: 1, y: 2 }, ...harness });
+    await showExternalLinkContextMenu({
+      href,
+      position: { x: 1, y: 2 },
+      labels: LABELS,
+      ...harness,
+    });
 
     expect(harness.copyLink).toHaveBeenCalledWith(href);
     expect(harness.openInPreview).not.toHaveBeenCalled();
@@ -59,7 +71,12 @@ describe("external chat link context menu", () => {
     const harness = createHarness(selection);
     const href = "https://example.com/docs";
 
-    await showExternalLinkContextMenu({ href, position: { x: 1, y: 2 }, ...harness });
+    await showExternalLinkContextMenu({
+      href,
+      position: { x: 1, y: 2 },
+      labels: LABELS,
+      ...harness,
+    });
 
     expect(harness[expectedCallback]).toHaveBeenCalledWith(href);
     expect(harness.copyLink).not.toHaveBeenCalled();
@@ -73,6 +90,7 @@ describe("external chat link context menu", () => {
     await showExternalLinkContextMenu({
       href: "https://example.com/docs",
       position: { x: 1, y: 2 },
+      labels: LABELS,
       ...harness,
     });
 
@@ -87,6 +105,7 @@ describe("external chat link context menu", () => {
     await showExternalLinkContextMenu({
       href: "https://example.com/docs",
       position: { x: 1, y: 2 },
+      labels: LABELS,
       ...harness,
     });
 
@@ -107,6 +126,7 @@ describe("external chat link context menu", () => {
     await showExternalLinkContextMenu({
       href: "https://example.com/docs",
       position: { x: 1, y: 2 },
+      labels: LABELS,
       ...harness,
     });
 

@@ -14,15 +14,16 @@ const FAILURE_OPERATION_BY_ACTION = {
   "copy-link": "copy-link",
 } as const satisfies Record<ExternalLinkContextMenuAction, ExternalLinkContextMenuFailureOperation>;
 
-const EXTERNAL_LINK_CONTEXT_MENU_ITEMS = [
-  { id: "open-in-preview", label: "Open in integrated browser" },
-  { id: "open-external", label: "Open in system browser" },
-  { id: "copy-link", label: "Copy Link" },
-] as const satisfies readonly ContextMenuItem<ExternalLinkContextMenuAction>[];
+export interface ExternalLinkContextMenuLabels {
+  readonly openInPreview: string;
+  readonly openExternal: string;
+  readonly copyLink: string;
+}
 
 interface ShowExternalLinkContextMenuOptions {
   readonly href: string;
   readonly position: { readonly x: number; readonly y: number };
+  readonly labels: ExternalLinkContextMenuLabels;
   readonly showContextMenu: (
     items: readonly ContextMenuItem<ExternalLinkContextMenuAction>[],
     position: { readonly x: number; readonly y: number },
@@ -50,15 +51,21 @@ export function resolveExternalWebLinkHost(href: string | undefined): string | n
 export async function showExternalLinkContextMenu({
   href,
   position,
+  labels,
   showContextMenu,
   openInPreview,
   openExternal,
   copyLink,
   reportFailure,
 }: ShowExternalLinkContextMenuOptions): Promise<void> {
+  const items: readonly ContextMenuItem<ExternalLinkContextMenuAction>[] = [
+    { id: "open-in-preview", label: labels.openInPreview },
+    { id: "open-external", label: labels.openExternal },
+    { id: "copy-link", label: labels.copyLink },
+  ];
   let action: ExternalLinkContextMenuAction | null;
   try {
-    action = await showContextMenu(EXTERNAL_LINK_CONTEXT_MENU_ITEMS, position);
+    action = await showContextMenu(items, position);
   } catch (cause) {
     reportFailure("show-link-context-menu", cause);
     return;
