@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { serializeComposerFileLink, serializeComposerMentionPath } from "./composerTrigger.ts";
+import {
+  hasEnabledFlowusCliSkill,
+  rewriteFlowusSlashCommand,
+  serializeComposerFileLink,
+  serializeComposerMentionPath,
+} from "./composerTrigger.ts";
 
 describe("serializeComposerMentionPath", () => {
   it("keeps simple mention paths unquoted", () => {
@@ -39,5 +44,39 @@ describe("serializeComposerFileLink", () => {
     expect(serializeComposerFileLink("@scope/package.json")).toBe(
       "[package.json](@scope/package.json)",
     );
+  });
+});
+
+describe("rewriteFlowusSlashCommand", () => {
+  it("rewrites /flowus to the flowus-cli skill mention", () => {
+    expect(rewriteFlowusSlashCommand("/flowus")).toBe("$flowus-cli");
+    expect(rewriteFlowusSlashCommand("/FLOWUS search text roadmap")).toBe(
+      "$flowus-cli search text roadmap",
+    );
+  });
+
+  it("preserves whitespace and multiline instructions", () => {
+    expect(rewriteFlowusSlashCommand("  /flowus create a page\nunder the roadmap")).toBe(
+      "  $flowus-cli create a page\nunder the roadmap",
+    );
+  });
+
+  it("does not rewrite similar commands or inline text", () => {
+    expect(rewriteFlowusSlashCommand("/flowus-cli doctor")).toBe("/flowus-cli doctor");
+    expect(rewriteFlowusSlashCommand("please run /flowus doctor")).toBe(
+      "please run /flowus doctor",
+    );
+  });
+});
+
+describe("hasEnabledFlowusCliSkill", () => {
+  it("only accepts an enabled flowus-cli skill", () => {
+    expect(
+      hasEnabledFlowusCliSkill([
+        { name: "other-skill", enabled: true },
+        { name: "flowus-cli", enabled: false },
+      ]),
+    ).toBe(false);
+    expect(hasEnabledFlowusCliSkill([{ name: "flowus-cli", enabled: true }])).toBe(true);
   });
 });

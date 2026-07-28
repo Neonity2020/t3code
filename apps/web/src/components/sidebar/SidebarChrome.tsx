@@ -1,4 +1,4 @@
-import { SettingsIcon } from "lucide-react";
+import { ExternalLinkIcon, SettingsIcon } from "lucide-react";
 import { memo, useCallback } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 
@@ -29,6 +29,7 @@ export const SidebarChromeHeader = memo(function SidebarChromeHeader({
 }: {
   isElectron: boolean;
 }) {
+  const { t } = useTranslation();
   const stageLabel = useEnvironmentStageLabel();
   const environmentIdentificationMode = useEnvironmentIdentificationMode();
   const backdropVariant = resolveSidebarStageBackdropVariant(
@@ -56,6 +57,21 @@ export const SidebarChromeHeader = memo(function SidebarChromeHeader({
         )}
       />
       <SidebarBrand onBackdrop={backdropVariant !== null} />
+      <a
+        href="https://flowus.cn/"
+        target="_blank"
+        rel="noreferrer"
+        className={cn(
+          "relative z-10 ml-2 inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs font-medium outline-hidden ring-ring transition-colors hover:bg-sidebar-accent focus-visible:ring-2",
+          backdropVariant
+            ? "text-white/85 hover:bg-white/15"
+            : "text-muted-foreground hover:text-foreground",
+        )}
+        title={t("nav.openFlowUs")}
+      >
+        <span>FlowUs</span>
+        <ExternalLinkIcon className="size-3" aria-hidden="true" />
+      </a>
       {pillLabel ? (
         <Badge
           className="relative z-10 ml-1 rounded-full px-1.5 text-muted-foreground"

@@ -63,6 +63,16 @@ export const GlassOpacity = Schema.Int.check(
 );
 export type GlassOpacity = typeof GlassOpacity.Type;
 export const DEFAULT_GLASS_OPACITY: GlassOpacity = 80;
+export const MIN_UI_FONT_SCALE = 85;
+export const MAX_UI_FONT_SCALE = 130;
+export const UiFontScale = Schema.Int.check(
+  Schema.isBetween({
+    minimum: MIN_UI_FONT_SCALE,
+    maximum: MAX_UI_FONT_SCALE,
+  }),
+);
+export type UiFontScale = typeof UiFontScale.Type;
+export const DEFAULT_UI_FONT_SCALE: UiFontScale = 100;
 export const EnvironmentIdentificationMode = Schema.Literals(["artwork", "pill", "none"]);
 export type EnvironmentIdentificationMode = typeof EnvironmentIdentificationMode.Type;
 export const DEFAULT_ENVIRONMENT_IDENTIFICATION_MODE: EnvironmentIdentificationMode = "artwork";
@@ -138,6 +148,7 @@ export const ClientSettingsSchema = Schema.Struct({
   timestampFormat: TimestampFormat.pipe(
     Schema.withDecodingDefault(Effect.succeed(DEFAULT_TIMESTAMP_FORMAT)),
   ),
+  uiFontScale: UiFontScale.pipe(Schema.withDecodingDefault(Effect.succeed(DEFAULT_UI_FONT_SCALE))),
   wordWrap: Schema.Boolean.pipe(Schema.withDecodingDefault(Effect.succeed(true))),
 });
 export type ClientSettings = typeof ClientSettingsSchema.Type;
@@ -752,6 +763,7 @@ export const ClientSettingsPatch = Schema.Struct({
   sidebarV2Enabled: Schema.optionalKey(Schema.Boolean),
   sidebarV2ConfiguredByUser: Schema.optionalKey(Schema.Boolean),
   timestampFormat: Schema.optionalKey(TimestampFormat),
+  uiFontScale: Schema.optionalKey(UiFontScale),
   wordWrap: Schema.optionalKey(Schema.Boolean),
 });
 export type ClientSettingsPatch = typeof ClientSettingsPatch.Type;

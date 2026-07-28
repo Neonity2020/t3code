@@ -10,7 +10,10 @@ import type {
 } from "@t3tools/contracts";
 import {
   detectComposerTrigger,
+  FLOWUS_CLI_SKILL_NAME,
+  hasEnabledFlowusCliSkill,
   replaceTextRange,
+  rewriteFlowusSlashCommand,
   serializeComposerFileLink,
   type ComposerTrigger,
 } from "@t3tools/shared/composerTrigger";
@@ -18,6 +21,7 @@ import type { ReactNode } from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Platform,
   Pressable,
@@ -371,6 +375,7 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
 
     if (composerTrigger.kind === "slash-command") {
       const q = composerTrigger.query.toLowerCase();
+      const hasFlowusCliSkill = hasEnabledFlowusCliSkill(selectedProviderStatus?.skills ?? []);
       const allBuiltIn = [
         {
           id: "cmd:model",
@@ -393,11 +398,23 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
           label: "/default",
           description: "Switch to default mode",
         },
+        ...(hasFlowusCliSkill
+          ? [
+              {
+                id: "cmd:flowus",
+                type: "slash-command" as const,
+                command: "flowus" as const,
+                label: "/flowus",
+                description: "Use FlowUs through flowus-cli",
+              },
+            ]
+          : []),
       ];
       const builtIn = allBuiltIn.filter((item) => item.command.includes(q));
 
       const providerCommands: ComposerCommandItem[] = [];
       for (const cmd of selectedProviderStatus?.slashCommands ?? []) {
+        if (hasFlowusCliSkill && cmd.name.toLowerCase() === "flowus") continue;
         if (!cmd.name.toLowerCase().includes(q)) continue;
         providerCommands.push({
           id: `pcmd:${cmd.name}`,
@@ -515,6 +532,17 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
   const { onChangeDraftMessage, onUpdateInteractionMode, draftMessage, onSendMessage } = props;
 
   const handleSend = useCallback(async () => {
+    const trimmedDraftMessage = props.draftMessage.trim();
+    if (
+      rewriteFlowusSlashCommand(trimmedDraftMessage) !== trimmedDraftMessage &&
+      !hasEnabledFlowusCliSkill(selectedProviderStatus?.skills ?? [])
+    ) {
+      Alert.alert(
+        "FlowUs CLI skill is unavailable",
+        "Enable or install the flowus-cli skill for the selected provider.",
+      );
+      return;
+    }
     const threadKey = scopedThreadKey(props.environmentId, props.selectedThread.id);
     if (inFlightThreadIdsRef.current.has(threadKey)) return;
     inFlightThreadIdsRef.current.add(threadKey);
@@ -533,10 +561,12 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
     }
   }, [
     onSendMessage,
+    props.draftMessage,
     props.environmentId,
     props.environmentLabel,
     props.selectedThread.id,
     props.selectedThread.title,
+    selectedProviderStatus,
   ]);
   const handleCommandSelect = useCallback(
     (item: ComposerCommandItem) => {
@@ -564,7 +594,8 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
       } else if (item.type === "skill") {
         replacement = `$${item.skill.name} `;
       } else if (item.type === "slash-command") {
-        replacement = `/${item.command} `;
+        replacement =
+          item.command === "flowus" ? `$${FLOWUS_CLI_SKILL_NAME} ` : `/${item.command} `;
       } else if (item.type === "provider-slash-command") {
         replacement = `/${item.command.name} `;
       }

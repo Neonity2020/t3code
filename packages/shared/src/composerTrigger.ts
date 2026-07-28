@@ -1,5 +1,13 @@
 export type ComposerTriggerKind = "path" | "slash-command" | "slash-model" | "skill";
-export type ComposerSlashCommand = "model" | "plan" | "default";
+export type ComposerSlashCommand = "model" | "plan" | "default" | "flowus";
+
+export const FLOWUS_CLI_SKILL_NAME = "flowus-cli";
+
+export function hasEnabledFlowusCliSkill(
+  skills: ReadonlyArray<{ readonly name: string; readonly enabled: boolean }>,
+): boolean {
+  return skills.some((skill) => skill.enabled && skill.name === FLOWUS_CLI_SKILL_NAME);
+}
 
 export interface ComposerTrigger {
   kind: ComposerTriggerKind;
@@ -126,7 +134,7 @@ export function detectComposerTrigger(
 
 export function parseStandaloneComposerSlashCommand(
   text: string,
-): Exclude<ComposerSlashCommand, "model"> | null {
+): Extract<ComposerSlashCommand, "plan" | "default"> | null {
   const match = /^\/(plan|default)\s*$/i.exec(text.trim());
   if (!match) {
     return null;
@@ -134,6 +142,15 @@ export function parseStandaloneComposerSlashCommand(
   const command = match[1]?.toLowerCase();
   if (command === "plan") return "plan";
   return "default";
+}
+
+export function rewriteFlowusSlashCommand(text: string): string {
+  const match = /^(\s*)\/flowus(?=$|\s)([\s\S]*)$/i.exec(text);
+  if (!match) {
+    return text;
+  }
+
+  return `${match[1] ?? ""}$${FLOWUS_CLI_SKILL_NAME}${match[2] ?? ""}`;
 }
 
 export function replaceTextRange(

@@ -75,6 +75,22 @@ describe("ClientSettings environment identification", () => {
   });
 });
 
+describe("ClientSettings UI font scale", () => {
+  it("defaults to 100%", () => {
+    expect(decodeClientSettings({}).uiFontScale).toBe(100);
+  });
+
+  it.each([84, 131, 100.5])("rejects an invalid font scale: %s", (value) => {
+    expect(() => decodeClientSettings({ uiFontScale: value })).toThrow();
+    expect(() => decodeClientSettingsPatch({ uiFontScale: value })).toThrow();
+  });
+
+  it.each([85, 115, 130])("accepts a supported font scale: %s", (value) => {
+    expect(decodeClientSettings({ uiFontScale: value }).uiFontScale).toBe(value);
+    expect(decodeClientSettingsPatch({ uiFontScale: value }).uiFontScale).toBe(value);
+  });
+});
+
 describe("ClientSettings sidebar v2", () => {
   it("defaults the beta off with a three-day auto-settle threshold", () => {
     const settings = decodeClientSettings({});

@@ -32,10 +32,13 @@ import {
 } from "@t3tools/client-runtime/state/runtime";
 import {
   DEFAULT_ENVIRONMENT_IDENTIFICATION_MODE,
+  DEFAULT_UI_FONT_SCALE,
   DEFAULT_UNIFIED_SETTINGS,
   type EnvironmentIdentificationMode,
   MAX_GLASS_OPACITY,
+  MAX_UI_FONT_SCALE,
   MIN_GLASS_OPACITY,
+  MIN_UI_FONT_SCALE,
 } from "@t3tools/contracts/settings";
 import {
   getBackgroundActivityBaseProfile,
@@ -1030,6 +1033,49 @@ export function AppearanceSettingsPanel() {
                 ))}
               </SelectPopup>
             </Select>
+          }
+        />
+
+        <SettingsRow
+          title={t("settings.fontSize")}
+          description={t("settings.fontSize.description")}
+          resetAction={
+            settings.uiFontScale !== DEFAULT_UI_FONT_SCALE ? (
+              <SettingResetButton
+                label="font size"
+                onClick={() => updateSettings({ uiFontScale: DEFAULT_UI_FONT_SCALE })}
+              />
+            ) : null
+          }
+          control={
+            <div className="flex w-full items-center gap-3 sm:w-52">
+              <output
+                className="min-w-12 rounded-md bg-muted px-2 py-1 text-center font-mono text-xs font-medium tabular-nums text-foreground"
+                htmlFor="ui-font-scale"
+              >
+                {settings.uiFontScale}%
+              </output>
+              <input
+                aria-label={t("settings.fontSize")}
+                className="glass-opacity-slider min-w-0 flex-1"
+                id="ui-font-scale"
+                max={MAX_UI_FONT_SCALE}
+                min={MIN_UI_FONT_SCALE}
+                onChange={(event) => {
+                  const uiFontScale = Number(event.currentTarget.value);
+                  if (
+                    Number.isInteger(uiFontScale) &&
+                    uiFontScale >= MIN_UI_FONT_SCALE &&
+                    uiFontScale <= MAX_UI_FONT_SCALE
+                  ) {
+                    updateSettings({ uiFontScale });
+                  }
+                }}
+                step={5}
+                type="range"
+                value={settings.uiFontScale}
+              />
+            </div>
           }
         />
 

@@ -38,6 +38,10 @@ import {
   resolvePromptInjectedEffort,
 } from "@t3tools/shared/model";
 import { CHAT_LIST_ANCHOR_OFFSET } from "@t3tools/shared/chatList";
+import {
+  hasEnabledFlowusCliSkill,
+  rewriteFlowusSlashCommand,
+} from "@t3tools/shared/composerTrigger";
 import { projectScriptCwd, projectScriptRuntimeEnv } from "@t3tools/shared/projectScripts";
 import { truncate } from "@t3tools/shared/String";
 import { nextTerminalId, resolveTerminalSessionLabel } from "@t3tools/shared/terminalLabels";
@@ -4570,7 +4574,24 @@ function ChatViewContent(props: ChatViewProps) {
       selectedPromptEffort: ctxSelectedPromptEffort,
       selectedModelSelection: ctxSelectedModelSelection,
     } = sendCtx;
-    const promptForSend = promptRef.current;
+    const originalPromptForSend = promptRef.current;
+    const promptForSend = rewriteFlowusSlashCommand(originalPromptForSend);
+    if (promptForSend !== originalPromptForSend) {
+      const providerStatusForSend =
+        providerStatuses.find(
+          (status) => status.instanceId === ctxSelectedModelSelection.instanceId,
+        ) ?? activeProviderStatus;
+      if (!hasEnabledFlowusCliSkill(providerStatusForSend?.skills ?? [])) {
+        toastManager.add(
+          stackedThreadToast({
+            type: "warning",
+            title: "FlowUs CLI skill is unavailable",
+            description: "Enable or install the flowus-cli skill for the selected provider.",
+          }),
+        );
+        return;
+      }
+    }
     const {
       trimmedPrompt: trimmed,
       sendableTerminalContexts: sendableComposerTerminalContexts,
@@ -4901,20 +4922,23 @@ function ChatViewContent(props: ChatViewProps) {
           const next = existing.filter((message) => message.id !== messageIdForSend);
           return next.length === existing.length ? existing : next;
         });
-        promptRef.current = promptForSend;
+        promptRef.current = originalPromptForSend;
         const retryComposerImages = composerImagesSnapshot.map(cloneComposerImageForRetry);
         composerImagesRef.current = retryComposerImages;
         composerTerminalContextsRef.current = composerTerminalContextsSnapshot;
         composerElementContextsRef.current = composerElementContextsSnapshot;
-        setComposerDraftPrompt(composerDraftTarget, promptForSend);
+        setComposerDraftPrompt(composerDraftTarget, originalPromptForSend);
         addComposerDraftImages(composerDraftTarget, retryComposerImages);
         setComposerDraftTerminalContexts(composerDraftTarget, composerTerminalContextsSnapshot);
         setComposerDraftElementContexts(composerDraftTarget, composerElementContextsSnapshot);
         setComposerDraftPreviewAnnotations(composerDraftTarget, composerPreviewAnnotationsSnapshot);
         setComposerDraftReviewComments(composerDraftTarget, composerReviewCommentsSnapshot);
         composerRef.current?.resetCursorState({
-          cursor: collapseExpandedComposerCursor(promptForSend, promptForSend.length),
-          prompt: promptForSend,
+          cursor: collapseExpandedComposerCursor(
+            originalPromptForSend,
+            originalPromptForSend.length,
+          ),
+          prompt: originalPromptForSend,
           detectTrigger: true,
         });
       }

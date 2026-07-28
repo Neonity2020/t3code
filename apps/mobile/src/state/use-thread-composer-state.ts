@@ -11,6 +11,7 @@ import {
   type ThreadId,
 } from "@t3tools/contracts";
 import { safeErrorLogAttributes } from "@t3tools/client-runtime/errors";
+import { rewriteFlowusSlashCommand } from "@t3tools/shared/composerTrigger";
 import { deriveActiveWorkStartedAt } from "@t3tools/shared/orchestrationTiming";
 
 import { makeQueuedMessageMetadata } from "../lib/commandMetadata";
@@ -141,7 +142,7 @@ export function useThreadComposerState() {
     const threadKey = scopedThreadKey(selectedThreadShell.environmentId, selectedThreadShell.id);
     const draft = getComposerDraftSnapshot(threadKey);
     const thread = selectedThreadDetail ?? selectedThreadShell;
-    const text = draft.text.trim();
+    const text = rewriteFlowusSlashCommand(draft.text.trim());
     const attachments = draft.attachments;
     if (text.length === 0 && attachments.length === 0) {
       return null;

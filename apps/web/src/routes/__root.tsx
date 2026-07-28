@@ -28,6 +28,7 @@ import {
 } from "../components/ui/toast";
 import { resolveAndPersistPreferredEditor } from "../editorPreferences";
 import { useClientSettings } from "../hooks/useSettings";
+import { DEFAULT_UI_FONT_SCALE } from "@t3tools/contracts/settings";
 import {
   deriveLogicalProjectKeyFromSettings,
   derivePhysicalProjectKeyFromPath,
@@ -128,6 +129,7 @@ function RootRouteView() {
       <AnchoredToastProvider>
         <DocumentTitleSync />
         <GlassAppearanceSync />
+        <UiFontScaleSync />
         <DocumentLanguageSync />
         {primaryEnvironmentAuthenticated ? <AuthenticatedTracingBootstrap /> : null}
         <RelayClientInstallDialog />
@@ -149,6 +151,17 @@ function GlassAppearanceSync() {
   useEffect(() => {
     document.documentElement.style.setProperty("--glass-opacity", `${glassOpacity}%`);
   }, [glassOpacity]);
+
+  return null;
+}
+
+function UiFontScaleSync() {
+  const uiFontScale = useClientSettings((settings) => settings.uiFontScale);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize =
+      uiFontScale === DEFAULT_UI_FONT_SCALE ? "" : `${uiFontScale}%`;
+  }, [uiFontScale]);
 
   return null;
 }
