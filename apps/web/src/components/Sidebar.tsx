@@ -1558,7 +1558,10 @@ const SidebarProjectItem = memo(function SidebarProjectItem(props: SidebarProjec
         return;
       }
 
-      const result = await removeProject(member);
+      // A client snapshot may be behind the orchestration read model. Once the
+      // user confirms removal, authorize deletion of any server-known threads
+      // too, rather than letting a stale local count omit the force flag.
+      const result = await removeProject(member, { force: true });
       if (result._tag === "Failure" && !isAtomCommandInterrupted(result)) {
         const error = squashAtomCommandFailure(result);
         const message = error instanceof Error ? error.message : "Unknown error removing project.";
