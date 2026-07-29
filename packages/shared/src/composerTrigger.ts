@@ -9,6 +9,20 @@ export function hasEnabledFlowusCliSkill(
   return skills.some((skill) => skill.enabled && skill.name === FLOWUS_CLI_SKILL_NAME);
 }
 
+/**
+ * FlowUs CLI runs in the shared local environment, rather than inside a
+ * particular model provider. A provider that can report the installed skill
+ * (currently Codex) therefore makes the /flowus shortcut available to every
+ * provider in the same environment.
+ */
+export function hasEnabledFlowusCliSkillForProviders(
+  providers: ReadonlyArray<{
+    readonly skills: ReadonlyArray<{ readonly name: string; readonly enabled: boolean }>;
+  }>,
+): boolean {
+  return providers.some((provider) => hasEnabledFlowusCliSkill(provider.skills));
+}
+
 export interface ComposerTrigger {
   kind: ComposerTriggerKind;
   query: string;

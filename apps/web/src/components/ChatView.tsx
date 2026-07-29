@@ -39,7 +39,7 @@ import {
 } from "@t3tools/shared/model";
 import { CHAT_LIST_ANCHOR_OFFSET } from "@t3tools/shared/chatList";
 import {
-  hasEnabledFlowusCliSkill,
+  hasEnabledFlowusCliSkillForProviders,
   rewriteFlowusSlashCommand,
 } from "@t3tools/shared/composerTrigger";
 import { projectScriptCwd, projectScriptRuntimeEnv } from "@t3tools/shared/projectScripts";
@@ -4577,11 +4577,7 @@ function ChatViewContent(props: ChatViewProps) {
     const originalPromptForSend = promptRef.current;
     const promptForSend = rewriteFlowusSlashCommand(originalPromptForSend);
     if (promptForSend !== originalPromptForSend) {
-      const providerStatusForSend =
-        providerStatuses.find(
-          (status) => status.instanceId === ctxSelectedModelSelection.instanceId,
-        ) ?? activeProviderStatus;
-      if (!hasEnabledFlowusCliSkill(providerStatusForSend?.skills ?? [])) {
+      if (!hasEnabledFlowusCliSkillForProviders(providerStatuses)) {
         toastManager.add(
           stackedThreadToast({
             type: "warning",

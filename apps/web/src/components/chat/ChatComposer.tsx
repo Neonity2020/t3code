@@ -21,7 +21,7 @@ import {
 import type { EnvironmentConnectionPresentation } from "@t3tools/client-runtime/connection";
 import {
   FLOWUS_CLI_SKILL_NAME,
-  hasEnabledFlowusCliSkill,
+  hasEnabledFlowusCliSkillForProviders,
   serializeComposerFileLink,
 } from "@t3tools/shared/composerTrigger";
 import { createModelSelection, normalizeModelSlug } from "@t3tools/shared/model";
@@ -1068,7 +1068,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
       }));
     }
     if (composerTrigger.kind === "slash-command") {
-      const hasFlowusCliSkill = hasEnabledFlowusCliSkill(selectedProviderStatus?.skills ?? []);
+      const hasFlowusCliSkill = hasEnabledFlowusCliSkillForProviders(providerStatuses);
       const builtInSlashCommandItems = [
         {
           id: "slash:model",

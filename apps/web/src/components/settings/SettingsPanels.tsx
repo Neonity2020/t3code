@@ -965,6 +965,12 @@ export function AppearanceSettingsPanel() {
     "--glass-slider-progress": `${glassOpacityRatio * 100}%`,
     "--glass-slider-fill-offset": `${0.5 - glassOpacityRatio}rem`,
   } as CSSProperties;
+  const uiFontScaleRatio =
+    (settings.uiFontScale - MIN_UI_FONT_SCALE) / (MAX_UI_FONT_SCALE - MIN_UI_FONT_SCALE);
+  const uiFontScaleSliderStyle = {
+    "--glass-slider-progress": `${uiFontScaleRatio * 100}%`,
+    "--glass-slider-fill-offset": `${0.5 - uiFontScaleRatio}rem`,
+  } as CSSProperties;
 
   return (
     <SettingsPageContainer>
@@ -1072,6 +1078,7 @@ export function AppearanceSettingsPanel() {
                   }
                 }}
                 step={5}
+                style={uiFontScaleSliderStyle}
                 type="range"
                 value={settings.uiFontScale}
               />
@@ -1080,8 +1087,8 @@ export function AppearanceSettingsPanel() {
         />
 
         <SettingsRow
-          title="Glass opacity"
-          description="Control how transparent glass surfaces are. Higher values make menus, dialogs, and the composer more solid."
+          title={t("settings.glassOpacity")}
+          description={t("settings.glassOpacity.description")}
           resetAction={
             settings.glassOpacity !== DEFAULT_UNIFIED_SETTINGS.glassOpacity ? (
               <SettingResetButton
@@ -1101,7 +1108,7 @@ export function AppearanceSettingsPanel() {
                 {settings.glassOpacity}%
               </output>
               <input
-                aria-label="Glass opacity"
+                aria-label={t("settings.glassOpacity")}
                 className="glass-opacity-slider min-w-0 flex-1"
                 id="glass-opacity"
                 max={MAX_GLASS_OPACITY}

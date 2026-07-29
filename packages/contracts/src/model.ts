@@ -210,7 +210,12 @@ export const MODEL_SLUG_ALIASES_BY_PROVIDER: Partial<
     "opus-4.5-thinking": "claude-opus-4-5",
     "opus-4.5": "claude-opus-4-5",
   },
-  [OPENCODE_DRIVER_KIND]: {},
+  [OPENCODE_DRIVER_KIND]: {
+    "Agnes 2.5 Flash": "agnes-2.5-flash",
+    "agent-2.5-flash": "agnes-2.5-flash",
+    "agnes flash 2.5": "agnes-2.5-flash",
+    "agnes-2.5": "agnes-2.5-flash",
+  },
 };
 
 // ── Provider display names ────────────────────────────────────────────

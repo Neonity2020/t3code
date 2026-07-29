@@ -2,6 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 
 import {
   hasEnabledFlowusCliSkill,
+  hasEnabledFlowusCliSkillForProviders,
   rewriteFlowusSlashCommand,
   serializeComposerFileLink,
   serializeComposerMentionPath,
@@ -78,5 +79,25 @@ describe("hasEnabledFlowusCliSkill", () => {
       ]),
     ).toBe(false);
     expect(hasEnabledFlowusCliSkill([{ name: "flowus-cli", enabled: true }])).toBe(true);
+  });
+});
+
+describe("hasEnabledFlowusCliSkillForProviders", () => {
+  it("shares the shortcut when any provider exposes an enabled flowus-cli skill", () => {
+    expect(
+      hasEnabledFlowusCliSkillForProviders([
+        { skills: [] },
+        { skills: [{ name: "flowus-cli", enabled: true }] },
+      ]),
+    ).toBe(true);
+  });
+
+  it("does not enable the shortcut for disabled or unrelated skills", () => {
+    expect(
+      hasEnabledFlowusCliSkillForProviders([
+        { skills: [{ name: "flowus-cli", enabled: false }] },
+        { skills: [{ name: "other-skill", enabled: true }] },
+      ]),
+    ).toBe(false);
   });
 });

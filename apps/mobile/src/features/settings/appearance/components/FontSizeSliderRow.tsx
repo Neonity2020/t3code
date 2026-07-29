@@ -6,6 +6,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
@@ -120,11 +121,16 @@ export function FontSizeSliderRow(props: {
     return Gesture.Race(pan, tap);
   }, [commit, disabled, dragging, max, min, progress, step, trackWidth]);
 
+  // Keep the fill coupled to the thumb's position so it always ends at the
+  // thumb's center while dragging.
+  const thumbPosition = useDerivedValue(
+    () => progress.value * Math.max(0, trackWidth.value - THUMB_SIZE),
+  );
   const fillStyle = useAnimatedStyle(() => ({
-    width: THUMB_SIZE / 2 + progress.value * Math.max(0, trackWidth.value - THUMB_SIZE),
+    width: THUMB_SIZE / 2 + thumbPosition.value,
   }));
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: progress.value * Math.max(0, trackWidth.value - THUMB_SIZE) }],
+    transform: [{ translateX: thumbPosition.value }],
   }));
 
   const handleAccessibilityAction = (event: AccessibilityActionEvent) => {

@@ -11,7 +11,7 @@ import type {
 import {
   detectComposerTrigger,
   FLOWUS_CLI_SKILL_NAME,
-  hasEnabledFlowusCliSkill,
+  hasEnabledFlowusCliSkillForProviders,
   replaceTextRange,
   rewriteFlowusSlashCommand,
   serializeComposerFileLink,
@@ -375,7 +375,9 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
 
     if (composerTrigger.kind === "slash-command") {
       const q = composerTrigger.query.toLowerCase();
-      const hasFlowusCliSkill = hasEnabledFlowusCliSkill(selectedProviderStatus?.skills ?? []);
+      const hasFlowusCliSkill = hasEnabledFlowusCliSkillForProviders(
+        props.serverConfig?.providers ?? [],
+      );
       const allBuiltIn = [
         {
           id: "cmd:model",
@@ -535,7 +537,7 @@ export const ThreadComposer = memo(function ThreadComposer(props: ThreadComposer
     const trimmedDraftMessage = props.draftMessage.trim();
     if (
       rewriteFlowusSlashCommand(trimmedDraftMessage) !== trimmedDraftMessage &&
-      !hasEnabledFlowusCliSkill(selectedProviderStatus?.skills ?? [])
+      !hasEnabledFlowusCliSkillForProviders(props.serverConfig?.providers ?? [])
     ) {
       Alert.alert(
         "FlowUs CLI skill is unavailable",
