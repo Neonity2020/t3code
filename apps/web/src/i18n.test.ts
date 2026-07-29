@@ -11,5 +11,7 @@ describe("translate", () => {
     expect(translate("zh-CN", "rightPanel.terminal")).toBe("终端");
     expect(translate("zh-CN", "plan.empty")).toBe("暂时没有进行中的计划。");
     expect(translate("zh-CN", "draftHero.addProjectToStart")).toBe("添加项目以开始");
+    expect(translate("zh-CN", "composer.slashCommand.plan")).toBe("将此任务切换到计划模式");
+    expect(translate("zh-CN", "composer.commandMenu.noMatchingCommand")).toBe("没有匹配的命令。");
   });
 });

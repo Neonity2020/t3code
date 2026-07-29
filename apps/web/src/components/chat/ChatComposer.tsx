@@ -1075,21 +1075,21 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           type: "slash-command",
           command: "model",
           label: "/model",
-          description: "Switch response model for this thread",
+          description: t("composer.slashCommand.model"),
         },
         {
           id: "slash:plan",
           type: "slash-command",
           command: "plan",
           label: "/plan",
-          description: "Switch this thread into plan mode",
+          description: t("composer.slashCommand.plan"),
         },
         {
           id: "slash:default",
           type: "slash-command",
           command: "default",
           label: "/default",
-          description: "Switch this thread back to normal build mode",
+          description: t("composer.slashCommand.default"),
         },
         ...(hasFlowusCliSkill
           ? [
@@ -1098,7 +1098,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
                 type: "slash-command" as const,
                 command: "flowus" as const,
                 label: "/flowus",
-                description: "Use FlowUs through flowus-cli",
+                description: t("composer.slashCommand.flowus"),
               },
             ]
           : []),
@@ -1111,7 +1111,8 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
           provider: selectedProvider,
           command,
           label: `/${command.name}`,
-          description: command.description ?? command.input?.hint ?? "Run provider command",
+          description:
+            command.description ?? command.input?.hint ?? t("composer.slashCommand.provider"),
         }));
       const query = composerTrigger.query.trim().toLowerCase();
       const slashCommandItems = [...builtInSlashCommandItems, ...providerSlashCommandItems];
@@ -1136,7 +1137,7 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
       );
     }
     return [];
-  }, [composerTrigger, selectedProvider, selectedProviderStatus, workspaceEntries.entries]);
+  }, [composerTrigger, selectedProvider, selectedProviderStatus, t, workspaceEntries.entries]);
 
   const composerMenuOpen = Boolean(composerTrigger);
   const composerMenuSearchKey = composerTrigger
@@ -1204,12 +1205,12 @@ export const ChatComposer = memo(function ChatComposer(props: ChatComposerProps)
     composerTriggerKind === "path" && pathTriggerQuery.length > 0 && workspaceEntries.isPending;
   const composerMenuEmptyState = useMemo(() => {
     if (composerTriggerKind === "skill") {
-      return "No skills found. Try / to browse provider commands.";
+      return t("composer.commandMenu.noSkills");
     }
     return composerTriggerKind === "path"
-      ? "No matching files or folders."
-      : "No matching command.";
-  }, [composerTriggerKind]);
+      ? t("composer.commandMenu.noMatchingFiles")
+      : t("composer.commandMenu.noMatchingCommand");
+  }, [composerTriggerKind, t]);
 
   // ------------------------------------------------------------------
   // Provider traits UI

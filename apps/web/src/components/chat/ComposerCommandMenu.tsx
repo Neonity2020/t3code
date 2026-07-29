@@ -8,6 +8,7 @@ import { BotIcon } from "lucide-react";
 import { memo, useLayoutEffect, useMemo, useRef } from "react";
 
 import { type ComposerSlashCommand, type ComposerTriggerKind } from "../../composer-logic";
+import { useTranslation } from "~/i18n";
 import { formatProviderSkillInstallSource } from "~/providerSkillPresentation";
 import { cn } from "~/lib/utils";
 import {
@@ -82,9 +83,10 @@ function groupCommandItems(
   items: ComposerCommandItem[],
   triggerKind: ComposerTriggerKind | null,
   groupSlashCommandSections: boolean,
+  labels: { builtIn: string; provider: string; skills: string },
 ): ComposerCommandGroup[] {
   if (triggerKind === "skill") {
-    return items.length > 0 ? [{ id: "skills", label: "Skills", items }] : [];
+    return items.length > 0 ? [{ id: "skills", label: labels.skills, items }] : [];
   }
   if (triggerKind !== "slash-command" || !groupSlashCommandSections) {
     return [{ id: "default", label: null, items }];
@@ -95,10 +97,10 @@ function groupCommandItems(
 
   const groups: ComposerCommandGroup[] = [];
   if (builtInItems.length > 0) {
-    groups.push({ id: "built-in", label: "Built-in", items: builtInItems });
+    groups.push({ id: "built-in", label: labels.builtIn, items: builtInItems });
   }
   if (providerItems.length > 0) {
-    groups.push({ id: "provider", label: "Provider", items: providerItems });
+    groups.push({ id: "provider", label: labels.provider, items: providerItems });
   }
   return groups;
 }
@@ -114,11 +116,25 @@ export const ComposerCommandMenu = memo(function ComposerCommandMenu(props: {
   onHighlightedItemChange: (itemId: string | null) => void;
   onSelect: (item: ComposerCommandItem) => void;
 }) {
+  const { t } = useTranslation();
   const listRef = useRef<HTMLDivElement>(null);
+  const groupLabels = useMemo(
+    () => ({
+      builtIn: t("composer.commandMenu.builtIn"),
+      provider: t("composer.commandMenu.provider"),
+      skills: t("composer.commandMenu.skills"),
+    }),
+    [t],
+  );
   const groups = useMemo(
     () =>
-      groupCommandItems(props.items, props.triggerKind, props.groupSlashCommandSections ?? true),
-    [props.groupSlashCommandSections, props.items, props.triggerKind],
+      groupCommandItems(
+        props.items,
+        props.triggerKind,
+        props.groupSlashCommandSections ?? true,
+        groupLabels,
+      ),
+    [groupLabels, props.groupSlashCommandSections, props.items, props.triggerKind],
   );
 
   useLayoutEffect(() => {
@@ -173,23 +189,22 @@ export const ComposerCommandMenu = memo(function ComposerCommandMenu(props: {
             {props.triggerKind === "skill" ? (
               <CommandGroup>
                 <CommandGroupLabel className="px-0 pt-0 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground/55">
-                  Skills
+                  {t("composer.commandMenu.skills")}
                 </CommandGroupLabel>
                 <p className="text-muted-foreground/70 text-xs">
                   {props.isLoading
-                    ? "Searching workspace skills..."
-                    : (props.emptyStateText ??
-                      "No skills found. Try / to browse provider commands.")}
+                    ? t("composer.commandMenu.searchingSkills")
+                    : (props.emptyStateText ?? t("composer.commandMenu.noSkills"))}
                 </p>
               </CommandGroup>
             ) : (
               <p className="text-muted-foreground/70 text-xs">
                 {props.isLoading
-                  ? "Searching workspace files..."
+                  ? t("composer.commandMenu.searchingFiles")
                   : (props.emptyStateText ??
                     (props.triggerKind === "path"
-                      ? "No matching files or folders."
-                      : "No matching command."))}
+                      ? t("composer.commandMenu.noMatchingFiles")
+                      : t("composer.commandMenu.noMatchingCommand")))}
               </p>
             )}
           </div>
