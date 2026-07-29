@@ -5,6 +5,7 @@ import { useClientSettings } from "./hooks/useSettings";
 const messages = {
   en: {
     "settings.general": "General",
+    "settings.restoreDefaults": "Restore defaults",
     "settings.language": "Language",
     "settings.language.description": "Choose the display language for the T3 Code interface.",
     "settings.language.english": "English",
@@ -134,6 +135,7 @@ const messages = {
   },
   "zh-CN": {
     "settings.general": "通用",
+    "settings.restoreDefaults": "恢复默认设置",
     "settings.language": "语言",
     "settings.language.description": "选择 T3 Code 界面的显示语言。",
     "settings.language.english": "English",
