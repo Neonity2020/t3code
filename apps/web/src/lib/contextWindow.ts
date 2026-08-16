@@ -25,6 +25,7 @@ export type ContextWindowSnapshot = NullableContextWindowUsage & {
   readonly updatedAt: string;
 };
 
+
 export function deriveLatestContextWindowSnapshot(
   activities: ReadonlyArray<OrchestrationThreadActivity>,
 ): ContextWindowSnapshot | null {
