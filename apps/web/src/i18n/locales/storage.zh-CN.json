@@ -1,0 +1,97 @@
+{
+  "storage": {
+    "common": {
+      "mixed": "混合",
+      "default": "默认",
+      "off": "关闭",
+      "inherit": "继承",
+      "custom": "自定义"
+    },
+    "sections": {
+      "worktrees": "工作树",
+      "artifactsAndLogs": "产物与日志",
+      "cleanup": "清理"
+    },
+    "worktreesDirectory": {
+      "description": "新建工作树的所在文件夹，可位于任意磁盘，例如 D:\\worktrees 或 ~/worktrees。现有工作树保持原位置不变。留空则使用 T3 主文件夹。",
+      "resetLabel": "工作树位置",
+      "inputAriaLabel": "工作树位置"
+    },
+    "retention": {
+      "decreaseAriaLabel": "减少{{label}}",
+      "increaseAriaLabel": "增加{{label}}",
+      "inDaysAriaLabel": "{{label}}（天数）",
+      "daysUnit": "天"
+    },
+    "keepWhen": {
+      "anyLocalFiles": "任何本地文件",
+      "uncommittedChanges": "未提交的更改",
+      "editedTrackedFiles": "已编辑的被跟踪文件"
+    },
+    "cleanup": {
+      "worktreesFallbackName": "工作树",
+      "rotatedLogs": "轮转日志",
+      "browserArtifacts": "浏览器产物",
+      "machine": "机器",
+      "project": "项目",
+      "folder": "文件夹",
+      "thread": "会话",
+      "filesCount_one": "{{formattedCount}} 个文件",
+      "filesCount_other": "{{formattedCount}} 个文件",
+      "moreResults": "{{environment}}：还有 {{omitted}} 条结果。",
+      "nothingNeededCleanup": "{{environment}}：无需清理任何内容。",
+      "onEveryMachine": "每台机器均为 {{counts}}",
+      "counts": "已删除 {{removed}}，保留 {{kept}}",
+      "countsFailed": "，{{failed}} 个失败",
+      "lastRunSummary": "上次运行于 {{time}}。已恢复 {{recovered}}。",
+      "failedItems_one": "{{count}} 项无法删除。",
+      "failedItems_other": "{{count}} 项无法删除。",
+      "couldNotLoadLastRun": "无法加载上次运行结果。",
+      "loadingLastRun": "正在加载上次运行结果…",
+      "notRunYet": "尚未运行过清理。",
+      "failedOn": "{{environment}} 上的清理失败",
+      "couldNotRunOn": "无法在 {{environment}} 上运行清理",
+      "deleteNow": "立即删除",
+      "deleting": "正在删除…",
+      "lastRun": "上次运行",
+      "turnOnRuleHint": "请先开启一条清理规则才能使用此功能。"
+    },
+    "modeStatus": {
+      "mixedAcrossMachines": "所选机器之间的设置不一致",
+      "offlineMachines": "离线的机器将不会应用此设置"
+    },
+    "scopeNotice": {
+      "updateMachinesForProjectCleanup": "请更新所选机器，以便配置项目工作树清理。",
+      "updateEnvironmentsForCleanup": "请更新所选环境以使用存储清理，或选择一台支持该功能的机器。"
+    },
+    "worktreeCleanupMode": {
+      "title": "自动工作树清理",
+      "selectAriaLabel": "自动工作树清理",
+      "descriptionOff": "保留此项目的工作树，直到你手动删除它们。",
+      "descriptionCustom": "对此项目使用以下规则。",
+      "descriptionInherit": "使用每台机器的工作树清理设置。"
+    },
+    "rules": {
+      "deleteWithDeletedThreads": "删除会话时同时删除工作树",
+      "deleteWithDeletedThreadsDescription": "删除活跃或已归档的会话时移除未使用的工作树。有本地更改的工作树会保留。",
+      "deleteInactive": "删除不活跃的工作树",
+      "deleteInactiveDescription": "会话不活跃达到此天数后移除其工作树。分支与会话历史会保留。",
+      "deleteSettled": "删除已结束的工作树",
+      "deleteSettledDescription": "会话结束达到此天数后移除其工作树。设为 0 天则在下一次清理时移除。分支与会话历史会保留。",
+      "deleteMerged": "删除已合并的工作树",
+      "deleteMergedDescription": "移除其 Pull Request 已合并且提交已包含在默认分支中的工作树。",
+      "deleteUnchanged": "删除无更改的工作树",
+      "deleteUnchangedDescription": "移除没有超出默认分支的提交的工作树。",
+      "keepWhenSelectAriaLabel": "有本地更改时保留工作树",
+      "keepWhenAnyLocalFilesDescription": "包含被忽略的文件，node_modules 除外。",
+      "keepWhenTrackedChangesDescription": "删除未跟踪与被忽略的文件，包括 .env。",
+      "keepWhenUncommittedChangesDescription": "保留编辑内容和未跟踪的文件。删除被忽略的文件，包括 .env。"
+    },
+    "artifacts": {
+      "deleteOldBrowserArtifacts": "删除旧的浏览器产物",
+      "deleteOldBrowserArtifactsDescription": "在此天数后删除已保存的浏览器截取内容。较旧的截取链接将无法再打开。",
+      "deleteOldRotatedLogs": "删除旧的轮转日志",
+      "deleteOldRotatedLogsDescription": "在此天数后删除不活跃的轮转日志文件。当前日志会保留。"
+    }
+  }
+}

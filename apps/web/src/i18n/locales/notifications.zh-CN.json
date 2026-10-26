@@ -1,0 +1,17 @@
+{
+  "notifications": {
+    "threadNotifications": {
+      "description": "当会话完成、失败或需要输入与批准时发出系统通知。在 T3 Code 打开期间对本设备生效。",
+      "needsBrowserOrDesktop": "通知需要通过 HTTPS 访问的受支持浏览器，或使用桌面应用。仍可单独使用声音。",
+      "unavailableInBrowser": "此浏览器无法使用通知。仍可单独使用声音。",
+      "allowAndRetry": "请在浏览器或系统设置中允许通知，然后重新选择此选项。仍可单独使用声音。",
+      "selectAriaLabel": "会话通知"
+    },
+    "mode": {
+      "off": "关闭",
+      "notifications": "仅通知",
+      "sound": "仅声音",
+      "notificationsAndSound": "通知和声音"
+    }
+  }
+}

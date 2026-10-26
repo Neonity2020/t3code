@@ -1,0 +1,422 @@
+{
+  "hero": {
+    "title": "接下来做点什么？",
+    "descriptionNoScratch": "添加一个项目，开启你的第一个会话。",
+    "descriptionWithScratch": "添加一个项目，或者不依赖项目直接开始。",
+    "addProject": "添加项目",
+    "startWithoutProject": "不使用项目直接开始"
+  },
+  "settings": {
+    "breadcrumbRoot": "设置",
+    "sections": {
+      "general": "通用",
+      "projects": "项目",
+      "diagnostics": "诊断",
+      "appearance": "外观",
+      "keybindings": "快捷键",
+      "snap-shot": "快照",
+      "providers": "提供商",
+      "integrations": "集成",
+      "scheduled-tasks": "计划任务",
+      "source-control": "版本控制",
+      "storage": "存储",
+      "connections": "连接",
+      "beta": "Beta",
+      "archived": "归档",
+      "open-source-licenses": "开源许可"
+    },
+    "search": {
+      "placeholder": "搜索",
+      "aria": "搜索设置"
+    },
+    "row": {
+      "resetToDefault": "重置为默认值",
+      "resetToDefaultAria": "将 {{label}} 重置为默认值",
+      "resetToInherited": "重置为继承值",
+      "noPermission": "此连接缺少修改 {{targets}} 设置的权限。",
+      "theSelectedEnvironment": "所选环境",
+      "thePrimaryEnvironment": "主环境",
+      "reconnectToChange": "重新连接所选环境后才能修改此设置。",
+      "environmentWide": "环境级设置。请先选择一个环境再修改。",
+      "summary": {
+        "mixed": "所选环境间不一致",
+        "overridden": "已为此项目覆盖",
+        "inheritedT3json": "继承自仓库的 t3.json",
+        "inheritedFrom": "继承自 {{name}}",
+        "setOnEnvironment": "已在环境上设置",
+        "builtInDefault": "内置默认值"
+      }
+    },
+    "options": {
+      "mixed": "多处不一致",
+      "responseStreaming": {
+        "turn": "等待完整回复",
+        "paragraph": "按完成的段落显示",
+        "turnDescription": "Agent 完成当前回合后一次性显示文本。",
+        "paragraphDescription": "每个段落或代码块完成后立即显示。"
+      },
+      "sortOrder": {
+        "lastUserMessage": "最近消息时间",
+        "createdAt": "创建时间",
+        "manual": "手动排序"
+      },
+      "timestamp": {
+        "systemDefault": "跟随系统",
+        "12hour": "12 小时制",
+        "24hour": "24 小时制"
+      },
+      "diffLayout": {
+        "stacked": "堆叠",
+        "split": "分栏"
+      },
+      "diffState": {
+        "expanded": "展开",
+        "collapsed": "折叠"
+      },
+      "quitMode": {
+        "direct": "直接退出",
+        "hold": "长按退出",
+        "doublePress": "双击退出"
+      },
+      "followUp": {
+        "queue": "排队",
+        "steer": "插入当前任务"
+      },
+      "sendShortcut": {
+        "enter": "Enter",
+        "modEnterMultiline": "{{modifier}} + Enter 仅多行时换行",
+        "modEnter": "{{modifier}} + Enter 始终换行"
+      }
+    },
+    "rows": {
+      "project-grouping": {
+        "title": "项目分组",
+        "description": "跨环境合并匹配的同一仓库。"
+      },
+      "project-order": {
+        "title": "项目排序",
+        "description": "侧边栏项目选择器和命令面板中项目的排序方式。"
+      },
+      "auto-resume-limited-threads": {
+        "title": "用量重置后自动恢复",
+        "description": "到达用量限制后在报告的重置时间自动恢复。每个会话都可以取消已排定的继续。"
+      },
+      "snooze-limited-threads": {
+        "title": "暂停至用量重置",
+        "description": "到达用量限制后暂停至重置。配合自动恢复，可在重置后继续。"
+      },
+      "compact-idle-threads": {
+        "title": "压缩空闲会话上下文",
+        "description": "空闲的 Claude 会话超过 200,000 token 时的压缩时机：你回来时、prompt 缓存即将过期前，或从不。每个 Claude 提供商都可以覆盖此设置。"
+      },
+      "auto-settle-merged-threads": {
+        "title": "自动收起已合并会话",
+        "description": "Pull Request 合并时自动收起对应会话。已关闭的 Pull Request 也会自动收起。"
+      },
+      "auto-settle-inactive-threads": {
+        "title": "自动收起不活跃会话",
+        "description": "侧边栏中超过此时长没有任何活动的会话将被自动收起。"
+      },
+      "days-before-auto-settle": {
+        "title": "自动收起前的闲置天数",
+        "description": "任何新的活动都会自动取消收起状态。"
+      },
+      "keep-threads-with-pr": {
+        "title": "保留带 Pull Request 的会话",
+        "description": "闲置不会收起带 Pull Request 的会话。合并或关闭仍会收起。"
+      },
+      "in-app-notifications": {
+        "title": "应用内通知",
+        "description": "当应用获得焦点时，其他会话完成、失败或需要输入、审批时显示弹窗通知。"
+      },
+      "time-format": {
+        "title": "时间格式",
+        "description": "「跟随系统」使用浏览器或操作系统的时钟格式偏好。"
+      },
+      "response-streaming": {
+        "title": "响应流式输出",
+        "mixedDescription": "所选目标使用的流式模式不一致。"
+      },
+      "hide-whitespace-changes": {
+        "title": "隐藏空白更改",
+        "description": "设置 Diff 面板默认是否忽略仅空白的改动。"
+      },
+      "default-diff-file-state": {
+        "title": "Diff 文件默认状态",
+        "description": "打开 Diff 或 Pull Request 的 Code 标签页时，文件默认展开还是折叠。"
+      },
+      "diff-layout": {
+        "title": "Diff 布局",
+        "description": "以堆叠或并排方式显示 Diff。Diff 工具栏中的切换按钮也可以修改此项。"
+      },
+      "proactive-panels": {
+        "title": "主动打开面板",
+        "description": "优先打开关联的 Pull Request；否则当改动涉及至少 3 个文件或 50 行时打开 Changes 面板。"
+      },
+      "skills-in-slash-menu": {
+        "title": "在斜杠菜单中显示技能",
+        "description": "在 / 命令菜单中同时列出技能。输入 $ 时技能始终会显示。"
+      },
+      "composer-rich-text": {
+        "title": "富文本输入框",
+        "description": "输入时即时显示格式化的 Markdown。"
+      },
+      "composer-collapse": {
+        "title": "滚动时收起输入框",
+        "description": "滚动会话时，将现有会话的输入框收起为一行。聚焦输入框或开始输入即可重新展开。"
+      },
+      "send-shortcut": {
+        "title": "发送快捷键",
+        "description": "选择 Enter 何时发送提示词、何时插入换行"
+      },
+      "follow-up-behavior": {
+        "title": "追加消息行为",
+        "description": "Agent 运行时的追加消息可以选择排队或插入当前任务。",
+        "hintMultiline": "按 {{modifier}} + Enter 发送单行提示词，按 {{modifier}} + Shift + Enter 发送多行提示词，即可对单条消息执行相反操作。",
+        "hint": "按 {{modifier}}{{shift}} + Enter 可对单条消息执行相反操作。",
+        "shift": " + Shift"
+      },
+      "provider-update-checks": {
+        "title": "提供商更新检查",
+        "aria": "检查提供商版本",
+        "description": "检查已安装的提供商 CLI 是否有新版本，并获取模型目录更新。关闭后可能看不到新模型。"
+      },
+      "continue-threads-after-server-update": {
+        "title": "重启后继续会话",
+        "description": "在所选环境中，更新、崩溃或机器重启后自动恢复被中断的会话。",
+        "unsupported": "所选的已连接环境必须全部支持重启续跑。"
+      },
+      "start-from-origin": {
+        "title": "从远程起点开始",
+        "aria": "新工作树默认从远程开始",
+        "description": "使用基础分支所跟踪远程分支的最新提交（即使名称不同）；否则使用 origin 上同名分支；若该远程分支不存在则使用本地分支。"
+      },
+      "add-project-starts-in": {
+        "title": "添加项目的起始位置",
+        "description": "留空则打开「添加项目」的目录浏览器时使用 \"~/\"。"
+      },
+      "unpin-confirmation": {
+        "title": "取消置顶确认",
+        "aria": "确认取消置顶会话",
+        "description": "从置顶区取消置顶会话前先询问。"
+      },
+      "archive-confirmation": {
+        "title": "归档确认",
+        "aria": "确认归档会话",
+        "description": "归档会话前需要在内联操作上二次点击确认。"
+      },
+      "delete-confirmation": {
+        "title": "删除确认",
+        "aria": "确认删除会话",
+        "description": "删除会话及其聊天记录前先询问。"
+      },
+      "quit-confirmation": {
+        "title": "退出确认",
+        "aria": "退出快捷键行为",
+        "description": "长按模式下，快速按两次也会退出。"
+      },
+      "text-generation-model": {
+        "title": "文本生成模型",
+        "description": "用于会话标题及该提供商在已连接设备上生成的其他文本。版本控制可覆盖此设置。"
+      },
+      "privacy-policy": {
+        "title": "隐私政策",
+        "description": "我们如何处理你的数据，包括 T3 Code 收集的匿名使用数据。"
+      },
+      "diagnostics": {
+        "title": "诊断",
+        "descriptionEnvironment": "查看此环境的进程、资源占用和日志。",
+        "descriptionAll": "逐个环境查看进程、资源占用和日志。"
+      },
+      "open-source-licenses": {
+        "title": "开源许可",
+        "description": "T3 Code 使用的依赖、资源和可选工具的许可声明。"
+      },
+      "update-track": {
+        "title": "更新通道"
+      },
+      "legacy-plan-mode": {
+        "title": "计划模式（旧版）"
+      },
+      "legacy-context-window-indicator": {
+        "title": "上下文窗口指示器（旧版）"
+      },
+      "legacy-sidebar": {
+        "title": "侧边栏（旧版）"
+      }
+    },
+    "changed": {
+      "theme": "主题",
+      "followSystem": "跟随系统",
+      "themeMix": "主题混合",
+      "contrast": "对比度",
+      "glassOpacity": "毛玻璃不透明度",
+      "diffColors": "Diff 配色",
+      "chatWidth": "对话宽度",
+      "renderMath": "数学公式渲染",
+      "newDesign": "新设计",
+      "panelAnimations": "面板动画",
+      "environmentIdentification": "环境标识",
+      "timeFormat": "时间格式",
+      "threadNotifications": "会话通知",
+      "inAppNotifications": "应用内通知",
+      "visibleThreads": "可见会话数",
+      "projectGrouping": "项目分组",
+      "projectOrder": "项目排序",
+      "workingSection": "进行中区",
+      "autoSettleInactiveThreads": "自动收起不活跃会话",
+      "keepThreadsWithPr": "保留带 Pull Request 的会话",
+      "autoSettleMergedThreads": "自动收起已合并会话",
+      "resumeAfterUsageLimits": "用量重置后自动恢复",
+      "snoozeUntilLimitsReset": "暂停至用量重置",
+      "wordWrap": "自动换行",
+      "composerContext": "输入框上下文",
+      "defaultDiffFileState": "Diff 文件默认状态",
+      "diffWhitespaceChanges": "Diff 空白更改",
+      "diffLayout": "Diff 布局",
+      "proactivePanels": "主动打开面板",
+      "showSkillsInSlashMenu": "在斜杠菜单中显示技能",
+      "collapseComposerOnScroll": "滚动时收起输入框",
+      "richTextComposer": "富文本输入框",
+      "sendShortcut": "发送快捷键",
+      "followUpBehavior": "追加消息行为",
+      "contextWindowIndicator": "上下文窗口指示器",
+      "responseStreaming": "响应流式输出",
+      "providerUpdateChecks": "提供商更新检查",
+      "continueThreadsAfterRestarts": "重启后继续会话",
+      "backgroundActivity": "后台活动",
+      "newThreadMode": "新会话模式",
+      "newWorktreesStartFromRemote": "新工作树从远程开始",
+      "addProjectBaseDirectory": "添加项目的基础目录",
+      "unpinConfirmation": "取消置顶确认",
+      "archiveConfirmation": "归档确认",
+      "deleteConfirmation": "删除确认",
+      "quitShortcut": "退出快捷键",
+      "textGenerationModel": "文本生成模型",
+      "threadTitleInstructions": "会话标题生成指令",
+      "agentBrowserAccess": "Agent 浏览器访问"
+    },
+    "restore": {
+      "title": "恢复默认设置？",
+      "body": "这将重置以下设置：{{labels}}。",
+      "themeFailureTitle": "无法恢复主题设置",
+      "themeFailureDescription": "请重试。"
+    },
+    "projectDefaults": {
+      "model": "模型",
+      "modelProjectScope": "此项目中新会话使用的模型。",
+      "modelAuto": "新会话的默认模型，自动选择。项目可以覆盖。",
+      "modelDescription": "新会话的默认模型。项目可以覆盖。",
+      "defaultModelLabel": "默认模型",
+      "modelNotSavedTitle": "默认模型未保存",
+      "modelUnavailable": "此模型在 {{environment}} 上不可用。请选择该环境单独为其选择模型。",
+      "aSelectedEnvironment": "某个所选环境",
+      "noProviders": "没有可用的提供商",
+      "workspace": "工作区",
+      "workspaceProjectScope": "此项目中新会话的起始位置。",
+      "workspaceDescription": "新会话的起始位置。项目和项目的 t3.json 可以覆盖。",
+      "defaultWorkspaceLabel": "默认工作区",
+      "unavailable": "不可用",
+      "repositories": "仓库",
+      "newThreads": "新会话",
+      "permissionsProjectScope": "此项目中新会话的权限。",
+      "permissionsDescription": "新会话的默认权限。项目可以覆盖。",
+      "defaultPermissionsLabel": "默认权限",
+      "submodulesProjectScope": "此项目新建工作树时如何处理 git 子模块。",
+      "submodulesDescription": "新建工作树时如何处理 git 子模块。项目和项目的 t3.json 可以覆盖。",
+      "submodulesResetLabel": "工作树子模块",
+      "autoPullProjectScope": "检出没有本地更改或提交时，保持此项目默认分支为最新。",
+      "autoPullDescription": "检出没有本地更改或提交时，保持默认分支为最新。项目可以覆盖。",
+      "autoPullResetLabel": "默认自动拉取",
+      "autoPullResetTooltip": "关闭自动拉取",
+      "agentCreditsDescription": "在支持的托管平台上，从合并和压缩合并信息中移除可识别的 AI 署名行，保留人类共同作者。包括自动合并；不包括合并队列、堆叠合并和已有提交。",
+      "agentCreditsResetLabel": "AI 署名移除",
+      "agentCreditsResetTooltip": "保留 AI 署名",
+      "mergeMethodProjectScope": "此项目的 Pull Request 默认使用此合并方式。",
+      "mergeMethodDescription": "Pull Request 默认使用此合并方式。「上次选择」沿用你在此设备上最近一次的选择。",
+      "mergeMethodResetLabel": "默认合并方式",
+      "mergeMethodResetTooltip": "重置为上次选择",
+      "lastSelected": "上次选择"
+    },
+    "threadTitle": {
+      "description": "附加到新会话标题和重新生成标题的提示词之后。",
+      "mixedPlaceholder": "多处不一致。输入要应用到所有所选目标的指令。",
+      "placeholder": "标题控制在几个词以内，突出主要主题。"
+    },
+    "cli": {
+      "couldNotInstall": "无法安装 t3",
+      "couldNotRemove": "无法移除 t3",
+      "genericError": "出了点问题。",
+      "shadowed": "另一个位于 {{path}} 的 t3 会在新终端中优先生效。移除它才能使用 T3 Code 的。",
+      "notInstalled": "在任意终端中以 `t3` 运行 T3 Code 的 CLI。",
+      "installed": "已安装到 {{path}}。打开新终端即可使用。",
+      "notOnPath": "已安装到 {{path}}，但它还不在你的 PATH 上。把该目录加入 PATH 后即可运行 `t3`。",
+      "install": "安装",
+      "remove": "移除"
+    },
+    "mobile": {
+      "description": "用手机或平板连接你的服务器。",
+      "scanHint": "用手机相机扫码。",
+      "openStore": "打开 {{store}}"
+    },
+    "legacy": {
+      "title": "旧版功能",
+      "planModeDescription": "恢复 Build/Plan、/plan、/default 和 Shift+Tab。关闭时使用 build 模式。",
+      "contextWindowDescription": "在输入框中以圆环指示器显示上下文窗口用量。",
+      "sidebarDescription": "恢复按项目分树的会话树，而不是默认的扁平侧边栏。"
+    },
+    "update": {
+      "version": "版本",
+      "checkForUpdates": "检查更新",
+      "download": "下载",
+      "install": "安装",
+      "checking": "检查中…",
+      "downloading": "下载中…",
+      "upToDate": "已是最新",
+      "updateAvailable": "有可用更新。",
+      "currentVersion": "当前应用版本。",
+      "stable": "稳定版",
+      "nightly": "Nightly",
+      "latest": "最新版",
+      "trackDescription": "使用稳定版或 Nightly 构建，可随时切换。",
+      "hostedTrackDescription": "切换在线版应用的发布通道。",
+      "couldNotChangeTrack": "无法切换更新通道",
+      "trackChangeFailed": "更新通道切换失败。",
+      "couldNotDownload": "无法下载更新",
+      "downloadFailed": "下载失败。",
+      "couldNotConfirm": "无法确认更新",
+      "confirmFailed": "更新确认失败。",
+      "couldNotInstall": "无法安装更新",
+      "installFailed": "安装失败。",
+      "couldNotCheck": "无法检查更新",
+      "autoUnavailable": "此构建不支持自动更新。",
+      "checkFailed": "更新检查失败。"
+    },
+    "general": {
+      "sections": {
+        "organization": "整理",
+        "behavior": "行为",
+        "projectsAndThreads": "项目与会话",
+        "confirmations": "操作确认",
+        "textGeneration": "文本生成",
+        "about": "关于",
+        "diagnostics": "诊断"
+      },
+      "textGeneration": {
+        "connectPrompt": "连接一个环境以选择其文本生成模型。",
+        "noProviders": "没有可用的文本生成提供商。",
+        "notSavedTitle": "文本生成模型未保存"
+      },
+      "about": {
+        "viewPolicy": "查看政策",
+        "viewDiagnostics": "查看诊断",
+        "viewLicenses": "查看许可"
+      },
+      "language": {
+        "title": "语言",
+        "description": "界面显示语言。「跟随系统」将使用操作系统的语言设置。",
+        "systemOption": "跟随系统"
+      }
+    }
+  }
+}

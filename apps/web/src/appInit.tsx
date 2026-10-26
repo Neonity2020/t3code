@@ -23,11 +23,14 @@ import { startGuideRunNotifications } from "./components/pullRequest/guide/PullR
 import { APP_BASE_NAME, APP_DISPLAY_NAME, APP_STAGE_LABEL } from "./branding";
 import { resolveServerBackedAppDisplayName } from "./branding.logic";
 import { isElectron } from "./env";
+import { changeUiLanguage, resolveLanguage, type AppLanguage } from "./i18n";
 import { useComposerDraftStore } from "./composerDraftStore";
 import { startDefaultThemeAdoption } from "./hooks/useDefaultTheme";
 import { startEnvironmentThemeRepaint } from "./hooks/useEnvironmentTheme";
 import {
+  ensureClientSettingsHydrated,
   getClientSettings,
+  isClientSettingsHydrated,
   startModelPreferencesMigration,
   subscribeClientSettings,
 } from "./hooks/useSettings";
@@ -96,6 +99,30 @@ function startClientAppearance(): void {
   apply();
 }
 
+/**
+ * Keeps i18next on the persisted UI language. i18next boots from a localStorage mirror so the
+ * first paint already has the right language; the persisted setting corrects it once hydration
+ * lands (the mirror can trail the setting, for example when another window changed it).
+ */
+function startUiLanguage(): void {
+  let applied: AppLanguage | null = null;
+  const apply = () => {
+    const language = resolveLanguage(getClientSettings().uiLanguage);
+    if (language === applied) {
+      return;
+    }
+    applied = language;
+    changeUiLanguage(language);
+  };
+  if (isClientSettingsHydrated()) {
+    apply();
+  }
+  void ensureClientSettingsHydrated()
+    .then(apply)
+    .catch(() => undefined);
+  subscribeClientSettings(apply);
+}
+
 function startDocumentTitle(): void {
   appAtomRegistry.subscribe(
     primaryServerConfigAtom,
@@ -159,6 +186,7 @@ export function startAppServices(): AppRouter {
   installDesktopPasteAsText(window.desktopBridge, window);
 
   startClientAppearance();
+  startUiLanguage();
   startDocumentTitle();
   startEnvironmentThemeRepaint();
   startBrowserChromeThemeSync(router);

@@ -1,0 +1,132 @@
+{
+  "integrations": {
+    "panel": {
+      "browserTitle": "浏览器",
+      "desktopOnlyMessage": "仅在桌面应用中可用。"
+    },
+    "viewport": {
+      "description": "你和智能体使用的标签页尺寸。「填充面板」会适配面板；其他尺寸会显示设备工具栏。",
+      "resetLabel": "默认浏览器视口",
+      "selectAriaLabel": "默认浏览器视口",
+      "fillPanel": "填充面板",
+      "responsive": "响应式",
+      "standard": "标准",
+      "widthAriaLabel": "默认视口宽度",
+      "heightAriaLabel": "默认视口高度",
+      "rotateTo": "旋转为{{orientation}}",
+      "landscape": "横向",
+      "portrait": "纵向",
+      "rotate": "旋转"
+    },
+    "zoom": {
+      "description": "应用于新浏览器标签页的页面缩放。",
+      "resetLabel": "默认浏览器缩放",
+      "selectAriaLabel": "默认浏览器缩放"
+    },
+    "appearance": {
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色",
+      "description": "页面将优先采用的配色方案。「跟随系统」会遵循你的操作系统设置。",
+      "resetLabel": "默认浏览器外观",
+      "selectAriaLabel": "默认浏览器外观"
+    },
+    "recording": {
+      "keyPressesDescription": "在新录制中显示按下的按键和快捷键。密码输入框会被排除。",
+      "keyPressesAriaLabel": "在录制中显示按键",
+      "mousePressesDescription": "在新录制中高亮鼠标点击和按住的按钮。",
+      "mousePressesAriaLabel": "在录制中显示鼠标点击",
+      "frameRateDescription": "最大录制帧率。30 fps 更节省 CPU 和存储；60 fps 更流畅。",
+      "frameRateResetLabel": "浏览器录制帧率",
+      "frameRateAriaLabel": "浏览器录制帧率"
+    },
+    "linkTarget": {
+      "systemBrowser": "你的默认浏览器",
+      "app": "T3 Code",
+      "description": "聊天和终端中的链接在哪里打开。按住 ⌘ 或 Ctrl 点击链接，则始终会在你的默认浏览器中打开。",
+      "resetLabel": "链接打开位置",
+      "selectAriaLabel": "链接打开位置"
+    },
+    "searchEngine": {
+      "duckduckgo": "DuckDuckGo",
+      "google": "Google",
+      "bing": "Bing",
+      "brave": "Brave Search",
+      "kagi": "Kagi",
+      "ecosia": "Ecosia",
+      "custom": "自定义",
+      "description": "当输入的内容不是 URL 时，地址栏使用的搜索引擎。",
+      "resetLabel": "搜索引擎",
+      "selectAriaLabel": "搜索引擎",
+      "customUrlTitle": "自定义搜索 URL",
+      "customUrlDescription": "在搜索词的位置使用 %s。",
+      "customUrlValidationError": "请输入包含 %s 的 http 或 https URL。在此之前，搜索将使用 DuckDuckGo。",
+      "customUrlAriaLabel": "自定义搜索 URL"
+    },
+    "pullRequestLinks": {
+      "description": "点击 Pull Request 链接会在 T3 Code 中打开它。关闭后，Pull Request 链接将像其他链接一样在你的 git 主机上打开。",
+      "resetLabel": "在 T3 Code 中打开 Pull Request",
+      "openInAppAriaLabel": "在 T3 Code 中打开 Pull Request"
+    },
+    "devices": {
+      "title": "设备",
+      "hubAriaLabel": "设备中心",
+      "agentDeviceAriaLabel": "智能体设备访问",
+      "platformStatusTemplate": "{{label}} 的状态。选择一个环境以查看其模拟器支持情况。",
+      "updating": "更新中…",
+      "updateToVersion": "更新到 v{{version}}",
+      "checking": "检查中…",
+      "checkVersions": "检查版本",
+      "refresh": "刷新",
+      "updateFailedTitle": "设备设置未在所有环境中保存",
+      "updateFailedDescription": "无法更新 {{environments}}。"
+    },
+    "agentBrowserAccess": {
+      "projectScopeDescription": "允许此项目中的智能体使用共享浏览器。将在智能体下次启动会话时生效。",
+      "defaultScopeDescription": "允许智能体使用共享浏览器。项目可以覆盖此设置。",
+      "resetLabel": "默认浏览器访问",
+      "ariaLabel": "智能体浏览器访问"
+    },
+    "floatingPreview": {
+      "description": "当智能体打开浏览器或设备时显示浮动预览，除非智能体另有要求。",
+      "resetLabel": "自动显示浮动预览",
+      "ariaLabel": "自动显示浮动预览"
+    },
+    "profiles": {
+      "description": "不同的浏览器配置会隔离各自的 Cookie 和登录状态。无痕配置的数据会在应用关闭时清除。",
+      "addProfile": "添加配置",
+      "blankProfile": "空白配置",
+      "profileLimitReached": "已达到配置数量上限",
+      "importFrom": "导入来源",
+      "lookingForBrowsers": "正在查找浏览器…",
+      "noSupportedBrowsers": "未找到支持的浏览器",
+      "connectToImport": "连接到环境后才能导入 Cookie",
+      "renameAriaLabel": "重命名 {{name}}",
+      "defaultBadge": "默认",
+      "optionsAriaLabel": "{{name}} 的选项",
+      "setAsDefault": "设为默认",
+      "clearCookiesAndCache": "清除 Cookie 和缓存",
+      "removeProfileAndData": "移除配置和数据",
+      "connectToClear": "连接到环境后才能清除配置数据",
+      "checkingEnvironments": "正在检查环境…",
+      "clearFailedToast": "无法清除 {{name}} 的数据",
+      "clearedToast": "已清除 {{name}} 的 Cookie 和缓存",
+      "notConnected": "尚未连接到服务器。",
+      "connectBeforeRemoving": "移除前请先连接到环境。",
+      "removeFailedRetry": "配置数据未能删除，请重试。",
+      "removeTitle": "移除“{{name}}”？",
+      "removeDescription": "其 Cookie 和登录状态将被删除。此配置中已打开的桌面标签页会保持打开，直到你关闭它们；服务器浏览器标签页会立即关闭。",
+      "connectToRemove": "连接到环境后才能移除此配置及其数据。",
+      "cancel": "取消",
+      "removing": "正在移除…",
+      "removeProfile": "移除配置",
+      "clearTitle": "清除“{{name}}”的 Cookie 和缓存？",
+      "clearDescription": "你将退出这些网站的登录。此配置中打开的服务器浏览器标签页会立即关闭。",
+      "clearData": "清除数据"
+    },
+    "systemSettings": {
+      "couldNotOpen": "无法打开系统设置",
+      "openFullDiskAccess": "请手动打开「隐私与安全性」→「完全磁盘访问权限」。"
+    }
+  }
+}

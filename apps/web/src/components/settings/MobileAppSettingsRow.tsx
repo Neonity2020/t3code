@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 import { AndroidIcon, AppleIcon } from "../Icons";
 import { Button } from "../ui/button";
 import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "../ui/popover";
@@ -21,10 +23,11 @@ const stores = [
 ];
 
 export function MobileAppSettingsRow() {
+  const { t } = useTranslation();
   return (
     <SettingsRow
       {...searchableSetting("mobile-app")}
-      description="Connect to your server from your phone or tablet."
+      description={t("settings.mobile.description")}
       control={
         <div className="flex items-center gap-2">
           {stores.map(({ label, store, url, Icon }) => (
@@ -36,7 +39,7 @@ export function MobileAppSettingsRow() {
               <PopoverPopup align="end">
                 <div className="flex flex-col items-center gap-3">
                   <PopoverTitle>{store}</PopoverTitle>
-                  <p className="text-xs text-muted-foreground">Scan with your phone camera.</p>
+                  <p className="text-xs text-muted-foreground">{t("settings.mobile.scanHint")}</p>
                   <div className="rounded-lg bg-white p-1.5">
                     <QRCodeSvg
                       value={url}
@@ -51,7 +54,7 @@ export function MobileAppSettingsRow() {
                     variant="outline"
                     render={<a href={url} target="_blank" rel="noreferrer noopener" />}
                   >
-                    Open {store}
+                    {t("settings.mobile.openStore", { store })}
                   </Button>
                 </div>
               </PopoverPopup>

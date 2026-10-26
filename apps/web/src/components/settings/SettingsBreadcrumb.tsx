@@ -1,34 +1,44 @@
+import { useTranslation } from "react-i18next";
+import { settingsSectionKey } from "~/i18n";
+
 import {
   WorkspaceBreadcrumb,
   WorkspaceBreadcrumbItem,
   WorkspaceBreadcrumbSeparator,
 } from "../WorkspaceBreadcrumb";
 import { SETTINGS_SECTION_LABELS } from "./settingsSearch";
+import type { SettingsPath } from "./settingsSearch";
 
-const SETTINGS_BREADCRUMB_LABELS: Readonly<Record<string, string>> = {
-  ...SETTINGS_SECTION_LABELS,
-  "/settings/diagnostics": "Diagnostics",
-  "/settings/open-source-licenses": "Open source licenses",
-};
+const SETTINGS_BREADCRUMB_PATHS: ReadonlySet<string> = new Set([
+  ...Object.keys(SETTINGS_SECTION_LABELS),
+  "/settings/open-source-licenses",
+]);
 
-function settingsBreadcrumbLabel(pathname: string): string | null {
-  const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
-  return SETTINGS_BREADCRUMB_LABELS[normalizedPathname] ?? null;
+function normalizeSettingsPathname(pathname: string): string {
+  return pathname.replace(/\/+$/, "") || "/";
 }
 
 export function SettingsBreadcrumb({ pathname }: { pathname: string }) {
-  const sectionLabel = settingsBreadcrumbLabel(pathname);
+  const { t } = useTranslation();
+  const normalizedPathname = normalizeSettingsPathname(pathname);
+  const hasSection = SETTINGS_BREADCRUMB_PATHS.has(normalizedPathname);
+  const sectionLabel = hasSection
+    ? t(settingsSectionKey(normalizedPathname), {
+        defaultValue: SETTINGS_SECTION_LABELS[normalizedPathname as SettingsPath],
+      })
+    : null;
+  const rootLabel = t("settings.breadcrumbRoot", { defaultValue: "Settings" });
 
   return (
-    <WorkspaceBreadcrumb ariaLabel="Settings breadcrumb">
+    <WorkspaceBreadcrumb ariaLabel={rootLabel}>
       {sectionLabel ? (
         <>
-          <WorkspaceBreadcrumbItem>Settings</WorkspaceBreadcrumbItem>
+          <WorkspaceBreadcrumbItem>{rootLabel}</WorkspaceBreadcrumbItem>
           <WorkspaceBreadcrumbSeparator />
         </>
       ) : null}
       <WorkspaceBreadcrumbItem current className="truncate">
-        {sectionLabel ?? "Settings"}
+        {sectionLabel ?? rootLabel}
       </WorkspaceBreadcrumbItem>
     </WorkspaceBreadcrumb>
   );

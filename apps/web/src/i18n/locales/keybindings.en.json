@@ -1,0 +1,101 @@
+{
+  "keybindings": {
+    "panel": {
+      "addButton": "Add keybinding",
+      "openFileAriaLabel": "Open keybindings.json",
+      "connectNotice": "Connect an environment to change keybindings.",
+      "readonlyNotice": "This connection can view keybindings but cannot change them.",
+      "emptySearch": "No keybindings match your search."
+    },
+    "toasts": {
+      "openFileFailed": "Unable to open keybindings file",
+      "openFileFailedDescription": "The keybindings file was not opened.",
+      "saveFailed": "Unable to save keybinding",
+      "saveFailedDescription": "The keybinding was not saved.",
+      "removeFailed": "Unable to remove keybinding",
+      "removeFailedDescription": "The keybinding was not removed."
+    },
+    "search": {
+      "placeholder": "Search keybindings",
+      "ariaLabel": "Search keybindings"
+    },
+    "browserNotice": "The browser may claim some shortcuts first. The desktop app receives them all.",
+    "group": {
+      "navigation": "Navigation",
+      "threads": "Threads",
+      "composer": "Composer",
+      "terminal": "Terminal",
+      "preview": "Preview & diff",
+      "appearance": "Appearance",
+      "scripts": "Project scripts",
+      "other": "Other"
+    },
+    "command": {
+      "composerSendAlternate": "Composer: Opposite Queue or Steer Action",
+      "composerSendBackground": "Composer: Start in Background",
+      "composerSendAndNewThread": "Composer: Send and Start New Thread",
+      "queueSendFirst": "Queue: Send First Queued Message",
+      "queueEditLast": "Queue: Edit Last Queued Message",
+      "pullRequestCopyReference": "Pull Request: Copy Link or Thread ID",
+      "usage": "Usage: {{label}}",
+      "usagePeriod": "Usage: Period: {{label}}",
+      "reopenClosedTab": "Reopen Closed Tab",
+      "previewFocusUrl": "Preview: Focus URL",
+      "runScript": "Run Script: {{name}}"
+    },
+    "source": {
+      "custom": "Custom",
+      "project": "Project"
+    },
+    "row": {
+      "editShortcutAriaLabel": "Edit shortcut for {{command}}: {{shortcut}}",
+      "keybindingAriaLabel": "Keybinding for {{command}}",
+      "actionsAriaLabel": "Actions for {{command}}",
+      "editWhenAriaLabel": "Edit when clause for {{label}}",
+      "whenLabel": "When",
+      "resetToDefault": "Reset to default",
+      "remove": "Remove"
+    },
+    "shortcut": {
+      "pressPlaceholder": "Press shortcut",
+      "unassignedPlaceholder": "Unassigned",
+      "save": "Save",
+      "saving": "Saving"
+    },
+    "new": {
+      "title": "New keybinding",
+      "fallbackLabel": "new keybinding",
+      "commandPlaceholder": "Command",
+      "cancelAriaLabel": "Cancel new keybinding",
+      "cancel": "Cancel"
+    },
+    "when": {
+      "builderTitle": "When",
+      "expressionAriaLabel": "When expression",
+      "alwaysPlaceholder": "Always",
+      "alwaysDisplay": "Always",
+      "conditionPlaceholder": "Condition",
+      "conditionButton": "Condition",
+      "groupButton": "Group",
+      "not": "Not",
+      "negateAriaLabel": "Negate {{identifier}}",
+      "negateGroupAriaLabel": "Negate group",
+      "and": "and",
+      "or": "or",
+      "unknownCondition": "Unknown condition: {{identifiers}}",
+      "unknownConditions": "Unknown conditions: {{identifiers}}",
+      "unknownWarning": "T3 Code does not recognize this condition yet. It can still be saved, but it may not match unless the runtime provides it.",
+      "fixToEditVisually": "Fix the expression above to continue editing visually.",
+      "parseError": "Use variables with !, &&, ||, and parentheses.",
+      "clearAll": "Clear all conditions",
+      "removeCondition": "Remove condition",
+      "removeGroup": "Remove group and its conditions"
+    },
+    "conflict": {
+      "withOne": "Conflicts with {{label}}.",
+      "withMany": "Conflicts with {{labels}}{{more}}.",
+      "andMore": ", and more",
+      "recencyNote": "The most recent matching binding wins when both conditions can apply."
+    }
+  }
+}

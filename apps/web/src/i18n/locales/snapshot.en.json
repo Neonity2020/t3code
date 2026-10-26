@@ -1,0 +1,86 @@
+{
+  "snapshot": {
+    "section": {
+      "title": "SnapShots"
+    },
+    "errors": {
+      "checkSetup": "Couldn't check capture setup",
+      "openShortcutPermissions": "Couldn't open shortcut permissions",
+      "completeSetup": "Couldn't complete capture setup",
+      "saveSettings": "Couldn't save capture settings",
+      "allowTextCapture": "Couldn't allow app text capture",
+      "verifyAccess": "Couldn't verify capture access",
+      "closeSetup": "Couldn't close capture setup",
+      "restartForSetup": "Restart T3 Code to finish capture setup.",
+      "checkShortcut": "Could not check this shortcut."
+    },
+    "status": {
+      "updating": "Updating capture settings…"
+    },
+    "shortcut": {
+      "pressPrompt": "Press your shortcut. Esc cancels.",
+      "conflict": "T3 Code already uses this for \"{{command}}\".",
+      "checking": "Checking shortcut…",
+      "readyToSave": "Ready to save.",
+      "tryModifierPair": "Try a shortcut such as Ctrl+Shift+2.",
+      "changeButton": "Change shortcut",
+      "permissionsButton": "Shortcut permissions",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "sound": {
+      "description": "Choose the sound played when capture starts.",
+      "triggerAriaLabel": "Snapshot sound: {{sound}}",
+      "off": "Off",
+      "whoosh": "Whoosh",
+      "defaultSuffix": "(Default)",
+      "click": "Click",
+      "playWhooshAriaLabel": "Play Whoosh",
+      "playClickAriaLabel": "Play Click"
+    },
+    "rows": {
+      "enableAriaLabel": "Enable snapshots",
+      "accessibilityDescription": "Include text and controls when the app makes them available.",
+      "accessibilityAriaLabel": "Include app text in snapshots",
+      "shortcutPickerDescription": "Choose a window to capture from any app.",
+      "shortcutDirectDescription": "Capture the window you're using without switching apps.",
+      "flashDescription": "Show a gentle cue on the captured window.",
+      "flashAriaLabel": "Flash captured window",
+      "animationsDescription": "Animate captured windows into your draft.",
+      "animationsAriaLabel": "Animate snapshots"
+    },
+    "logic": {
+      "checking": "Checking snapshots…",
+      "notSupported": "Not supported on this platform.",
+      "turnOnFirst": "Turn this on to set up snapshots.",
+      "needsAttention": "Capture needs attention",
+      "checkAccessInSetup": "Check capture access in setup",
+      "installHelper": "Install the capture helper to continue",
+      "setUpActiveWindow": "Set up active-window snapshots",
+      "manualCaptureOnly": "Manual capture only. You'll choose a window each time",
+      "enableCapture": "Enable capture to continue",
+      "connectingShortcut": "Connecting your shortcut…",
+      "waitingShortcutPermission": "Waiting for shortcut permission",
+      "readyToCapture": "Ready to capture",
+      "useShortcutElsewhere": "Use your shortcut from another app",
+      "shortcutSaved": "Shortcut saved",
+      "finishShortcutSetup": "Finish shortcut setup",
+      "approveShortcutPrompt": "Approve the shortcut permission prompt to continue.",
+      "shortcutSavedSentence": "Shortcut saved.",
+      "continueSetup": "Continue setup",
+      "manageCapture": "Manage capture",
+      "setUpDesktopCapture": "Set up {{desktop}} capture",
+      "effectsUnavailableDesktop": "Capture effects aren't available on this desktop.",
+      "installHelperForEffects": "Install or update the capture helper to enable effects.",
+      "effectsUnavailableNiri": "Capture effects aren't available on Niri.",
+      "updateGnomeExtension": "Update the GNOME extension, then sign out and back in to enable effects.",
+      "finishExtensionSetup": "Finish extension setup to enable effects.",
+      "pickerDescription": "Automatic capture isn't available here. Choose a window instead.",
+      "description": "Capture a window and attach it to your current draft.",
+      "screenshotOnly": "This desktop only provides a screenshot.",
+      "updateDesktopApp": "Update the desktop app to use snapshots.",
+      "desktopOnly": "Only available in the desktop app."
+    }
+  }
+}

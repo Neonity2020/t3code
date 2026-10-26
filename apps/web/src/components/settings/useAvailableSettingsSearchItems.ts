@@ -14,6 +14,7 @@ import type { SettingsScopeSearch } from "./settingsScope";
 import {
   filterAvailableSettingsSearchItems,
   getThreadAutoSettlementSearchAvailability,
+  localizeAvailableSettingsSearchItems,
 } from "./settingsSearch";
 
 export function useAvailableSettingsSearchItems(scopeSearch: SettingsScopeSearch = {}) {
@@ -56,15 +57,17 @@ export function useAvailableSettingsSearchItems(scopeSearch: SettingsScopeSearch
   const wslSettingsRowVisible =
     isWslSettingsRowVisible({ state: desktopWsl.data, error: desktopWsl.error }) === true;
 
-  return filterAvailableSettingsSearchItems({
-    localEnvironmentDisabled,
-    hasCloudPublicConfig: cloudPublicConfig,
-    hasEnvironment,
-    hasProviderSettingsEnvironment,
-    hasMacProviderSettingsEnvironment,
-    canManageLocalBackend,
-    isWslSettingsRowVisible: wslSettingsRowVisible,
-    hasThreadAutoSettlement,
-    managedTunnelActive,
-  });
+  return localizeAvailableSettingsSearchItems(
+    filterAvailableSettingsSearchItems({
+      localEnvironmentDisabled,
+      hasCloudPublicConfig: cloudPublicConfig,
+      hasEnvironment,
+      hasProviderSettingsEnvironment,
+      hasMacProviderSettingsEnvironment,
+      canManageLocalBackend,
+      isWslSettingsRowVisible: wslSettingsRowVisible,
+      hasThreadAutoSettlement,
+      managedTunnelActive,
+    }),
+  );
 }

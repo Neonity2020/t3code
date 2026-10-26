@@ -2,6 +2,7 @@ import { SessionPermissions } from "./SessionPermissions";
 import { ChevronRightIcon, EllipsisIcon } from "lucide-react";
 import { useAtomValue } from "@effect/atom-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AuthAccessReadScope,
   AuthAccessWriteScope,
@@ -152,6 +153,7 @@ function LocalVersionStatusLabel() {
 }
 
 export function ConnectionsSettings() {
+  const { t } = useTranslation();
   const desktopBridge = window.desktopBridge;
   const { environments } = useEnvironments();
   const primaryEnvironment = usePrimaryEnvironment();
@@ -370,13 +372,16 @@ export function ConnectionsSettings() {
       setPendingDesktopServerExposureMode(null);
       setIsUpdatingDesktopServerExposure(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to update network exposure.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : t("connections.networkAccess.failedUpdateExposure");
       setPendingDesktopServerExposureMode(null);
       setDesktopServerExposureMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not update network access",
+          title: t("connections.networkAccess.couldNotUpdateAccess"),
           description: message,
         }),
       );
@@ -411,12 +416,12 @@ export function ConnectionsSettings() {
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
       const message =
-        error instanceof Error ? error.message : "Failed to configure Tailscale HTTPS.";
+        error instanceof Error ? error.message : t("connections.tailscale.failedConfigure");
       setDesktopServerExposureMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not set up Tailscale HTTPS",
+          title: t("connections.tailscale.couldNotSetUp"),
           description: message,
         }),
       );
@@ -450,12 +455,13 @@ export function ConnectionsSettings() {
     });
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
-      const message = error instanceof Error ? error.message : "Failed to disable Tailscale HTTPS.";
+      const message =
+        error instanceof Error ? error.message : t("connections.tailscale.failedDisable");
       setDesktopServerExposureMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not disable Tailscale HTTPS",
+          title: t("connections.tailscale.couldNotDisable"),
           description: message,
         }),
       );
@@ -480,12 +486,13 @@ export function ConnectionsSettings() {
     });
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
-      const message = error instanceof Error ? error.message : "Failed to revoke pairing link.";
+      const message =
+        error instanceof Error ? error.message : t("connections.access.failedRevokePairingLink");
       setDesktopAccessManagementMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not revoke pairing link",
+          title: t("connections.access.couldNotRevokePairingLink"),
           description: message,
         }),
       );
@@ -508,12 +515,13 @@ export function ConnectionsSettings() {
     });
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
-      const message = error instanceof Error ? error.message : "Failed to revoke client access.";
+      const message =
+        error instanceof Error ? error.message : t("connections.access.failedRevokeClientAccess");
       setDesktopAccessManagementMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not revoke client access",
+          title: t("connections.access.couldNotRevokeClientAccess"),
           description: message,
         }),
       );
@@ -533,18 +541,19 @@ export function ConnectionsSettings() {
       const revokedCount = await revokeOtherServerClientSessions();
       toastManager.add({
         type: "success",
-        title: revokedCount === 1 ? "Revoked 1 other client" : `Revoked ${revokedCount} clients`,
-        description: "Other paired clients will need a new pairing link before reconnecting.",
+        title: t("connections.access.revokedOtherClients", { count: revokedCount }),
+        description: t("connections.access.revokeOtherClientsDescription"),
       });
     });
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
-      const message = error instanceof Error ? error.message : "Failed to revoke other clients.";
+      const message =
+        error instanceof Error ? error.message : t("connections.access.failedRevokeOtherClients");
       setDesktopAccessManagementMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not revoke other clients",
+          title: t("connections.access.couldNotRevokeOtherClients"),
           description: message,
         }),
       );
@@ -560,12 +569,16 @@ export function ConnectionsSettings() {
       const message =
         error instanceof Error
           ? error.message
-          : `Failed to switch the backend ${enabled ? "on" : "off"}.`;
+          : enabled
+            ? t("connections.backends.failedSwitchOn")
+            : t("connections.backends.failedSwitchOff");
       setSavedBackendError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: `Could not switch backend ${enabled ? "on" : "off"}`,
+          title: enabled
+            ? t("connections.backends.couldNotSwitchOn")
+            : t("connections.backends.couldNotSwitchOff"),
           description: message,
         }),
       );
@@ -580,12 +593,13 @@ export function ConnectionsSettings() {
     setRemovingSavedEnvironmentId(null);
     if (result._tag === "Failure" && !isAtomCommandInterrupted(result)) {
       const error = squashAtomCommandFailure(result);
-      const message = error instanceof Error ? error.message : "Failed to remove backend.";
+      const message =
+        error instanceof Error ? error.message : t("connections.backends.failedRemove");
       setSavedBackendError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not remove backend",
+          title: t("connections.backends.couldNotRemove"),
           description: message,
         }),
       );
@@ -602,7 +616,7 @@ export function ConnectionsSettings() {
       return;
     }
     const confirmed = await requestConfirmDialog(
-      `Remove ${environment.label} from this device?\nThis forgets its pairing, credentials, and cached threads here. Switch it off instead to keep it saved.`,
+      t("connections.confirm.removeBackend", { label: environment.label }),
       { variant: "destructive" },
     );
     if (confirmed === true) await removeSavedBackend(environment);
@@ -640,7 +654,7 @@ export function ConnectionsSettings() {
       onCheckedChange={(checked) => {
         setPendingDesktopServerExposureMode(checked ? "network-accessible" : "local-only");
       }}
-      aria-label="Enable network access"
+      aria-label={t("connections.networkAccess.enableAriaLabel")}
     />
   );
   const renderEndpointRows = (presentation: AccessSectionPresentation) =>
@@ -676,12 +690,12 @@ export function ConnectionsSettings() {
     });
     if (settled._tag === "Failure") {
       const error = Cause.squash(settled.cause);
-      const message = error instanceof Error ? error.message : "Failed to update WSL backend.";
+      const message = error instanceof Error ? error.message : t("connections.wsl.failedUpdate");
       setDesktopWslMutationError(message);
       toastManager.add(
         stackedThreadToast({
           type: "error",
-          title: "Could not change WSL backend",
+          title: t("connections.wsl.couldNotChange"),
           description: message,
         }),
       );
@@ -780,7 +794,7 @@ export function ConnectionsSettings() {
         return (
           <SettingsRow
             {...searchableSetting("wsl-backend")}
-            description="Couldn't load the WSL backend state."
+            description={t("connections.wsl.loadFailedDescription")}
             status={<span className="block text-destructive">{desktopWslError}</span>}
             control={
               <Button
@@ -789,7 +803,9 @@ export function ConnectionsSettings() {
                 onClick={loadWslState}
                 disabled={isLoadingWslState}
               >
-                {isLoadingWslState ? "Retrying…" : "Retry"}
+                {isLoadingWslState
+                  ? t("connections.common.retrying")
+                  : t("connections.common.retry")}
               </Button>
             }
           />
@@ -804,7 +820,7 @@ export function ConnectionsSettings() {
       return (
         <SettingsRow
           {...searchableSetting("wsl-backend")}
-          description="WSL is unavailable, so Windows is running instead. Turn WSL off to clear this preference."
+          description={t("connections.wsl.unavailableDescription")}
           status={
             desktopWslError ? (
               <span className="block text-destructive">{desktopWslError}</span>
@@ -817,7 +833,7 @@ export function ConnectionsSettings() {
               disabled={isUpdatingWslBackend}
               onClick={() => handleSelectWslMode(BACKEND_VALUE_WSL_OFF)}
             >
-              Switch to Windows
+              {t("connections.wsl.switchToWindows")}
             </Button>
           }
         />
@@ -830,21 +846,21 @@ export function ConnectionsSettings() {
       : (desktopWslState.distro ?? defaultDistroName ?? BACKEND_VALUE_DEFAULT_WSL);
     const selectLabel =
       selectValue === BACKEND_VALUE_WSL_OFF
-        ? "Off"
+        ? t("connections.wsl.off")
         : selectValue === BACKEND_VALUE_DEFAULT_WSL
-          ? "Default distro"
+          ? t("connections.wsl.defaultDistro")
           : selectValue;
     return (
       <>
         <SettingsRow
           {...searchableSetting("wsl-backend")}
-          description="Run the selected WSL distro alongside Windows. Projects remain on their current filesystem."
+          description={t("connections.wsl.runAlongsideDescription")}
           status={
             desktopWslError ? (
               <span className="block text-destructive">{desktopWslError}</span>
             ) : desktopWslState.preflightError ? (
               <span className="block text-destructive">
-                WSL backend couldn't start: {desktopWslState.preflightError}
+                {t("connections.wsl.startFailed", { error: desktopWslState.preflightError })}
               </span>
             ) : null
           }
@@ -859,24 +875,24 @@ export function ConnectionsSettings() {
               <SelectTrigger
                 size="sm"
                 className="w-full sm:w-56"
-                aria-label="WSL backend"
+                aria-label={t("connections.wsl.backendAriaLabel")}
                 disabled={isUpdatingWslBackend}
               >
                 <SelectValue>{selectLabel}</SelectValue>
               </SelectTrigger>
               <SelectPopup align="end" alignItemWithTrigger={false}>
                 <SelectItem hideIndicator value={BACKEND_VALUE_WSL_OFF}>
-                  Off
+                  {t("connections.wsl.off")}
                 </SelectItem>
                 {desktopWslState.distros.length === 0 ? (
                   <SelectItem hideIndicator value={BACKEND_VALUE_DEFAULT_WSL}>
-                    Default distro
+                    {t("connections.wsl.defaultDistro")}
                   </SelectItem>
                 ) : (
                   desktopWslState.distros.map((distro) => (
                     <SelectItem hideIndicator key={distro.name} value={distro.name}>
                       {distro.name}
-                      {distro.isDefault ? " (default)" : ""}
+                      {distro.isDefault ? t("connections.wsl.defaultSuffix") : ""}
                     </SelectItem>
                   ))
                 )}
@@ -886,15 +902,15 @@ export function ConnectionsSettings() {
         />
         {desktopWslState.enabled ? (
           <SettingsRow
-            title="WSL only"
-            description="Run only the WSL backend. T3 Code restarts when this changes."
+            title={t("connections.wsl.onlyTitle")}
+            description={t("connections.wsl.onlyDescription")}
             className="bg-muted/20 pl-7 sm:pl-8"
             control={
               <Switch
                 checked={desktopWslState.wslOnly}
                 disabled={isUpdatingWslBackend}
                 onCheckedChange={(checked) => handleToggleWslOnly(checked)}
-                aria-label="Run WSL only"
+                aria-label={t("connections.wsl.onlyAriaLabel")}
               />
             }
           />
@@ -910,7 +926,7 @@ export function ConnectionsSettings() {
         tailscaleHttpsEndpoint
           ? tailscaleHttpsEndpoint.status === "available"
             ? tailscaleHttpsEndpoint.httpBaseUrl
-            : "Use Tailscale Serve to expose this backend through a MagicDNS HTTPS URL."
+            : t("connections.tailscale.useServeDescription")
           : missingTailscaleEndpointDescription(desktopServerExposureState)
       }
       control={
@@ -925,7 +941,7 @@ export function ConnectionsSettings() {
               }
               handleStartTailscaleServeDisable(tailscaleHttpsEndpoint);
             }}
-            aria-label="Enable Tailscale HTTPS"
+            aria-label={t("connections.tailscale.enableAriaLabel")}
           />
         ) : null
       }
@@ -967,16 +983,20 @@ export function ConnectionsSettings() {
             onToggleExpanded={() => setIsAdvertisedEndpointListExpanded((expanded) => !expanded)}
             fallback={
               desktopServerExposureState?.endpointUrl
-                ? `Reachable at ${desktopServerExposureState.endpointUrl}`
+                ? t("connections.networkAccess.reachableAt", {
+                    url: desktopServerExposureState.endpointUrl,
+                  })
                 : desktopServerExposureState?.advertisedHost
-                  ? `Exposed on all interfaces. Pairing links use ${desktopServerExposureState.advertisedHost}.`
-                  : "Exposed on all interfaces."
+                  ? t("connections.networkAccess.exposedWithHost", {
+                      host: desktopServerExposureState.advertisedHost,
+                    })
+                  : t("connections.networkAccess.exposedAllInterfaces")
             }
           />
         ) : desktopServerExposureState ? (
-          "Limited to this machine."
+          t("connections.networkAccess.limitedToThisMachine")
         ) : (
-          "Loading…"
+          t("connections.common.loading")
         )
       }
       status={
@@ -992,12 +1012,12 @@ export function ConnectionsSettings() {
       title={searchableSetting("network-access").title}
       description={
         desktopBridge
-          ? "This connection cannot view or change network exposure."
+          ? t("connections.networkAccess.cannotViewOrChange")
           : currentAuthPolicy === "remote-reachable"
-            ? "Remote access is already configured. Change network exposure where the server starts."
+            ? t("connections.networkAccess.remoteAlreadyConfigured")
             : currentAuthPolicy === "loopback-browser"
-              ? "Only this machine can connect. Restart with a non-loopback host for remote pairing."
-              : "Network exposure information is unavailable."
+              ? t("connections.networkAccess.onlyThisMachineCanConnect")
+              : t("connections.networkAccess.infoUnavailable")
       }
       control={
         !desktopBridge &&
@@ -1009,14 +1029,13 @@ export function ConnectionsSettings() {
                   <Switch
                     checked={isLocalBackendNetworkAccessible}
                     disabled
-                    aria-label="Enable network access"
+                    aria-label={t("connections.networkAccess.enableAriaLabel")}
                   />
                 </span>
               }
             />
             <TooltipPopup side="top">
-              Network exposure changes restart the backend and must be controlled where the server
-              process is launched.
+              {t("connections.networkAccess.remoteControlledTooltip")}
             </TooltipPopup>
           </Tooltip>
         ) : undefined
@@ -1031,7 +1050,10 @@ export function ConnectionsSettings() {
           <SettingsSection
             {...searchableSetting("connections-environment")}
             title={
-              primaryEnvironment?.label ?? (desktopBridge ? "This machine" : "Primary environment")
+              primaryEnvironment?.label ??
+              (desktopBridge
+                ? t("connections.environments.thisMachine")
+                : t("connections.environments.primaryEnvironment"))
             }
             icon={
               <EnvironmentMachineIcon
@@ -1053,7 +1075,7 @@ export function ConnectionsSettings() {
                         type="button"
                         variant="ghost-muted"
                         size="icon-xs"
-                        aria-label="More actions for this machine"
+                        aria-label={t("connections.environments.moreActionsAriaLabel")}
                       />
                     }
                   >
@@ -1072,7 +1094,7 @@ export function ConnectionsSettings() {
             <LocalEnvironmentSetting />
             {canManageLocalBackend ? (
               <SettingsRow
-                title="Version"
+                title={t("connections.version.title")}
                 description={
                   primaryServerUpdateState.status !== "idle" ? (
                     <ServerUpdateProgress state={primaryServerUpdateState} />
@@ -1082,7 +1104,7 @@ export function ConnectionsSettings() {
                       primaryEnvironment?.displayUrl ?? null,
                     ]
                       .filter((value): value is string => value !== null)
-                      .join(" · ") || "Loading…"
+                      .join(" · ") || t("connections.common.loading")
                   )
                 }
                 control={
@@ -1093,7 +1115,11 @@ export function ConnectionsSettings() {
                       size="sm"
                       environmentId={primaryEnvironmentId}
                       serverLabel={
-                        primaryEnvironment ? `${primaryEnvironment.label} server` : "server"
+                        primaryEnvironment
+                          ? t("connections.version.serverWithLabel", {
+                              label: primaryEnvironment.label,
+                            })
+                          : t("connections.version.server")
                       }
                       selfUpdate={resolveServerSelfUpdateCapability(primaryServerConfig)}
                       installation={
@@ -1106,8 +1132,10 @@ export function ConnectionsSettings() {
                       targetVersion={primaryVersionMismatch.clientVersion}
                       label={
                         primaryServerUpdateState.status === "failed"
-                          ? "Retry update"
-                          : `Update to ${primaryVersionMismatch.clientVersion}`
+                          ? t("connections.version.retryUpdate")
+                          : t("connections.version.updateTo", {
+                              version: primaryVersionMismatch.clientVersion,
+                            })
                       }
                     />
                   ) : primaryServerUpdateState.status === "idle" && primaryServerConfig ? (
@@ -1137,7 +1165,7 @@ export function ConnectionsSettings() {
             {primaryEnvironment ? (
               <details className="group px-3 sm:px-4">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-md text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring [&::-webkit-details-marker]:hidden">
-                  Permissions
+                  {t("connections.environments.permissions")}
                   <ChevronRightIcon
                     aria-hidden
                     className="size-3 text-muted-foreground group-open:rotate-90"
@@ -1154,7 +1182,7 @@ export function ConnectionsSettings() {
           {canReadAccess || canWriteAccess ? (
             <FoldedSettingsSection
               id="authorized-clients"
-              title="Authorized clients"
+              title={t("connections.authorizedClients.title")}
               summary={summarizeAuthorizedClients(
                 desktopClientSessions,
                 visibleDesktopPairingLinks,
@@ -1187,7 +1215,7 @@ export function ConnectionsSettings() {
                   renderAuthorizedClients("current")
                 ) : (
                   <p className="px-4 py-3 text-xs text-muted-foreground">
-                    This connection can create access links but cannot view authorized clients.
+                    {t("connections.authorizedClients.cannotView")}
                   </p>
                 )}
               </ScrollArea>
@@ -1204,13 +1232,13 @@ export function ConnectionsSettings() {
               <AlertDialogHeader>
                 <AlertDialogTitle>
                   {pendingDesktopServerExposureMode === "network-accessible"
-                    ? "Enable network access?"
-                    : "Disable network access?"}
+                    ? t("connections.networkAccess.enableQuestion")
+                    : t("connections.networkAccess.disableQuestion")}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {pendingDesktopServerExposureMode === "network-accessible"
-                    ? "Let your other devices connect to T3 Code over the network. Pair devices to give them access. T3 Code will restart."
-                    : "Devices connected over your local network will disconnect. Existing tunnels, such as T3 Connect or Tailscale HTTPS, keep working. T3 Code will restart."}
+                    ? t("connections.networkAccess.enableDescription")
+                    : t("connections.networkAccess.disableDescription")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -1218,7 +1246,9 @@ export function ConnectionsSettings() {
                   disabled={isUpdatingDesktopServerExposure}
                   render={<Button variant="outline" disabled={isUpdatingDesktopServerExposure} />}
                 >
-                  <span className="[text-box:trim-both_cap_alphabetic]">Cancel</span>
+                  <span className="[text-box:trim-both_cap_alphabetic]">
+                    {t("connections.common.cancel")}
+                  </span>
                 </AlertDialogClose>
                 <Button
                   variant="default"
@@ -1232,10 +1262,10 @@ export function ConnectionsSettings() {
                   {isUpdatingDesktopServerExposure && <Spinner size="sm" />}
                   <span className="[text-box:trim-both_cap_alphabetic]">
                     {isUpdatingDesktopServerExposure
-                      ? "Restarting…"
+                      ? t("connections.common.restarting")
                       : pendingDesktopServerExposureMode === "network-accessible"
-                        ? "Restart and enable"
-                        : "Restart and disable"}
+                        ? t("connections.common.restartAndEnable")
+                        : t("connections.common.restartAndDisable")}
                   </span>
                 </Button>
               </AlertDialogFooter>
@@ -1253,28 +1283,28 @@ export function ConnectionsSettings() {
                 <AlertDialogTitle>
                   {pendingWslChange?.kind === "disable"
                     ? pendingWslChange.wasWslOnly
-                      ? "Turn off WSL and switch back to Windows?"
-                      : "Disable WSL backend?"
+                      ? t("connections.wsl.dialog.turnOffAndSwitchTitle")
+                      : t("connections.wsl.dialog.disableTitle")
                     : pendingWslChange?.kind === "distro"
-                      ? "Switch WSL distro?"
+                      ? t("connections.wsl.dialog.switchDistroTitle")
                       : pendingWslChange?.kind === "enable"
-                        ? "Start the WSL backend"
+                        ? t("connections.wsl.dialog.startTitle")
                         : pendingWslChange?.nextValue
-                          ? "Run only the WSL backend?"
-                          : "Re-enable the Windows backend?"}
+                          ? t("connections.wsl.dialog.onlyTitle")
+                          : t("connections.wsl.dialog.reEnableWindowsTitle")}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {pendingWslChange?.kind === "disable"
                     ? pendingWslChange.wasWslOnly
-                      ? "T3 Code will restart on the Windows backend. Threads and projects opened against WSL stay safe inside the distro and become available again when you re-enable WSL."
-                      : "The WSL backend will stop. Threads and projects opened against WSL stay safe inside the distro, but they'll be unavailable in T3 Code until you re-enable WSL."
+                      ? t("connections.wsl.dialog.disableWasOnlyDescription")
+                      : t("connections.wsl.dialog.disableDescription")
                     : pendingWslChange?.kind === "distro"
-                      ? "T3 Code will restart the WSL backend on the new distro. Sessions still running on the current distro will be interrupted."
+                      ? t("connections.wsl.dialog.switchDistroDescription")
                       : pendingWslChange?.kind === "enable"
-                        ? "Run the WSL backend alongside the Windows one, or stop the Windows backend and use only WSL? You can change this later from Settings."
+                        ? t("connections.wsl.dialog.startDescription")
                         : pendingWslChange?.nextValue
-                          ? "T3 Code will restart and start only the WSL backend. Your Windows-side projects won't be accessible until you turn this off again."
-                          : "T3 Code will restart and bring the Windows backend back up alongside WSL."}
+                          ? t("connections.wsl.dialog.onlyDescription")
+                          : t("connections.wsl.dialog.reEnableWindowsDescription")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -1282,7 +1312,7 @@ export function ConnectionsSettings() {
                   disabled={isUpdatingWslBackend}
                   render={<Button variant="outline" disabled={isUpdatingWslBackend} />}
                 >
-                  Cancel
+                  {t("connections.common.cancel")}
                 </AlertDialogClose>
                 {pendingWslChange?.kind === "enable" ? (
                   <>
@@ -1294,10 +1324,10 @@ export function ConnectionsSettings() {
                       {isUpdatingWslBackend ? (
                         <>
                           <Spinner size="sm" />
-                          Applying…
+                          {t("connections.common.applying")}
                         </>
                       ) : (
-                        "Use only WSL"
+                        t("connections.wsl.useOnlyWsl")
                       )}
                     </Button>
                     <Button
@@ -1308,10 +1338,10 @@ export function ConnectionsSettings() {
                       {isUpdatingWslBackend ? (
                         <>
                           <Spinner size="sm" />
-                          Applying…
+                          {t("connections.common.applying")}
                         </>
                       ) : (
-                        "Run both backends"
+                        t("connections.wsl.runBothBackends")
                       )}
                     </Button>
                   </>
@@ -1329,20 +1359,20 @@ export function ConnectionsSettings() {
                     {isUpdatingWslBackend ? (
                       <>
                         <Spinner size="sm" />
-                        Applying…
+                        {t("connections.common.applying")}
                       </>
                     ) : pendingWslChange?.kind === "disable" ? (
                       pendingWslChange.wasWslOnly ? (
-                        "Switch to Windows"
+                        t("connections.wsl.switchToWindows")
                       ) : (
-                        "Disable WSL"
+                        t("connections.wsl.disableWsl")
                       )
                     ) : pendingWslChange?.kind === "distro" ? (
-                      "Switch distro"
+                      t("connections.wsl.switchDistroAction")
                     ) : pendingWslChange?.nextValue ? (
-                      "Restart and enable"
+                      t("connections.common.restartAndEnable")
                     ) : (
-                      "Restart and disable"
+                      t("connections.common.restartAndDisable")
                     )}
                   </Button>
                 )}
@@ -1358,9 +1388,9 @@ export function ConnectionsSettings() {
           >
             <AlertDialogPopup>
               <AlertDialogHeader>
-                <AlertDialogTitle>Disable Tailscale HTTPS?</AlertDialogTitle>
+                <AlertDialogTitle>{t("connections.tailscale.disableQuestion")}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  T3 Code will restart the local backend without Tailscale Serve.
+                  {t("connections.tailscale.disableDescription")}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -1368,7 +1398,7 @@ export function ConnectionsSettings() {
                   disabled={isUpdatingTailscaleServe}
                   render={<Button variant="outline" disabled={isUpdatingTailscaleServe} />}
                 >
-                  Cancel
+                  {t("connections.common.cancel")}
                 </AlertDialogClose>
                 <Button
                   variant="destructive"
@@ -1378,10 +1408,10 @@ export function ConnectionsSettings() {
                   {isUpdatingTailscaleServe ? (
                     <>
                       <Spinner size="sm" />
-                      Restarting…
+                      {t("connections.common.restarting")}
                     </>
                   ) : (
-                    "Restart and disable"
+                    t("connections.common.restartAndDisable")
                   )}
                 </Button>
               </AlertDialogFooter>
@@ -1396,15 +1426,14 @@ export function ConnectionsSettings() {
           >
             <DialogPopup className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Set up Tailscale HTTPS?</DialogTitle>
-                <DialogDescription>
-                  T3 Code will restart the local backend with Tailscale Serve enabled and ask
-                  Tailscale to proxy HTTPS traffic to this backend.
-                </DialogDescription>
+                <DialogTitle>{t("connections.tailscale.setupQuestion")}</DialogTitle>
+                <DialogDescription>{t("connections.tailscale.setupDescription")}</DialogDescription>
               </DialogHeader>
               <DialogPanel>
                 <label className="block">
-                  <span className="text-sm font-medium text-foreground">HTTPS port</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {t("connections.tailscale.httpsPort")}
+                  </span>
                   <Input
                     className="mt-2"
                     type="number"
@@ -1418,15 +1447,20 @@ export function ConnectionsSettings() {
                   />
                 </label>
                 {!isTailscaleServePortValid ? (
-                  <p className="mt-2 text-xs text-destructive">Enter a port from 1 to 65535.</p>
+                  <p className="mt-2 text-xs text-destructive">
+                    {t("connections.tailscale.portValidationError")}
+                  </p>
                 ) : null}
                 <div className="rounded-md border border-border/70 bg-muted/20 px-3 py-2">
-                  <p className="text-xs font-medium text-muted-foreground">HTTPS endpoint</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {t("connections.tailscale.httpsEndpoint")}
+                  </p>
                   <Tooltip>
                     <TooltipTrigger
                       render={
                         <p className="mt-1 truncate text-sm text-foreground">
-                          {pendingTailscaleServeBaseUrl ?? "Pending MagicDNS endpoint"}
+                          {pendingTailscaleServeBaseUrl ??
+                            t("connections.tailscale.pendingMagicDnsEndpoint")}
                         </p>
                       }
                     />
@@ -1441,7 +1475,7 @@ export function ConnectionsSettings() {
                   disabled={isUpdatingTailscaleServe}
                   render={<Button variant="outline" disabled={isUpdatingTailscaleServe} />}
                 >
-                  Cancel
+                  {t("connections.common.cancel")}
                 </DialogClose>
                 <Button
                   onClick={() => void handleConfirmTailscaleServeSetup()}
@@ -1450,10 +1484,10 @@ export function ConnectionsSettings() {
                   {isUpdatingTailscaleServe ? (
                     <>
                       <Spinner size="sm" />
-                      Restarting…
+                      {t("connections.common.restarting")}
                     </>
                   ) : (
-                    "Enable"
+                    t("connections.tailscale.enable")
                   )}
                 </Button>
               </DialogFooter>
@@ -1463,8 +1497,8 @@ export function ConnectionsSettings() {
       ) : (
         <SettingsSection {...searchableSetting("connections-environment")}>
           <SettingsRow
-            title="No environment selected"
-            description="Connect an environment to view its settings and access."
+            title={t("connections.environments.noEnvironmentSelected")}
+            description={t("connections.environments.connectToView")}
           />
           <LocalEnvironmentSetting />
           {canReadRelay || canManageRelay ? (
@@ -1480,7 +1514,7 @@ export function ConnectionsSettings() {
       {primarySettings}
       <SettingsSection
         {...searchableSetting("remote-environments")}
-        title="Environments"
+        title={t("connections.environments.title")}
         headerAction={
           <div className="flex items-center gap-1">
             {savedServerUpdateTargets.length > 0 ? (

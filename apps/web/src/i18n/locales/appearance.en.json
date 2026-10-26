@@ -1,0 +1,203 @@
+{
+  "appearance": {
+    "panel": {
+      "sections": {
+        "colorsAndThemes": "Colors & themes",
+        "interface": "Interface",
+        "motion": "Motion"
+      },
+      "envIdentification": {
+        "artwork": "Artwork",
+        "pill": "Version pill",
+        "none": "None"
+      },
+      "chatWidth": {
+        "comfortable": "Comfortable",
+        "comfortableOption": "Comfortable (default)",
+        "wide": "Wide",
+        "full": "Full"
+      },
+      "diffColors": {
+        "redGreenValue": "Red & green",
+        "redGreenOption": "Red & green (default)",
+        "blueOrange": "Blue & orange"
+      },
+      "descriptions": {
+        "contrast": "Adjust the contrast of colors and borders across the interface.",
+        "glass": "Higher values make menus, dialogs, and the composer more solid.",
+        "envIdentification": "Choose how Dev and Nightly environments are identified.",
+        "diffColors": "Choose colors for additions and deletions, including change counts.",
+        "composerContext": "Keep branch and worktree controls below the composer after a thread starts.",
+        "chatWidth": "Set how wide messages and the composer can grow on large screens.",
+        "mathRendering": "Typeset LaTeX math, such as $x^2$ or \\[x^2\\], in messages and Markdown previews. The composer keeps TeX source editable.",
+        "panelAnimations": "Set how fast panels open and close."
+      },
+      "resetLabels": {
+        "contrast": "contrast",
+        "glassOpacity": "glass opacity",
+        "envIdentification": "environment identification",
+        "diffColors": "diff colors",
+        "composerContext": "composer context",
+        "chatWidth": "chat width",
+        "mathRendering": "math rendering",
+        "panelAnimations": "panel animations"
+      },
+      "aria": {
+        "contrast": "Contrast",
+        "glassOpacity": "Glass opacity",
+        "envIdentification": "Environment identification",
+        "diffColors": "Diff colors",
+        "composerContext": "Keep composer context visible in active threads",
+        "chatWidth": "Chat width",
+        "renderMath": "Render math",
+        "panelAnimationDuration": "Panel animation duration"
+      }
+    },
+    "theme": {
+      "modes": {
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "appearanceModeAria": "Appearance mode",
+      "followSystemAria": "Follow the system appearance",
+      "useModeAria": "Use {{mode}} mode",
+      "variantsGroupAria": "Light and dark theme variants",
+      "chooseVariantAria": "Choose {{mode}} variant, {{total}} options, currently {{label}}",
+      "useVariantAria": "Use {{mode}} variant, currently {{label}}",
+      "useForModeTooltip": "Use {{label}} for {{mode}} mode",
+      "useForModeAria": "Use {{label}} for {{mode}} mode",
+      "useForModeActiveAria": "Use {{label}} for {{mode}} mode, currently active",
+      "useCollectionVariantAria": "Use {{collection}}, {{label}} variant",
+      "useThemeAria": "Use {{label}} theme",
+      "activeSuffix": ", currently active",
+      "useFirstVariantsTooltip": "Use the first variants for light and dark",
+      "useBothTooltip": "Use for both light and dark",
+      "useModeOnlyTooltip": "Use for {{mode}} mode only",
+      "duplicateAria": "Duplicate {{label}}",
+      "duplicateTooltip": "Duplicate theme",
+      "editAria": "Edit {{label}}",
+      "editTooltip": "Edit theme",
+      "exportAria": "Export {{label}}",
+      "exportTooltip": "Export theme file",
+      "removeCollectionAria": "Remove themes from {{collection}}",
+      "removeThemeAria": "Remove {{label}}",
+      "removeThemesTooltip": "Remove themes",
+      "removeThemeTooltip": "Remove theme",
+      "createTheme": "Create theme",
+      "addTheme": "Add theme",
+      "saveFailedTitle": "Couldn’t save theme selection",
+      "removeFailedTitle": "Couldn’t remove theme",
+      "tryAgain": "Try again.",
+      "importAddedSingle": "{{label}} added",
+      "importUpdatedSingle": "{{label}} updated",
+      "importAddedMany": "{{total}} themes added",
+      "importUpdatedMany": "{{total}} themes updated",
+      "importSingleModeDescription": "It’s now your {{mode}} theme.",
+      "importActiveDescription": "It’s now active.",
+      "removeCollectionTitle": "Remove themes from “{{label}}”?",
+      "removeThemeTitle": "Remove “{{label}}”?",
+      "removeCollectionDescription": "Select the variants you want to remove. You can restore them by importing the extension again.",
+      "removeThemeDescription": "You can bring it back anytime by importing its JSON file.",
+      "cancel": "Cancel",
+      "removeSelected": "Remove selected",
+      "removeSelectedWithCount": "Remove selected ({{total}})",
+      "removeThemeButton": "Remove theme"
+    },
+    "typography": {
+      "section": {
+        "title": "Typography",
+        "advanced": "Advanced",
+        "advancedAria": "Show advanced typography settings"
+      },
+      "systemDefault": "System default",
+      "systemMonospace": "System monospace",
+      "monospaceFont": "Monospace font",
+      "familyAria": "{{title}} family",
+      "sizes": {
+        "interface": "Interface font size",
+        "prompt": "Prompt font size",
+        "code": "Code font size",
+        "terminal": "Terminal font size"
+      },
+      "descriptions": {
+        "interface": "Everything outside code blocks and the terminal.",
+        "prompt": "Only the box you write prompts in. Mono works well here.",
+        "code": "Code blocks, diffs, and file previews.",
+        "simpleCode": "Code blocks, diffs, file previews, and the terminal.",
+        "terminal": "Terminal output, independent from code blocks and diffs.",
+        "fontSmoothing": "Use thinner grayscale text smoothing instead of the macOS default.",
+        "wordWrap": "Wrap long lines in code blocks, tables, diffs, and file previews by default."
+      },
+      "fontSmoothingAria": "Font smoothing",
+      "wordWrapAria": "Wrap code, tables, diffs, and file previews by default",
+      "resetLabels": {
+        "fontSmoothing": "font smoothing",
+        "wordWrapping": "word wrapping"
+      }
+    },
+    "fontPicker": {
+      "notMonospaceTitle": "\"{{family}}\" isn't monospace",
+      "notMonospaceDescription": "Code and terminal need a fixed-width font, so the current font was kept.",
+      "defaultLabel": "default",
+      "searchPlaceholder": "Search fonts…",
+      "noFontsFound": "No fonts found."
+    },
+    "colorPicker": {
+      "chooseColor": "Choose a color",
+      "chooseColorAria": "Choose {{label}} color",
+      "hueAria": "{{label}} hue",
+      "panelHexAria": "{{label}} picker hex value",
+      "panelRgbAria": "{{label}} picker RGB value",
+      "fieldHexAria": "{{label}} hex value",
+      "hideUsageAria": "Hide {{label}} usage",
+      "showUsageAria": "Show {{label}} usage",
+      "hideUsageTooltip": "Hide where {{label}} is used",
+      "showUsageTooltip": "Show where {{label}} is used",
+      "roles": {
+        "canvas": "Background",
+        "toolbar": "Toolbar background",
+        "toolbarForeground": "Toolbar text",
+        "toolbarBorder": "Toolbar border",
+        "toolbarControl": "Toolbar control",
+        "toolbarControlForeground": "Toolbar control text",
+        "toolbarControlHover": "Toolbar control hover",
+        "accent": "Accent color",
+        "errorForeground": "Error text",
+        "errorSurface": "Error background",
+        "warningForeground": "Warning text",
+        "warningSurface": "Warning background",
+        "updateForeground": "Update text",
+        "updateSurface": "Update background"
+      }
+    },
+    "importDialog": {
+      "title": "Add a theme",
+      "themeJson": "Theme JSON",
+      "sizeMb": "{{value}} MB",
+      "sizeKb": "{{value}} KB",
+      "sizeBytes": "{{value}} bytes",
+      "oversizedFile": "That file is {{size}}. Theme files are only a few KB, so this one was not read (limit {{limit}}).",
+      "readFailed": "Could not read that file. Paste the JSON below instead.",
+      "failedWithReason": "{{name}}: {{reason}}",
+      "tooLarge": "too large",
+      "notAThemeFile": "not a theme file",
+      "couldNotInstall": "could not install",
+      "failed": "failed",
+      "orImportFile": "or import a file",
+      "chooseFiles": "Choose files",
+      "reading": "Reading…",
+      "alreadyInstalled": "Already installed",
+      "updateExisting": "Update existing",
+      "keepBoth": "Keep both",
+      "back": "Back",
+      "cancel": "Cancel",
+      "themeFile": "Theme file",
+      "dropHint": "Drop T3 Code or VS Code .json files",
+      "addTheme": "Add theme",
+      "selectFailed": "Theme added, but it could not be selected. Try again.",
+      "invalidThemeFile": "That theme file is invalid.",
+      "tooManyCopies": "Too many copies of \"{{label}}\"."
+    }
+  }
+}

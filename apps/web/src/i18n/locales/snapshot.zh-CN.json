@@ -1,0 +1,86 @@
+{
+  "snapshot": {
+    "section": {
+      "title": "快照"
+    },
+    "errors": {
+      "checkSetup": "无法检查截取设置",
+      "openShortcutPermissions": "无法打开快捷键权限设置",
+      "completeSetup": "无法完成截取设置",
+      "saveSettings": "无法保存截取设置",
+      "allowTextCapture": "无法开启应用文本截取",
+      "verifyAccess": "无法验证截取权限",
+      "closeSetup": "无法关闭截取设置",
+      "restartForSetup": "请重启 T3 Code 以完成截取设置。",
+      "checkShortcut": "无法检查此快捷键。"
+    },
+    "status": {
+      "updating": "正在更新截取设置…"
+    },
+    "shortcut": {
+      "pressPrompt": "按下你的快捷键。按 Esc 取消。",
+      "conflict": "T3 Code 已将此快捷键用于「{{command}}」。",
+      "checking": "正在检查快捷键…",
+      "readyToSave": "可以保存了。",
+      "tryModifierPair": "请尝试类似 Ctrl+Shift+2 的快捷键。",
+      "changeButton": "更改快捷键",
+      "permissionsButton": "快捷键权限",
+      "save": "保存",
+      "saving": "正在保存…",
+      "cancel": "取消"
+    },
+    "sound": {
+      "description": "选择开始截取时播放的音效。",
+      "triggerAriaLabel": "快照音效：{{sound}}",
+      "off": "关闭",
+      "whoosh": "Whoosh",
+      "defaultSuffix": "（默认）",
+      "click": "Click",
+      "playWhooshAriaLabel": "播放 Whoosh",
+      "playClickAriaLabel": "播放 Click"
+    },
+    "rows": {
+      "enableAriaLabel": "启用快照",
+      "accessibilityDescription": "当应用提供文本和控件时，将它们一并截取。",
+      "accessibilityAriaLabel": "在快照中包含应用文本",
+      "shortcutPickerDescription": "从任意应用中选择要截取的窗口。",
+      "shortcutDirectDescription": "无需切换应用即可截取你正在使用的窗口。",
+      "flashDescription": "在被截取的窗口上显示轻微的提示闪烁。",
+      "flashAriaLabel": "闪烁被截取的窗口",
+      "animationsDescription": "将被截取的窗口以动画形式收入你的草稿。",
+      "animationsAriaLabel": "为快照添加动画"
+    },
+    "logic": {
+      "checking": "正在检查快照…",
+      "notSupported": "此平台不支持。",
+      "turnOnFirst": "打开此开关以设置快照。",
+      "needsAttention": "截取需要处理",
+      "checkAccessInSetup": "在设置中检查截取权限",
+      "installHelper": "安装截取辅助程序以继续",
+      "setUpActiveWindow": "设置活动窗口快照",
+      "manualCaptureOnly": "仅手动截取。每次都需要选择窗口",
+      "enableCapture": "启用截取以继续",
+      "connectingShortcut": "正在连接你的快捷键…",
+      "waitingShortcutPermission": "等待快捷键权限",
+      "readyToCapture": "可以截取",
+      "useShortcutElsewhere": "从其他应用使用你的快捷键",
+      "shortcutSaved": "快捷键已保存",
+      "finishShortcutSetup": "完成快捷键设置",
+      "approveShortcutPrompt": "批准快捷键权限弹窗以继续。",
+      "shortcutSavedSentence": "快捷键已保存。",
+      "continueSetup": "继续设置",
+      "manageCapture": "管理截取",
+      "setUpDesktopCapture": "设置 {{desktop}} 截取",
+      "effectsUnavailableDesktop": "此桌面环境不支持截取特效。",
+      "installHelperForEffects": "安装或更新截取辅助程序以启用特效。",
+      "effectsUnavailableNiri": "Niri 不支持截取特效。",
+      "updateGnomeExtension": "更新 GNOME 扩展，然后注销并重新登录以启用特效。",
+      "finishExtensionSetup": "完成扩展设置以启用特效。",
+      "pickerDescription": "此处不支持自动截取。请改为选择窗口。",
+      "description": "截取一个窗口并附加到当前草稿。",
+      "screenshotOnly": "此桌面环境仅支持屏幕截图。",
+      "updateDesktopApp": "更新桌面应用以使用快照。",
+      "desktopOnly": "仅在桌面应用中可用。"
+    }
+  }
+}

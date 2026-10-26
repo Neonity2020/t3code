@@ -1,0 +1,101 @@
+{
+  "keybindings": {
+    "panel": {
+      "addButton": "添加快捷键",
+      "openFileAriaLabel": "打开 keybindings.json",
+      "connectNotice": "连接一个环境后才能更改快捷键。",
+      "readonlyNotice": "此连接可以查看快捷键，但无法更改。",
+      "emptySearch": "没有与你的搜索匹配的快捷键。"
+    },
+    "toasts": {
+      "openFileFailed": "无法打开快捷键文件",
+      "openFileFailedDescription": "快捷键文件未能打开。",
+      "saveFailed": "无法保存快捷键",
+      "saveFailedDescription": "快捷键未能保存。",
+      "removeFailed": "无法移除快捷键",
+      "removeFailedDescription": "快捷键未能移除。"
+    },
+    "search": {
+      "placeholder": "搜索快捷键",
+      "ariaLabel": "搜索快捷键"
+    },
+    "browserNotice": "浏览器可能优先占用部分快捷键。桌面应用则会接收全部快捷键。",
+    "group": {
+      "navigation": "导航",
+      "threads": "会话",
+      "composer": "输入框",
+      "terminal": "终端",
+      "preview": "预览与 Diff",
+      "appearance": "外观",
+      "scripts": "项目脚本",
+      "other": "其他"
+    },
+    "command": {
+      "composerSendAlternate": "输入框：反向队列或引导操作",
+      "composerSendBackground": "输入框：在后台启动",
+      "composerSendAndNewThread": "输入框：发送并开启新会话",
+      "queueSendFirst": "队列：发送第一条排队消息",
+      "queueEditLast": "队列：编辑最后一条排队消息",
+      "pullRequestCopyReference": "Pull Request：复制链接或会话 ID",
+      "usage": "用量：{{label}}",
+      "usagePeriod": "用量：周期：{{label}}",
+      "reopenClosedTab": "重新打开已关闭的标签页",
+      "previewFocusUrl": "预览：聚焦 URL",
+      "runScript": "运行脚本：{{name}}"
+    },
+    "source": {
+      "custom": "自定义",
+      "project": "项目"
+    },
+    "row": {
+      "editShortcutAriaLabel": "编辑 {{command}} 的快捷键：{{shortcut}}",
+      "keybindingAriaLabel": "{{command}} 的快捷键",
+      "actionsAriaLabel": "{{command}} 的操作",
+      "editWhenAriaLabel": "编辑 {{label}} 的生效条件",
+      "whenLabel": "生效条件",
+      "resetToDefault": "重置为默认",
+      "remove": "移除"
+    },
+    "shortcut": {
+      "pressPlaceholder": "按下快捷键",
+      "unassignedPlaceholder": "未分配",
+      "save": "保存",
+      "saving": "正在保存"
+    },
+    "new": {
+      "title": "新建快捷键",
+      "fallbackLabel": "新快捷键",
+      "commandPlaceholder": "命令",
+      "cancelAriaLabel": "取消新建快捷键",
+      "cancel": "取消"
+    },
+    "when": {
+      "builderTitle": "生效条件",
+      "expressionAriaLabel": "条件表达式",
+      "alwaysPlaceholder": "始终",
+      "alwaysDisplay": "始终",
+      "conditionPlaceholder": "条件",
+      "conditionButton": "条件",
+      "groupButton": "分组",
+      "not": "非",
+      "negateAriaLabel": "取反 {{identifier}}",
+      "negateGroupAriaLabel": "取反分组",
+      "and": "且",
+      "or": "或",
+      "unknownCondition": "未知条件：{{identifiers}}",
+      "unknownConditions": "未知条件：{{identifiers}}",
+      "unknownWarning": "T3 Code 尚不能识别此条件。仍然可以保存，但如果运行时未提供该条件，可能无法匹配。",
+      "fixToEditVisually": "请先修正上方的表达式，再继续使用可视化编辑。",
+      "parseError": "请使用 !、&&、|| 和括号来组合变量。",
+      "clearAll": "清除所有条件",
+      "removeCondition": "移除条件",
+      "removeGroup": "移除分组及其条件"
+    },
+    "conflict": {
+      "withOne": "与 {{label}} 存在冲突。",
+      "withMany": "与 {{labels}}{{more}} 存在冲突。",
+      "andMore": "等更多",
+      "recencyNote": "当两个条件都可能匹配时，以最近设置的绑定为准。"
+    }
+  }
+}

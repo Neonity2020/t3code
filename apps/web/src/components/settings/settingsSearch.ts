@@ -1,6 +1,7 @@
 import { HOSTED_APP_CHANNEL } from "~/branding";
 import { isElectron } from "~/env";
 import { isMacPlatform, isWindowsPlatform, normalizeSearchText } from "~/lib/utils";
+import i18next, { settingsSectionKey } from "~/i18n";
 import { STATIC_KEYBINDING_COMMANDS, type KeybindingCommand } from "@t3tools/contracts";
 import type { EnvironmentId } from "@t3tools/contracts";
 import type { EnvironmentConnectionPhase } from "@t3tools/client-runtime/connection";
@@ -94,6 +95,14 @@ export const SETTINGS_SECTION_LABELS: Readonly<Record<SettingsPath, string>> = {
   "/settings/beta": "Beta",
   "/settings/archived": "Archive",
 };
+
+/**
+ * Localized section label; falls back to the English registry entry when a translation is missing.
+ * Call from render paths. Components that must re-render on language change subscribe via useTranslation.
+ */
+export function settingsSectionLabel(path: SettingsPath): string {
+  return i18next.t(settingsSectionKey(path), { defaultValue: SETTINGS_SECTION_LABELS[path] });
+}
 
 export function keybindingSearchAnchorId<Command extends KeybindingCommand>(command: Command) {
   return `keybinding-${command}` as const;
@@ -1050,6 +1059,193 @@ export type SettingsSearchItemId = (typeof SETTINGS_SEARCH_ITEMS)[number]["id"];
 
 const SEARCH_ITEMS_BY_ID = new Map(SETTINGS_SEARCH_ITEMS.map((item) => [item.id, item] as const));
 
+/**
+ * Simplified Chinese overlay for registry titles, keyed by item id. The registry itself stays
+ * English so search tests and English search keep working; localization happens on render paths
+ * (searchableSetting / localizeAvailableSettingsSearchItems). `terms` are extra Chinese search
+ * keywords appended to the item's English terms.
+ */
+const SETTINGS_SEARCH_ITEMS_ZH: Readonly<Record<string, { title: string; terms?: string }>> = {
+  "storage-worktree-keep-when": { title: "保留含本地更改的工作树" },
+  "storage-delete-now": { title: "立即清理", terms: "马上 运行 清理报告" },
+  "storage-worktrees": { title: "工作树清理", terms: "磁盘 清理 归档 会话 保留天数" },
+  "storage-worktrees-location": { title: "工作树位置", terms: "目录 路径 外置磁盘" },
+  "storage-artifacts": { title: "产物与日志", terms: "磁盘 截图 日志 清理 保留" },
+  "project-defaults": { title: "项目默认值与覆盖", terms: "继承 检出 环境" },
+  "project-overview": { title: "项目概览", terms: "名称 图标 删除 移除" },
+  "default-model": { title: "默认模型", terms: "新会话 提供商 推理强度" },
+  "default-permissions": { title: "权限", terms: "运行模式 监督 审批 自动接受编辑 完全访问" },
+  "color-scheme": { title: "配色方案", terms: "深色 浅色 跟随系统 外观模式" },
+  theme: { title: "主题", terms: "配色 自定义 导入" },
+  "setting-appearance-contrast": { title: "对比度", terms: "颜色 边框 界面" },
+  "setting-glass-opacity": { title: "毛玻璃不透明度", terms: "透明 模糊 菜单 对话框" },
+  "diff-color-scheme": { title: "Diff 配色", terms: "红绿 蓝橙 新增 删除 色盲" },
+  "chat-width": { title: "对话宽度", terms: "宽 全宽 栏宽 布局" },
+  "math-rendering": { title: "数学公式渲染", terms: "LaTeX KaTeX 公式" },
+  "panel-animations": { title: "面板动画", terms: "过渡 动效" },
+  "environment-identification": { title: "环境标识", terms: "徽标 标签 隐藏" },
+  "interface-font": { title: "界面字体", terms: "字体 字号 无衬线" },
+  "prompt-font": { title: "输入框字体", terms: "字体 字号 提示词" },
+  "code-font": { title: "代码字体", terms: "等宽 代码块 Diff 文件预览" },
+  "terminal-font": { title: "终端字体", terms: "等宽 输出" },
+  "font-smoothing": { title: "字体平滑", terms: "灰度 抗锯齿" },
+  "word-wrap": { title: "自动换行", terms: "长行 代码块 表格 文件预览" },
+  "composer-context": { title: "输入框上下文", terms: "引用 附件" },
+  "project-grouping": { title: "项目分组", terms: "合并 仓库 侧边栏" },
+  "project-order": { title: "项目排序", terms: "手动 创建时间 最近使用" },
+  "snooze-limited-threads": { title: "暂停至用量重置", terms: "配额 限流 恢复" },
+  "auto-resume-limited-threads": { title: "用量重置后自动恢复", terms: "配额 限流 继续" },
+  "new-design": { title: "新设计", terms: "Beta 改版 侧边栏 输入框" },
+  "working-shelf": { title: "进行中区", terms: "Beta 折叠 运行中 收件箱" },
+  "guest-links": { title: "访客链接", terms: "分享 邀请 只读 观察" },
+  "auto-settle-inactive-threads": { title: "自动收起不活跃会话", terms: "闲置 天数 自动" },
+  "compact-idle-threads": { title: "压缩空闲会话上下文", terms: "上下文压缩 缓存 token 摘要" },
+  "auto-settle-merged-threads": { title: "自动收起已合并会话", terms: "Pull Request 合并 关闭" },
+  "days-before-auto-settle": { title: "自动收起前的闲置天数", terms: "超时 不活跃" },
+  "thread-notifications": { title: "会话通知", terms: "声音 提醒 完成 输入 审批" },
+  "in-app-notifications": { title: "应用内通知", terms: "弹窗 完成 失败 审批" },
+  "time-format": { title: "时间格式", terms: "时间戳 12 小时 24 小时 跟随系统" },
+  "response-streaming": { title: "响应流式输出", terms: "逐段输出 等待整段 回合" },
+  "hide-whitespace-changes": { title: "隐藏空白更改", terms: "Diff 空格 缩进" },
+  "default-diff-file-state": { title: "Diff 文件默认状态", terms: "折叠 展开" },
+  "diff-layout": { title: "Diff 布局", terms: "堆叠 分栏 并排 统一" },
+  "proactive-panels": { title: "主动打开面板", terms: "自动打开 Diff Pull Request 右侧面板" },
+  "skills-in-slash-menu": { title: "在斜杠菜单中显示技能", terms: "命令菜单 $ /" },
+  "composer-rich-text": { title: "富文本输入框", terms: "加粗 斜体 Markdown 所见即所得" },
+  "composer-collapse": { title: "滚动时收起输入框", terms: "滚动 收起 缩小" },
+  "send-shortcut": { title: "发送快捷键", terms: "Enter 回车 换行 多行" },
+  "follow-up-behavior": { title: "追加消息行为", terms: "排队 插入 运行中 默认" },
+  "provider-update-checks": { title: "提供商更新检查", terms: "CLI 版本 检查更新" },
+  "continue-threads-after-server-update": {
+    title: "重启后继续会话",
+    terms: "恢复运行 中断 崩溃 自动",
+  },
+  "background-activity": { title: "后台活动", terms: "性能 省电 Git 拉取 刷新 策略" },
+  "new-threads": { title: "新会话", terms: "工作区 草稿 本地 工作树" },
+  "worktree-submodules": { title: "子模块", terms: "git submodule 递归" },
+  "start-from-origin": { title: "从远程起点开始", terms: "远程 最新 分支 本地" },
+  "add-project-starts-in": { title: "添加项目的起始位置", terms: "基础目录 路径 主目录" },
+  "unpin-confirmation": { title: "取消置顶确认", terms: "再次点击 确认" },
+  "archive-confirmation": { title: "归档确认", terms: "再次点击 确认" },
+  "delete-confirmation": { title: "删除确认", terms: "历史记录 确认" },
+  "quit-confirmation": { title: "退出确认", terms: "长按 双击 退出应用" },
+  "text-generation-model": { title: "文本生成模型", terms: "会话标题 生成 提供商" },
+  "thread-title-instructions": { title: "会话标题生成指令", terms: "标题 提示词 风格 重命名" },
+  "app-version": { title: "版本", terms: "关于 检查更新 下载 安装 升级" },
+  "update-track": { title: "更新通道", terms: "稳定版 最新版 Nightly 预发布" },
+  "cli-command": { title: "t3 命令", terms: "CLI 终端 命令行 安装" },
+  "mobile-app": { title: "移动应用", terms: "手机 平板 iOS Android 二维码" },
+  "privacy-policy": { title: "隐私政策", terms: "遥测 分析 数据 退出" },
+  "telemetry-export": { title: "OpenTelemetry 导出", terms: "OTel OTLP 日志 追踪 指标" },
+  diagnostics: { title: "诊断", terms: "日志 追踪 进程 资源 历史 CPU 内存" },
+  "open-source-licenses": { title: "开源许可", terms: "许可证 第三方" },
+  "legacy-plan-mode": { title: "计划模式（旧版）", terms: "旧版 兼容" },
+  "legacy-context-window-indicator": { title: "上下文窗口指示器（旧版）", terms: "用量 圆环 旧版" },
+  "legacy-sidebar": { title: "侧边栏（旧版）", terms: "树形 列表 旧版" },
+  keybindings: { title: "快捷键", terms: "键盘 快捷方式 命令 绑定 JSON" },
+  "snap-shot-enabled": { title: "SnapShot", terms: "窗口 截图 屏幕捕获" },
+  "snap-shot-accessibility": { title: "包含应用文本", terms: "无障碍 UI 结构 隐私 上下文" },
+  "snap-shot-shortcut": { title: "截取快捷键", terms: "快捷键 触发" },
+  "snap-shot-sound": { title: "截取音效", terms: "声音 提示音" },
+  "snap-shot-flash": { title: "截取闪光", terms: "闪光效果" },
+  "snap-shot-animations": { title: "截取动画", terms: "动画效果" },
+  providers: { title: "提供商", terms: "Agent CLI 登录 安装 订阅 实例 认证 API Key 模型 配置" },
+  "usage-providers": { title: "用量数据源", terms: "配额 订阅 限额 密钥" },
+  "cursor-keychain-usage": { title: "Cursor 账户用量", terms: "钥匙串 用量 费用 限额" },
+  "provider-health-check-interval": { title: "健康检查间隔", terms: "刷新 可用性 后台探测" },
+  "agent-browser-access": { title: "Agent 浏览器访问", terms: "允许 预览 工具 会话 覆盖" },
+  "device-hosts": { title: "设备主机", terms: "SSH 远程 模拟器 iOS Android 连接" },
+  "agent-device-access": { title: "Agent 设备访问", terms: "允许 模拟器 工具 会话" },
+  "device-hub": { title: "设备中心", terms: "模拟器 安装 启动" },
+  "device-platform-support": { title: "模拟器支持", terms: "Xcode Android Studio SDK" },
+  "browser-profiles": { title: "浏览器配置", terms: "Profile 多配置" },
+  "browser-default-profile": { title: "默认浏览器配置", terms: "Profile 默认" },
+  "browser-default-viewport": { title: "默认浏览器视口", terms: "尺寸 宽高 设备 旋转" },
+  "browser-default-zoom": { title: "默认浏览器缩放", terms: "缩放 比例 页面" },
+  "browser-default-appearance": { title: "默认浏览器外观", terms: "深色 浅色 跟随系统" },
+  "browser-recording-frame-rate": { title: "浏览器录制帧率", terms: "录制 帧率 FPS" },
+  "browser-recording-key-presses": { title: "录制中显示按键", terms: "键盘 按键 覆盖层" },
+  "browser-recording-mouse-presses": { title: "录制中显示鼠标点击", terms: "点击 拖拽 覆盖层" },
+  "browser-link-target": { title: "链接打开方式", terms: "外部浏览器 应用内打开 默认" },
+  "browser-search-engine": { title: "搜索引擎", terms: "地址栏 Google Bing DuckDuckGo 自定义" },
+  "pull-request-links-open-in-app": {
+    title: "在 T3 Code 中打开 Pull Request",
+    terms: "PR 链接 浏览器 外部 默认",
+  },
+  "browser-auto-show-floating-preview": {
+    title: "自动弹出浮动预览",
+    terms: "浮动窗口 预览 隐藏",
+  },
+  "automatic-pull": { title: "自动拉取", terms: "默认分支 快进 上游" },
+  "remove-agent-credits-on-merge": {
+    title: "合并时移除 AI 署名",
+    terms: "Co-authored-by 署名 归属 压缩合并",
+  },
+  "pull-request-merge-method": { title: "默认合并方式", terms: "合并 压缩合并 变基 上次选择" },
+  "source-control": { title: "版本控制", terms: "Git 托管 集成 凭据 扫描" },
+  "git-fetch-interval": { title: "Git 拉取间隔", terms: "远程 分支 刷新 凭据 秒 关闭" },
+  "worktree-branch-naming": {
+    title: "工作树分支命名",
+    terms: "语义 前缀 自定义 提示词 feat fix",
+  },
+  "source-control-writing-style": {
+    title: "版本控制写作风格",
+    terms: "约定式提交 自定义指令 变更描述 标题",
+  },
+  "follow-change-request-templates": { title: "遵循变更请求模板", terms: "模板 描述 结构" },
+  "source-control-writer-model": {
+    title: "版本控制写作模型",
+    terms: "覆盖 生成 提交 标题 描述 分支",
+  },
+  "review-guides": { title: "评审向导（Beta）", terms: "引导式评审 实验性" },
+  "review-guide-model": { title: "评审向导模型", terms: "覆盖 生成 评审摘要" },
+  "review-guide-instructions": { title: "评审向导指令", terms: "偏好 提示词 自定义" },
+  "project-actions": { title: "动作", terms: "命令 脚本 启动 开发服务器 检出" },
+  "environment-icon": { title: "环境图标", terms: "机器 图标 侧边栏 服务器 云" },
+  "local-environment": { title: "本地环境", terms: "开关 禁用 启用 本地服务器 重启" },
+  "network-access": { title: "网络访问", terms: "暴露 后端 远程 配对 接口 重启" },
+  "tailscale-https": { title: "Tailscale HTTPS", terms: "安全 端点 远程" },
+  "wsl-backend": { title: "WSL 后端", terms: "Windows 子系统 发行版 重启" },
+  "t3-connect": { title: "T3 Connect", terms: "隧道 云 远程 其他设备" },
+  "hold-webhooks-while-offline": { title: "离线时暂存 Webhook", terms: "自动化 队列 离线" },
+  "publish-agent-activity": { title: "发布 Agent 动态", terms: "推送通知 实时活动 云" },
+  "connections-environment": {
+    title: "本机",
+    terms: "连接 服务器 本地 远程 权限 配对 二维码 授权客户端 会话 吊销",
+  },
+  "remote-environments": { title: "环境", terms: "添加 配对 主机 SSH 隧道 保存" },
+  "load-balancing": { title: "负载均衡", terms: "自动 资源 CPU 内存 权重 共享" },
+  "pull-request-routing": {
+    title: "Pull Request 共享",
+    terms: "路由 信任环境 凭据 权限",
+  },
+  archive: { title: "已归档会话", terms: "恢复 重新打开 历史" },
+};
+
+function localizeSearchTitle(id: string, fallback: string): string {
+  if (i18next.language !== "zh-CN") return fallback;
+  return SETTINGS_SEARCH_ITEMS_ZH[id]?.title ?? fallback;
+}
+
+/**
+ * Localizes a filtered search-item list for the nav search and command palette. English terms are
+ * kept so searches in either language still match. Pure render-path helper: not used by searchSettings.
+ */
+export function localizeAvailableSettingsSearchItems(
+  items: ReadonlyArray<SettingsSearchItem>,
+): ReadonlyArray<SettingsSearchItem> {
+  if (i18next.language !== "zh-CN") return items;
+  return items.map((item) => {
+    const zh = SETTINGS_SEARCH_ITEMS_ZH[item.id];
+    if (!zh) return item;
+    return {
+      ...item,
+      title: zh.title,
+      ...(zh.terms ? { searchTerms: [...(item.searchTerms ?? []), zh.terms] } : {}),
+    };
+  });
+}
+
 const SETTINGS_CATEGORY_SCOPES: Readonly<Record<SettingsPath, SettingsSearchScope | null>> = {
   "/settings/diagnostics": "environment",
   "/settings/projects": "project",
@@ -1160,7 +1356,7 @@ export function searchableSetting(id: SettingsSearchItemId): {
   readonly title: string;
 } {
   const { id: anchorId, title } = SEARCH_ITEMS_BY_ID.get(id)!;
-  return { id: anchorId, title };
+  return { id: anchorId, title: localizeSearchTitle(id, title) };
 }
 
 export function filterAvailableSettingsSearchItems(

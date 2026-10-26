@@ -1,0 +1,17 @@
+{
+  "notifications": {
+    "threadNotifications": {
+      "description": "System alerts when a thread finishes, fails, or needs input or approval. Applies to this device while T3 Code is open.",
+      "needsBrowserOrDesktop": "Notifications need a supported browser over HTTPS, or the desktop app. Sound only is still available.",
+      "unavailableInBrowser": "Notifications are unavailable in this browser. Sound only is still available.",
+      "allowAndRetry": "Allow notifications in your browser or system settings, then choose this option again. Sound only is still available.",
+      "selectAriaLabel": "Thread notifications"
+    },
+    "mode": {
+      "off": "Off",
+      "notifications": "Notifications only",
+      "sound": "Sound only",
+      "notificationsAndSound": "Notifications with sound"
+    }
+  }
+}

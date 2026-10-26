@@ -1,0 +1,132 @@
+{
+  "integrations": {
+    "panel": {
+      "browserTitle": "Browser",
+      "desktopOnlyMessage": "Only available in the desktop app."
+    },
+    "viewport": {
+      "description": "Tab size for you and agents. Fill fits the panel; other sizes show the device toolbar.",
+      "resetLabel": "default browser viewport",
+      "selectAriaLabel": "Default browser viewport",
+      "fillPanel": "Fill panel",
+      "responsive": "Responsive",
+      "standard": "Standard",
+      "widthAriaLabel": "Default viewport width",
+      "heightAriaLabel": "Default viewport height",
+      "rotateTo": "Rotate to {{orientation}}",
+      "landscape": "landscape",
+      "portrait": "portrait",
+      "rotate": "Rotate"
+    },
+    "zoom": {
+      "description": "Page zoom applied to new browser tabs.",
+      "resetLabel": "default browser zoom",
+      "selectAriaLabel": "Default browser zoom"
+    },
+    "appearance": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark",
+      "description": "The color scheme pages are told to prefer. System follows your OS setting.",
+      "resetLabel": "default browser appearance",
+      "selectAriaLabel": "Default browser appearance"
+    },
+    "recording": {
+      "keyPressesDescription": "Show pressed keys and shortcuts in new recordings. Password fields are excluded.",
+      "keyPressesAriaLabel": "Show key presses in recordings",
+      "mousePressesDescription": "Highlight mouse presses and held buttons in new recordings.",
+      "mousePressesAriaLabel": "Show mouse presses in recordings",
+      "frameRateDescription": "Maximum recording rate. 30 fps saves CPU and storage; 60 fps is smoother.",
+      "frameRateResetLabel": "browser recording frame rate",
+      "frameRateAriaLabel": "Browser recording frame rate"
+    },
+    "linkTarget": {
+      "systemBrowser": "Your default browser",
+      "app": "T3 Code",
+      "description": "Where links in the chat and terminal open. Hold ⌘ or Ctrl while clicking a link to open it in your default browser either way.",
+      "resetLabel": "link target",
+      "selectAriaLabel": "Open links in"
+    },
+    "searchEngine": {
+      "duckduckgo": "DuckDuckGo",
+      "google": "Google",
+      "bing": "Bing",
+      "brave": "Brave Search",
+      "kagi": "Kagi",
+      "ecosia": "Ecosia",
+      "custom": "Custom",
+      "description": "What the address bar searches when you type something that isn't a URL.",
+      "resetLabel": "search engine",
+      "selectAriaLabel": "Search engine",
+      "customUrlTitle": "Custom search URL",
+      "customUrlDescription": "Use %s where the search terms go.",
+      "customUrlValidationError": "Enter an http or https URL containing %s. Searches use DuckDuckGo until then.",
+      "customUrlAriaLabel": "Custom search URL"
+    },
+    "pullRequestLinks": {
+      "description": "Clicking a pull request link opens it in T3 Code. Turn off to open pull request links like any other link, on your git host.",
+      "resetLabel": "open pull requests in T3 Code",
+      "openInAppAriaLabel": "Open pull requests in T3 Code"
+    },
+    "devices": {
+      "title": "Devices",
+      "hubAriaLabel": "Device hub",
+      "agentDeviceAriaLabel": "Agent device access",
+      "platformStatusTemplate": "Status for {{label}}. Select an environment to inspect its simulator support.",
+      "updating": "Updating…",
+      "updateToVersion": "Update to v{{version}}",
+      "checking": "Checking…",
+      "checkVersions": "Check versions",
+      "refresh": "Refresh",
+      "updateFailedTitle": "Device settings not saved on all environments",
+      "updateFailedDescription": "Could not update {{environments}}."
+    },
+    "agentBrowserAccess": {
+      "projectScopeDescription": "Allow agents in this project to use the shared browser. Applies when the agent session next starts.",
+      "defaultScopeDescription": "Allow agents to use the shared browser. Projects can override it.",
+      "resetLabel": "default browser access",
+      "ariaLabel": "Agent browser access"
+    },
+    "floatingPreview": {
+      "description": "Show the floating preview when an agent opens a browser or device unless the agent says otherwise.",
+      "resetLabel": "auto-show floating preview",
+      "ariaLabel": "Auto-show floating preview"
+    },
+    "profiles": {
+      "description": "Profiles separate cookies and logins. Incognito data is cleared when the app closes.",
+      "addProfile": "Add profile",
+      "blankProfile": "Blank profile",
+      "profileLimitReached": "You've reached the profile limit",
+      "importFrom": "Import from",
+      "lookingForBrowsers": "Looking for browsers…",
+      "noSupportedBrowsers": "No supported browsers found",
+      "connectToImport": "Connect to an environment to import cookies",
+      "renameAriaLabel": "Rename {{name}}",
+      "defaultBadge": "Default",
+      "optionsAriaLabel": "{{name}} options",
+      "setAsDefault": "Set as default",
+      "clearCookiesAndCache": "Clear cookies and cache",
+      "removeProfileAndData": "Remove profile and data",
+      "connectToClear": "Connect to an environment to clear profile data",
+      "checkingEnvironments": "Checking environments…",
+      "clearFailedToast": "Could not clear {{name}}'s data",
+      "clearedToast": "Cleared {{name}}'s cookies and cache",
+      "notConnected": "You're not connected to a server yet.",
+      "connectBeforeRemoving": "Connect to an environment before removing this profile.",
+      "removeFailedRetry": "Profile data could not be deleted. Try again.",
+      "removeTitle": "Remove “{{name}}”?",
+      "removeDescription": "Its cookies and logins are deleted. Desktop tabs already open in this profile stay open until you close them; server browser tabs close now.",
+      "connectToRemove": "Connect to an environment to remove this profile and its data.",
+      "cancel": "Cancel",
+      "removing": "Removing…",
+      "removeProfile": "Remove profile",
+      "clearTitle": "Clear “{{name}}”’s cookies and cache?",
+      "clearDescription": "You are signed out of its sites. Server browser tabs open in this profile close now.",
+      "clearData": "Clear data"
+    },
+    "systemSettings": {
+      "couldNotOpen": "Could not open System Settings",
+      "openFullDiskAccess": "Open Privacy & Security → Full Disk Access manually."
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
 import type { ClientSettings } from "@t3tools/contracts/settings";
+import i18next from "~/i18n";
 
 import completionUrl from "./assets/notification-completion.mp3";
 import inputUrl from "./assets/notification-input.mp3";
@@ -11,6 +12,24 @@ export const NOTIFICATION_MODE_LABELS = {
   sound: "Sound only",
   "notifications-and-sound": "Notifications with sound",
 } satisfies Record<NotificationMode, string>;
+
+/** Localized labels; the constant above stays as the English source of truth (and for tests). */
+export function notificationModeLabels(): Record<NotificationMode, string> {
+  return {
+    off: i18next.t("notifications.mode.off", {
+      defaultValue: NOTIFICATION_MODE_LABELS.off,
+    }),
+    notifications: i18next.t("notifications.mode.notifications", {
+      defaultValue: NOTIFICATION_MODE_LABELS.notifications,
+    }),
+    sound: i18next.t("notifications.mode.sound", {
+      defaultValue: NOTIFICATION_MODE_LABELS.sound,
+    }),
+    "notifications-and-sound": i18next.t("notifications.mode.notificationsAndSound", {
+      defaultValue: NOTIFICATION_MODE_LABELS["notifications-and-sound"],
+    }),
+  };
+}
 
 export function hasNotificationSound(mode: NotificationMode) {
   return mode === "sound" || mode === "notifications-and-sound";

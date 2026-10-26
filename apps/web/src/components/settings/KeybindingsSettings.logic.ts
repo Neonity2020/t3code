@@ -15,6 +15,7 @@ import {
 import { shortcutKeyFromEvent } from "../../keybindings";
 import { isMacPlatform } from "../../lib/utils";
 import { METRIC_OPTIONS, WINDOW_OPTIONS } from "../usage/usageShortcuts";
+import i18next from "~/i18n";
 
 // Rank every usage command; mixing rank and alphabetical comparisons makes order input-dependent.
 const usageCommandOrder = new Map<KeybindingCommand, number>(
@@ -102,11 +103,15 @@ export function whenAstToExpression(node: KeybindingWhenNode | undefined): strin
 }
 
 export function whenNodeRemoveLabel(node: KeybindingWhenNode, depth: number): string {
-  if (depth === 0) return "Clear all conditions";
-  if (node.type === "identifier" || (node.type === "not" && node.node.type === "identifier")) {
-    return "Remove condition";
+  if (depth === 0) {
+    return i18next.t("keybindings.when.clearAll", { defaultValue: "Clear all conditions" });
   }
-  return "Remove group and its conditions";
+  if (node.type === "identifier" || (node.type === "not" && node.node.type === "identifier")) {
+    return i18next.t("keybindings.when.removeCondition", { defaultValue: "Remove condition" });
+  }
+  return i18next.t("keybindings.when.removeGroup", {
+    defaultValue: "Remove group and its conditions",
+  });
 }
 
 function wrapWhenExpression(node: KeybindingWhenNode): string {
@@ -124,7 +129,9 @@ export function parseWhenExpressionDraft(
   if (!ast) {
     return {
       ok: false,
-      message: "Use variables with !, &&, ||, and parentheses.",
+      message: i18next.t("keybindings.when.parseError", {
+        defaultValue: "Use variables with !, &&, ||, and parentheses.",
+      }),
     };
   }
 
@@ -236,7 +243,15 @@ export function groupKeybindingRows(
   }
   return [...KEYBINDING_GROUPS, OTHER_KEYBINDING_GROUP].flatMap((group) => {
     const groupRows = rowsByGroup.get(group.id);
-    return groupRows ? [{ id: group.id, title: group.title, rows: groupRows }] : [];
+    return groupRows
+      ? [
+          {
+            id: group.id,
+            title: i18next.t(`keybindings.group.${group.id}`, { defaultValue: group.title }),
+            rows: groupRows,
+          },
+        ]
+      : [];
   });
 }
 
@@ -357,21 +372,64 @@ export function buildKeybindingCommandOptions(
 }
 
 export function commandLabel(command: KeybindingCommand): string {
-  if (command === "composer.sendAlternate") return "Composer: Opposite Queue or Steer Action";
-  if (command === "composer.sendBackground") return "Composer: Start in Background";
-  if (command === "composer.sendAndNewThread") return "Composer: Send and Start New Thread";
-  if (command === "thread.steerQueuedMessage") return "Queue: Send First Queued Message";
-  if (command === "thread.editQueuedMessage") return "Queue: Edit Last Queued Message";
-  if (command === "thread.copyReference") return "Pull Request: Copy Link or Thread ID";
+  if (command === "composer.sendAlternate") {
+    return i18next.t("keybindings.command.composerSendAlternate", {
+      defaultValue: "Composer: Opposite Queue or Steer Action",
+    });
+  }
+  if (command === "composer.sendBackground") {
+    return i18next.t("keybindings.command.composerSendBackground", {
+      defaultValue: "Composer: Start in Background",
+    });
+  }
+  if (command === "composer.sendAndNewThread") {
+    return i18next.t("keybindings.command.composerSendAndNewThread", {
+      defaultValue: "Composer: Send and Start New Thread",
+    });
+  }
+  if (command === "thread.steerQueuedMessage") {
+    return i18next.t("keybindings.command.queueSendFirst", {
+      defaultValue: "Queue: Send First Queued Message",
+    });
+  }
+  if (command === "thread.editQueuedMessage") {
+    return i18next.t("keybindings.command.queueEditLast", {
+      defaultValue: "Queue: Edit Last Queued Message",
+    });
+  }
+  if (command === "thread.copyReference") {
+    return i18next.t("keybindings.command.pullRequestCopyReference", {
+      defaultValue: "Pull Request: Copy Link or Thread ID",
+    });
+  }
   const usageMetric = METRIC_OPTIONS.find((option) => option.command === command);
-  if (usageMetric) return `Usage: ${usageMetric.label}`;
+  if (usageMetric) {
+    return i18next.t("keybindings.command.usage", {
+      defaultValue: "Usage: {{label}}",
+      label: usageMetric.label,
+    });
+  }
   const usagePeriod = WINDOW_OPTIONS.find((option) => option.command === command);
-  if (usagePeriod) return `Usage: Period: ${usagePeriod.label}`;
-  if (command === "view.reopenClosed") return "Reopen Closed Tab";
-  if (command === "preview.focusUrl") return "Preview: Focus URL";
+  if (usagePeriod) {
+    return i18next.t("keybindings.command.usagePeriod", {
+      defaultValue: "Usage: Period: {{label}}",
+      label: usagePeriod.label,
+    });
+  }
+  if (command === "view.reopenClosed") {
+    return i18next.t("keybindings.command.reopenClosedTab", {
+      defaultValue: "Reopen Closed Tab",
+    });
+  }
+  if (command === "preview.focusUrl") {
+    return i18next.t("keybindings.command.previewFocusUrl", { defaultValue: "Preview: Focus URL" });
+  }
   const raw = String(command);
   if (raw.startsWith("script.") && raw.endsWith(".run")) {
-    return `Run Script: ${titleCaseCommandSegment(raw.slice("script.".length, -".run".length))}`;
+    return i18next.t("keybindings.command.runScript", {
+      defaultValue: "Run Script: {{name}}",
+      name: titleCaseCommandSegment(raw.slice("script.".length, -".run".length)),
+    });
   }
   return raw.split(".").map(titleCaseCommandSegment).join(": ");
 }

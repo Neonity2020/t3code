@@ -1,0 +1,125 @@
+{
+  "connections": {
+    "common": {
+      "cancel": "Cancel",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "retrying": "Retrying…",
+      "restarting": "Restarting…",
+      "restartAndEnable": "Restart and enable",
+      "restartAndDisable": "Restart and disable",
+      "applying": "Applying…"
+    },
+    "networkAccess": {
+      "enableAriaLabel": "Enable network access",
+      "reachableAt": "Reachable at {{url}}",
+      "exposedWithHost": "Exposed on all interfaces. Pairing links use {{host}}.",
+      "exposedAllInterfaces": "Exposed on all interfaces.",
+      "limitedToThisMachine": "Limited to this machine.",
+      "cannotViewOrChange": "This connection cannot view or change network exposure.",
+      "remoteAlreadyConfigured": "Remote access is already configured. Change network exposure where the server starts.",
+      "onlyThisMachineCanConnect": "Only this machine can connect. Restart with a non-loopback host for remote pairing.",
+      "infoUnavailable": "Network exposure information is unavailable.",
+      "remoteControlledTooltip": "Network exposure changes restart the backend and must be controlled where the server process is launched.",
+      "enableQuestion": "Enable network access?",
+      "disableQuestion": "Disable network access?",
+      "enableDescription": "Let your other devices connect to T3 Code over the network. Pair devices to give them access. T3 Code will restart.",
+      "disableDescription": "Devices connected over your local network will disconnect. Existing tunnels, such as T3 Connect or Tailscale HTTPS, keep working. T3 Code will restart.",
+      "couldNotUpdateAccess": "Could not update network access",
+      "failedUpdateExposure": "Failed to update network exposure."
+    },
+    "tailscale": {
+      "useServeDescription": "Use Tailscale Serve to expose this backend through a MagicDNS HTTPS URL.",
+      "enableAriaLabel": "Enable Tailscale HTTPS",
+      "setupQuestion": "Set up Tailscale HTTPS?",
+      "setupDescription": "T3 Code will restart the local backend with Tailscale Serve enabled and ask Tailscale to proxy HTTPS traffic to this backend.",
+      "httpsPort": "HTTPS port",
+      "portValidationError": "Enter a port from 1 to 65535.",
+      "httpsEndpoint": "HTTPS endpoint",
+      "pendingMagicDnsEndpoint": "Pending MagicDNS endpoint",
+      "enable": "Enable",
+      "disableQuestion": "Disable Tailscale HTTPS?",
+      "disableDescription": "T3 Code will restart the local backend without Tailscale Serve.",
+      "couldNotSetUp": "Could not set up Tailscale HTTPS",
+      "failedConfigure": "Failed to configure Tailscale HTTPS.",
+      "couldNotDisable": "Could not disable Tailscale HTTPS",
+      "failedDisable": "Failed to disable Tailscale HTTPS."
+    },
+    "wsl": {
+      "loadFailedDescription": "Couldn't load the WSL backend state.",
+      "unavailableDescription": "WSL is unavailable, so Windows is running instead. Turn WSL off to clear this preference.",
+      "switchToWindows": "Switch to Windows",
+      "runAlongsideDescription": "Run the selected WSL distro alongside Windows. Projects remain on their current filesystem.",
+      "startFailed": "WSL backend couldn't start: {{error}}",
+      "failedUpdate": "Failed to update WSL backend.",
+      "couldNotChange": "Could not change WSL backend",
+      "backendAriaLabel": "WSL backend",
+      "off": "Off",
+      "defaultDistro": "Default distro",
+      "defaultSuffix": " (default)",
+      "onlyTitle": "WSL only",
+      "onlyDescription": "Run only the WSL backend. T3 Code restarts when this changes.",
+      "onlyAriaLabel": "Run WSL only",
+      "useOnlyWsl": "Use only WSL",
+      "runBothBackends": "Run both backends",
+      "disableWsl": "Disable WSL",
+      "switchDistroAction": "Switch distro",
+      "dialog": {
+        "turnOffAndSwitchTitle": "Turn off WSL and switch back to Windows?",
+        "disableTitle": "Disable WSL backend?",
+        "switchDistroTitle": "Switch WSL distro?",
+        "startTitle": "Start the WSL backend",
+        "onlyTitle": "Run only the WSL backend?",
+        "reEnableWindowsTitle": "Re-enable the Windows backend?",
+        "disableWasOnlyDescription": "T3 Code will restart on the Windows backend. Threads and projects opened against WSL stay safe inside the distro and become available again when you re-enable WSL.",
+        "disableDescription": "The WSL backend will stop. Threads and projects opened against WSL stay safe inside the distro, but they'll be unavailable in T3 Code until you re-enable WSL.",
+        "switchDistroDescription": "T3 Code will restart the WSL backend on the new distro. Sessions still running on the current distro will be interrupted.",
+        "startDescription": "Run the WSL backend alongside the Windows one, or stop the Windows backend and use only WSL? You can change this later from Settings.",
+        "onlyDescription": "T3 Code will restart and start only the WSL backend. Your Windows-side projects won't be accessible until you turn this off again.",
+        "reEnableWindowsDescription": "T3 Code will restart and bring the Windows backend back up alongside WSL."
+      }
+    },
+    "version": {
+      "title": "Version",
+      "retryUpdate": "Retry update",
+      "updateTo": "Update to {{version}}",
+      "serverWithLabel": "{{label}} server",
+      "server": "server"
+    },
+    "authorizedClients": {
+      "title": "Authorized clients",
+      "cannotView": "This connection can create access links but cannot view authorized clients."
+    },
+    "access": {
+      "failedRevokePairingLink": "Failed to revoke pairing link.",
+      "couldNotRevokePairingLink": "Could not revoke pairing link",
+      "failedRevokeClientAccess": "Failed to revoke client access.",
+      "couldNotRevokeClientAccess": "Could not revoke client access",
+      "revokedOtherClients_one": "Revoked 1 other client",
+      "revokedOtherClients_other": "Revoked {{count}} clients",
+      "revokeOtherClientsDescription": "Other paired clients will need a new pairing link before reconnecting.",
+      "failedRevokeOtherClients": "Failed to revoke other clients.",
+      "couldNotRevokeOtherClients": "Could not revoke other clients"
+    },
+    "backends": {
+      "failedSwitchOn": "Failed to switch the backend on.",
+      "failedSwitchOff": "Failed to switch the backend off.",
+      "couldNotSwitchOn": "Could not switch backend on",
+      "couldNotSwitchOff": "Could not switch backend off",
+      "failedRemove": "Failed to remove backend.",
+      "couldNotRemove": "Could not remove backend"
+    },
+    "environments": {
+      "title": "Environments",
+      "thisMachine": "This machine",
+      "primaryEnvironment": "Primary environment",
+      "moreActionsAriaLabel": "More actions for this machine",
+      "permissions": "Permissions",
+      "noEnvironmentSelected": "No environment selected",
+      "connectToView": "Connect an environment to view its settings and access."
+    },
+    "confirm": {
+      "removeBackend": "Remove {{label}} from this device?\nThis forgets its pairing, credentials, and cached threads here. Switch it off instead to keep it saved."
+    }
+  }
+}

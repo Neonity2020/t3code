@@ -1,0 +1,125 @@
+{
+  "connections": {
+    "common": {
+      "cancel": "取消",
+      "loading": "加载中…",
+      "retry": "重试",
+      "retrying": "重试中…",
+      "restarting": "正在重启…",
+      "restartAndEnable": "重启并开启",
+      "restartAndDisable": "重启并关闭",
+      "applying": "正在应用…"
+    },
+    "networkAccess": {
+      "enableAriaLabel": "开启网络访问",
+      "reachableAt": "可通过 {{url}} 访问",
+      "exposedWithHost": "已在所有网络接口上暴露。配对链接使用 {{host}}。",
+      "exposedAllInterfaces": "已在所有网络接口上暴露。",
+      "limitedToThisMachine": "仅限本机访问。",
+      "cannotViewOrChange": "当前连接无法查看或更改网络暴露设置。",
+      "remoteAlreadyConfigured": "远程访问已配置。请在服务器启动处更改网络暴露设置。",
+      "onlyThisMachineCanConnect": "仅本机可以连接。重启时使用非环回主机即可进行远程配对。",
+      "infoUnavailable": "网络暴露信息不可用。",
+      "remoteControlledTooltip": "更改网络暴露会重启后端，必须在服务器进程的启动处进行控制。",
+      "enableQuestion": "开启网络访问？",
+      "disableQuestion": "关闭网络访问？",
+      "enableDescription": "允许你的其他设备通过网络连接 T3 Code。配对设备以授予访问权限。T3 Code 将会重启。",
+      "disableDescription": "通过本地网络连接的设备将会断开。现有隧道（例如 T3 Connect 或 Tailscale HTTPS）将继续工作。T3 Code 将会重启。",
+      "couldNotUpdateAccess": "无法更新网络访问",
+      "failedUpdateExposure": "更新网络暴露失败。"
+    },
+    "tailscale": {
+      "useServeDescription": "使用 Tailscale Serve 通过 MagicDNS HTTPS URL 暴露此后端。",
+      "enableAriaLabel": "开启 Tailscale HTTPS",
+      "setupQuestion": "设置 Tailscale HTTPS？",
+      "setupDescription": "T3 Code 将在启用 Tailscale Serve 的情况下重启本地后端，并请求 Tailscale 将 HTTPS 流量代理到此后端。",
+      "httpsPort": "HTTPS 端口",
+      "portValidationError": "请输入 1 到 65535 之间的端口。",
+      "httpsEndpoint": "HTTPS 端点",
+      "pendingMagicDnsEndpoint": "等待 MagicDNS 端点",
+      "enable": "开启",
+      "disableQuestion": "关闭 Tailscale HTTPS？",
+      "disableDescription": "T3 Code 将在不使用 Tailscale Serve 的情况下重启本地后端。",
+      "couldNotSetUp": "无法设置 Tailscale HTTPS",
+      "failedConfigure": "配置 Tailscale HTTPS 失败。",
+      "couldNotDisable": "无法关闭 Tailscale HTTPS",
+      "failedDisable": "关闭 Tailscale HTTPS 失败。"
+    },
+    "wsl": {
+      "loadFailedDescription": "无法加载 WSL 后端状态。",
+      "unavailableDescription": "WSL 不可用，因此当前运行的是 Windows。关闭 WSL 以清除此偏好设置。",
+      "switchToWindows": "切换到 Windows",
+      "runAlongsideDescription": "在 Windows 旁边运行所选的 WSL 发行版。项目仍保留在其当前文件系统上。",
+      "startFailed": "WSL 后端无法启动：{{error}}",
+      "failedUpdate": "更新 WSL 后端失败。",
+      "couldNotChange": "无法更改 WSL 后端",
+      "backendAriaLabel": "WSL 后端",
+      "off": "关闭",
+      "defaultDistro": "默认发行版",
+      "defaultSuffix": "（默认）",
+      "onlyTitle": "仅 WSL",
+      "onlyDescription": "仅运行 WSL 后端。更改后 T3 Code 会重启。",
+      "onlyAriaLabel": "仅运行 WSL",
+      "useOnlyWsl": "仅使用 WSL",
+      "runBothBackends": "运行两个后端",
+      "disableWsl": "禁用 WSL",
+      "switchDistroAction": "切换发行版",
+      "dialog": {
+        "turnOffAndSwitchTitle": "关闭 WSL 并切换回 Windows？",
+        "disableTitle": "禁用 WSL 后端？",
+        "switchDistroTitle": "切换 WSL 发行版？",
+        "startTitle": "启动 WSL 后端",
+        "onlyTitle": "仅运行 WSL 后端？",
+        "reEnableWindowsTitle": "重新启用 Windows 后端？",
+        "disableWasOnlyDescription": "T3 Code 将在 Windows 后端上重启。在 WSL 中打开的会话和项目会安全地保留在发行版内，重新启用 WSL 后将再次可用。",
+        "disableDescription": "WSL 后端将停止。在 WSL 中打开的会话和项目会安全地保留在发行版内，但在重新启用 WSL 之前，它们在 T3 Code 中将不可用。",
+        "switchDistroDescription": "T3 Code 将在新发行版上重启 WSL 后端。仍在当前发行版上运行的会话将被中断。",
+        "startDescription": "在 Windows 后端旁边运行 WSL 后端，还是停止 Windows 后端、仅使用 WSL？之后可以在设置中更改。",
+        "onlyDescription": "T3 Code 将重启并仅启动 WSL 后端。在再次关闭此选项之前，你的 Windows 侧项目将无法访问。",
+        "reEnableWindowsDescription": "T3 Code 将重启并让 Windows 后端与 WSL 一起重新运行。"
+      }
+    },
+    "version": {
+      "title": "版本",
+      "retryUpdate": "重试更新",
+      "updateTo": "更新到 {{version}}",
+      "serverWithLabel": "{{label}} 服务器",
+      "server": "服务器"
+    },
+    "authorizedClients": {
+      "title": "已授权客户端",
+      "cannotView": "当前连接可以创建访问链接，但无法查看已授权客户端。"
+    },
+    "access": {
+      "failedRevokePairingLink": "吊销配对链接失败。",
+      "couldNotRevokePairingLink": "无法吊销配对链接",
+      "failedRevokeClientAccess": "吊销客户端访问权限失败。",
+      "couldNotRevokeClientAccess": "无法吊销客户端访问权限",
+      "revokedOtherClients_one": "已吊销 1 个其他客户端",
+      "revokedOtherClients_other": "已吊销 {{count}} 个客户端",
+      "revokeOtherClientsDescription": "其他已配对的客户端在重新连接前需要新的配对链接。",
+      "failedRevokeOtherClients": "吊销其他客户端失败。",
+      "couldNotRevokeOtherClients": "无法吊销其他客户端"
+    },
+    "backends": {
+      "failedSwitchOn": "开启后端失败。",
+      "failedSwitchOff": "关闭后端失败。",
+      "couldNotSwitchOn": "无法开启后端",
+      "couldNotSwitchOff": "无法关闭后端",
+      "failedRemove": "移除后端失败。",
+      "couldNotRemove": "无法移除后端"
+    },
+    "environments": {
+      "title": "环境",
+      "thisMachine": "本机",
+      "primaryEnvironment": "主环境",
+      "moreActionsAriaLabel": "本机的更多操作",
+      "permissions": "权限",
+      "noEnvironmentSelected": "未选择环境",
+      "connectToView": "连接一个环境以查看其设置和访问权限。"
+    },
+    "confirm": {
+      "removeBackend": "要从本设备移除 {{label}} 吗？\n这会忘记它的配对信息、凭据以及此处缓存的会话。若想保留它，请改为将其关闭。"
+    }
+  }
+}

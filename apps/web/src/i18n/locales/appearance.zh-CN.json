@@ -1,0 +1,203 @@
+{
+  "appearance": {
+    "panel": {
+      "sections": {
+        "colorsAndThemes": "颜色与主题",
+        "interface": "界面",
+        "motion": "动效"
+      },
+      "envIdentification": {
+        "artwork": "艺术图",
+        "pill": "版本角标",
+        "none": "无"
+      },
+      "chatWidth": {
+        "comfortable": "舒适",
+        "comfortableOption": "舒适（默认）",
+        "wide": "较宽",
+        "full": "全宽"
+      },
+      "diffColors": {
+        "redGreenValue": "红绿",
+        "redGreenOption": "红绿（默认）",
+        "blueOrange": "蓝橙"
+      },
+      "descriptions": {
+        "contrast": "调整界面各处颜色与边框的对比度。",
+        "glass": "数值越高，菜单、对话框和输入框就越不透明。",
+        "envIdentification": "选择 Dev 和 Nightly 环境的标识方式。",
+        "diffColors": "选择新增与删除内容使用的颜色，包括变更计数。",
+        "composerContext": "会话开始后，在输入框下方保留分支和工作树控件。",
+        "chatWidth": "设置大屏幕上消息和输入框的最大宽度。",
+        "mathRendering": "在消息和 Markdown 预览中排版 LaTeX 数学公式，例如 $x^2$ 或 \\[x^2\\]。输入框中的 TeX 源码保持可编辑。",
+        "panelAnimations": "设置面板打开和关闭的速度。"
+      },
+      "resetLabels": {
+        "contrast": "对比度",
+        "glassOpacity": "毛玻璃不透明度",
+        "envIdentification": "环境标识",
+        "diffColors": "Diff 配色",
+        "composerContext": "输入框上下文",
+        "chatWidth": "聊天宽度",
+        "mathRendering": "数学公式渲染",
+        "panelAnimations": "面板动画"
+      },
+      "aria": {
+        "contrast": "对比度",
+        "glassOpacity": "毛玻璃不透明度",
+        "envIdentification": "环境标识",
+        "diffColors": "Diff 配色",
+        "composerContext": "在活跃会话中保持输入框上下文可见",
+        "chatWidth": "聊天宽度",
+        "renderMath": "渲染数学公式",
+        "panelAnimationDuration": "面板动画时长"
+      }
+    },
+    "theme": {
+      "modes": {
+        "system": "系统",
+        "light": "浅色",
+        "dark": "深色"
+      },
+      "appearanceModeAria": "外观模式",
+      "followSystemAria": "跟随系统外观",
+      "useModeAria": "使用{{mode}}模式",
+      "variantsGroupAria": "浅色与深色主题变体",
+      "chooseVariantAria": "选择{{mode}}变体，{{total}} 个选项，当前为 {{label}}",
+      "useVariantAria": "使用{{mode}}变体，当前为 {{label}}",
+      "useForModeTooltip": "将{{label}}用于{{mode}}模式",
+      "useForModeAria": "将{{label}}用于{{mode}}模式",
+      "useForModeActiveAria": "将{{label}}用于{{mode}}模式，当前已激活",
+      "useCollectionVariantAria": "使用{{collection}}的{{label}}变体",
+      "useThemeAria": "使用{{label}}主题",
+      "activeSuffix": "，当前已激活",
+      "useFirstVariantsTooltip": "将首个变体用于浅色和深色",
+      "useBothTooltip": "同时用于浅色和深色",
+      "useModeOnlyTooltip": "仅用于{{mode}}模式",
+      "duplicateAria": "复制{{label}}",
+      "duplicateTooltip": "复制主题",
+      "editAria": "编辑{{label}}",
+      "editTooltip": "编辑主题",
+      "exportAria": "导出{{label}}",
+      "exportTooltip": "导出主题文件",
+      "removeCollectionAria": "从{{collection}}移除主题",
+      "removeThemeAria": "移除{{label}}",
+      "removeThemesTooltip": "移除主题",
+      "removeThemeTooltip": "移除主题",
+      "createTheme": "创建主题",
+      "addTheme": "添加主题",
+      "saveFailedTitle": "无法保存主题选择",
+      "removeFailedTitle": "无法移除主题",
+      "tryAgain": "请重试。",
+      "importAddedSingle": "已添加{{label}}",
+      "importUpdatedSingle": "已更新{{label}}",
+      "importAddedMany": "已添加 {{total}} 个主题",
+      "importUpdatedMany": "已更新 {{total}} 个主题",
+      "importSingleModeDescription": "它现在是你{{mode}}模式下的主题。",
+      "importActiveDescription": "现已激活。",
+      "removeCollectionTitle": "从“{{label}}”移除主题？",
+      "removeThemeTitle": "移除“{{label}}”？",
+      "removeCollectionDescription": "选择要移除的变体，重新导入该扩展即可恢复。",
+      "removeThemeDescription": "随时可以重新导入其 JSON 文件来找回。",
+      "cancel": "取消",
+      "removeSelected": "移除所选",
+      "removeSelectedWithCount": "移除所选 ({{total}})",
+      "removeThemeButton": "移除主题"
+    },
+    "typography": {
+      "section": {
+        "title": "排版",
+        "advanced": "高级",
+        "advancedAria": "显示高级排版设置"
+      },
+      "systemDefault": "系统默认",
+      "systemMonospace": "系统等宽字体",
+      "monospaceFont": "等宽字体",
+      "familyAria": "{{title}}族",
+      "sizes": {
+        "interface": "界面字号",
+        "prompt": "输入框字号",
+        "code": "代码字号",
+        "terminal": "终端字号"
+      },
+      "descriptions": {
+        "interface": "代码块和终端之外的所有内容。",
+        "prompt": "仅用于撰写提示词的输入框，适合使用等宽字体。",
+        "code": "代码块、Diff 和文件预览。",
+        "simpleCode": "代码块、Diff、文件预览和终端。",
+        "terminal": "终端输出，独立于代码块和 Diff。",
+        "fontSmoothing": "使用更细的灰度文字平滑效果，而非 macOS 的默认设置。",
+        "wordWrap": "默认在代码块、表格、Diff 和文件预览中为长行自动换行。"
+      },
+      "fontSmoothingAria": "字体平滑",
+      "wordWrapAria": "默认对代码、表格、Diff 和文件预览自动换行",
+      "resetLabels": {
+        "fontSmoothing": "字体平滑",
+        "wordWrapping": "自动换行"
+      }
+    },
+    "fontPicker": {
+      "notMonospaceTitle": "“{{family}}”不是等宽字体",
+      "notMonospaceDescription": "代码和终端需要等宽字体，因此保留了当前字体。",
+      "defaultLabel": "默认",
+      "searchPlaceholder": "搜索字体…",
+      "noFontsFound": "未找到字体。"
+    },
+    "colorPicker": {
+      "chooseColor": "选择颜色",
+      "chooseColorAria": "选择{{label}}颜色",
+      "hueAria": "{{label}}色相",
+      "panelHexAria": "{{label}}取色器 HEX 值",
+      "panelRgbAria": "{{label}}取色器 RGB 值",
+      "fieldHexAria": "{{label}} HEX 值",
+      "hideUsageAria": "隐藏{{label}}的使用位置",
+      "showUsageAria": "显示{{label}}的使用位置",
+      "hideUsageTooltip": "隐藏{{label}}的使用位置",
+      "showUsageTooltip": "显示{{label}}的使用位置",
+      "roles": {
+        "canvas": "背景",
+        "toolbar": "工具栏背景",
+        "toolbarForeground": "工具栏文字",
+        "toolbarBorder": "工具栏边框",
+        "toolbarControl": "工具栏控件",
+        "toolbarControlForeground": "工具栏控件文字",
+        "toolbarControlHover": "工具栏控件悬停",
+        "accent": "强调色",
+        "errorForeground": "错误文字",
+        "errorSurface": "错误背景",
+        "warningForeground": "警告文字",
+        "warningSurface": "警告背景",
+        "updateForeground": "更新文字",
+        "updateSurface": "更新背景"
+      }
+    },
+    "importDialog": {
+      "title": "添加主题",
+      "themeJson": "主题 JSON",
+      "sizeMb": "{{value}} MB",
+      "sizeKb": "{{value}} KB",
+      "sizeBytes": "{{value}} 字节",
+      "oversizedFile": "该文件大小为 {{size}}。主题文件通常只有几 KB，因此未读取此文件（上限 {{limit}}）。",
+      "readFailed": "无法读取该文件，请改为在下方粘贴 JSON。",
+      "failedWithReason": "{{name}}：{{reason}}",
+      "tooLarge": "文件过大",
+      "notAThemeFile": "不是主题文件",
+      "couldNotInstall": "无法安装",
+      "failed": "失败",
+      "orImportFile": "或从文件导入",
+      "chooseFiles": "选择文件",
+      "reading": "读取中…",
+      "alreadyInstalled": "已安装",
+      "updateExisting": "更新现有主题",
+      "keepBoth": "两者都保留",
+      "back": "返回",
+      "cancel": "取消",
+      "themeFile": "主题文件",
+      "dropHint": "拖入 T3 Code 或 VS Code 的 .json 文件",
+      "addTheme": "添加主题",
+      "selectFailed": "主题已添加，但无法选中，请重试。",
+      "invalidThemeFile": "该主题文件无效。",
+      "tooManyCopies": "“{{label}}”的副本过多。"
+    }
+  }
+}

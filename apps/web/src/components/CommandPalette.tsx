@@ -227,7 +227,12 @@ import { canShareWithGuestAtom } from "./chat/guestShareAvailability";
 import { openGuestShareDialog } from "./chat/guestShareDialogState";
 import { ProjectContentSearchDialog } from "./search/ProjectContentSearchDialog";
 import { toggleThemeEditorForTheme } from "./settings/themeEditorStore";
-import { settingsForThisPlatform, SETTINGS_SECTION_LABELS } from "./settings/settingsSearch";
+import {
+  settingsForThisPlatform,
+  settingsSectionLabel,
+  SETTINGS_SECTION_LABELS,
+} from "./settings/settingsSearch";
+import { useTranslation } from "react-i18next";
 import { primaryServerKeybindingsAtom } from "../state/server";
 import { resolveShortcutCommand, threadJumpIndexFromCommand } from "../keybindings";
 import { CommandDialog, CommandDialogPopup, CommandFooterAction } from "./ui/command";
@@ -479,6 +484,7 @@ function OpenCommandPaletteDialog(props: {
   readonly clearOpenIntent: () => void;
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pathname = useLocation({ select: (location) => location.pathname });
   const { clearOpenIntent, openIntent, openChildSearch, setOpen } = props;
   const initialSearch = props.initialContext ?? {
@@ -1652,9 +1658,15 @@ function OpenCommandPaletteDialog(props: {
   ).map((item) => ({
     kind: "action",
     value: `setting:${item.id}`,
-    searchTerms: [item.title, SETTINGS_SECTION_LABELS[item.to], ...(item.searchTerms ?? [])],
+    // Keep both languages searchable regardless of the active UI language.
+    searchTerms: [
+      item.title,
+      SETTINGS_SECTION_LABELS[item.to],
+      settingsSectionLabel(item.to),
+      ...(item.searchTerms ?? []),
+    ],
     title: item.title,
-    description: `Settings · ${SETTINGS_SECTION_LABELS[item.to]}`,
+    description: `${t("settings.breadcrumbRoot")} · ${settingsSectionLabel(item.to)}`,
     ...(item.secondary ? { secondary: true } : {}),
     icon: <SettingsIcon className={ITEM_ICON_CLASS} />,
     run: async () => {
