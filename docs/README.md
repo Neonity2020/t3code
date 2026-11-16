@@ -64,6 +64,7 @@ source alone does not explain. Most code changes do not need an internal documen
 
 ### Runbooks
 
+- [代码 Review 指南（中文版）](./operations/code-review.zh-CN.md)
 - [Development and local builds](./operations/development.md)
 - [Scenarios: real-app proof for a fix](./operations/scenarios.md)
 - [T3 Connect setup](./operations/connect-setup.md)
