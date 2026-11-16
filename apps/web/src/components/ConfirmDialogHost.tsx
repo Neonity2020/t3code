@@ -24,10 +24,7 @@ type ConfirmationCopy = {
   readonly description: string | null;
 };
 
-function resolveConfirmDialogCopy(
-  message: string,
-  gt: ReturnType<typeof useGT>,
-): ConfirmationCopy {
+function resolveConfirmDialogCopy(message: string, gt: ReturnType<typeof useGT>): ConfirmationCopy {
   const normalizedMessage = message.trim();
   const lines = normalizedMessage.split("\n");
   const questionLineIndex = lines.findIndex((line) => line.trim().endsWith("?"));

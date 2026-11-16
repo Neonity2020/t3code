@@ -8,6 +8,7 @@ import type { ProviderOptionDescriptor, RuntimeMode } from "@t3tools/contracts";
 import type { EffortDisplay } from "@t3tools/contracts/settings";
 import { getProviderOptionCurrentLabel } from "@t3tools/shared/model";
 import { CheckIcon, ChevronRightIcon, ChevronUpIcon, WorkflowIcon } from "lucide-react";
+import { msg, T, useGT, useMessages } from "gt-react";
 import { type KeyboardEvent, type ReactNode, use, useRef, useState } from "react";
 
 import { cn } from "~/lib/utils";
@@ -35,6 +36,40 @@ import {
 
 type SelectDescriptor = Extract<ProviderOptionDescriptor, { type: "select" }>;
 type BooleanDescriptor = Extract<ProviderOptionDescriptor, { type: "boolean" }>;
+
+const COMMON_TRAIT_LABELS: Readonly<Record<string, string>> = {
+  None: msg("None"),
+  Off: msg("Off"),
+  On: msg("On"),
+  Minimal: msg("Minimal"),
+  Low: msg("Low"),
+  Medium: msg("Medium"),
+  High: msg("High"),
+  "Extra high": msg("Extra high"),
+  "Extra High": msg("Extra high"),
+  Max: msg("Max"),
+  Auto: msg("Auto"),
+  Fast: msg("Fast"),
+  Ultrafast: msg("Ultrafast"),
+  Standard: msg("Standard"),
+  Effort: msg("Effort"),
+  Reasoning: msg("Reasoning"),
+  "Reasoning effort": msg("Reasoning effort"),
+  "Reasoning Effort": msg("Reasoning effort"),
+  Thinking: msg("Thinking"),
+  "Thinking level": msg("Thinking level"),
+  "Thinking Level": msg("Thinking level"),
+};
+
+function translateTraitText(m: ReturnType<typeof useMessages>, value: string): string {
+  const mapped = COMMON_TRAIT_LABELS[value];
+  return mapped ? m(mapped) : value;
+}
+
+function TranslatedTraitText(props: { value: string }) {
+  const m = useMessages();
+  return <>{translateTraitText(m, props.value)}</>;
+}
 
 /** Service tiers, Claude's Fast mode, and Ultracode sit in the footer, not the column. */
 function splitSpeed(
@@ -152,7 +187,7 @@ export function describeComposerEffort(
       >
         {word ? (
           <span data-composer-control-label className="max-w-24 truncate">
-            {word}
+            <TranslatedTraitText value={word} />
           </span>
         ) : glyph ? (
           <EffortGlyph count={glyph.count} filled={glyph.filled} size={size} />
@@ -209,11 +244,17 @@ function ColumnRow(props: {
       <span className="min-w-0 flex-1 truncate">{props.label}</span>
       {props.selected ? (
         <>
-          {props.isDefault ? <span className="sr-only">Default</span> : null}
+          {props.isDefault ? (
+            <span className="sr-only">
+              <T>Default</T>
+            </span>
+          ) : null}
           <CheckIcon aria-hidden="true" className="size-3.5" />
         </>
       ) : props.isDefault ? (
-        <span className="text-muted-foreground/70 text-xs">Default</span>
+        <span className="text-muted-foreground/70 text-xs">
+          <T>Default</T>
+        </span>
       ) : null}
     </>
   );
@@ -300,15 +341,20 @@ function EffortLevels(props: { traits: TraitsSelectionInput }) {
 type TraitsSelection = ReturnType<typeof useTraitsSelection>;
 
 function EffortRows(props: { control: ColumnControl; traits: TraitsSelection; locked: boolean }) {
+  const m = useMessages();
   const { control, traits } = props;
   const { descriptor } = control;
   if (control.kind === "boolean") {
     return (
-      <div role="radiogroup" aria-label={descriptor.label} className="flex flex-col gap-0.5">
+      <div
+        role="radiogroup"
+        aria-label={translateTraitText(m, descriptor.label)}
+        className="flex flex-col gap-0.5"
+      >
         {([true, false] as const).map((value) => (
           <ColumnRow
             key={String(value)}
-            label={value ? "On" : "Off"}
+            label={m(value ? COMMON_TRAIT_LABELS.On! : COMMON_TRAIT_LABELS.Off!)}
             selected={(control.descriptor.currentValue === true) === value}
             tabStop={(control.descriptor.currentValue === true) === value}
             onPick={() => traits.changeBoolean(descriptor.id, value)}
@@ -323,7 +369,11 @@ function EffortRows(props: { control: ColumnControl; traits: TraitsSelection; lo
   // An "Ultrathink:" prefix selects a level the column does not offer.
   const shown = choices.some((option) => option.id === value);
   return (
-    <div role="radiogroup" aria-label={descriptor.label} className="flex flex-col gap-0.5">
+    <div
+      role="radiogroup"
+      aria-label={translateTraitText(m, descriptor.label)}
+      className="flex flex-col gap-0.5"
+    >
       {locked ? (
         <div className="px-2 pb-1.5 text-muted-foreground/80 text-xs">
           {ULTRATHINK_IN_BODY_NOTE}
@@ -332,7 +382,7 @@ function EffortRows(props: { control: ColumnControl; traits: TraitsSelection; lo
       {choices.map((option, index) => (
         <ColumnRow
           key={option.id}
-          label={option.label}
+          label={translateTraitText(m, option.label)}
           selected={option.id === value}
           tabStop={shown ? option.id === value : index === 0}
           description={option.description}
@@ -448,7 +498,9 @@ function OptionMenuRow(props: {
                   ) : null}
                 </span>
                 {choice.isDefault ? (
-                  <span className="text-muted-foreground/70 text-xs">Default</span>
+                  <span className="text-muted-foreground/70 text-xs">
+                    <T>Default</T>
+                  </span>
                 ) : null}
                 <MenuRadioItemIndicator />
               </span>
@@ -466,16 +518,20 @@ function OptionSwitchRow(props: {
   traits: TraitsSelection;
   tabStop: boolean;
 }) {
+  const m = useMessages();
   const { descriptor, traits } = props;
   const checked = descriptor.currentValue === true;
   return (
     <label className={cn(OPTION_ROW, "has-focus-visible:bg-foreground/[0.09]")}>
-      <OptionRowText label={descriptor.label} value={checked ? "On" : "Off"} />
+      <OptionRowText
+        label={translateTraitText(m, descriptor.label)}
+        value={m(checked ? COMMON_TRAIT_LABELS.On! : COMMON_TRAIT_LABELS.Off!)}
+      />
       <Switch
         size="sm"
         checked={checked}
         onCheckedChange={(next) => traits.changeBoolean(descriptor.id, next)}
-        aria-label={descriptor.label}
+        aria-label={translateTraitText(m, descriptor.label)}
         data-effort-row
         tabIndex={props.tabStop ? 0 : -1}
       />
@@ -485,12 +541,16 @@ function OptionSwitchRow(props: {
 
 function NoEffortRow() {
   return (
-    <div className="flex h-8 items-center px-2 text-muted-foreground text-sm">No effort levels</div>
+    <div className="flex h-8 items-center px-2 text-muted-foreground text-sm">
+      <T>No effort levels</T>
+    </div>
   );
 }
 
 /** The model picker's effort column: the selected model's levels and its other options. */
 export function ComposerEffortColumn(props: { traits: TraitsSelectionInput | null }) {
+  const gt = useGT();
+  const m = useMessages();
   const picker = use(DockedPickerContext);
   const visibility = props.traits ? getTraitsSectionVisibility(props.traits) : null;
   const controls =
@@ -503,7 +563,11 @@ export function ComposerEffortColumn(props: { traits: TraitsSelectionInput | nul
       <div className="shrink-0 px-3 pt-2.5">
         <div className="flex h-8.25 -translate-y-px items-center gap-2 border-b border-border/70 pb-1.5 text-sm">
           <span className="text-muted-foreground">
-            {controls?.effort?.descriptor.label ?? (controls?.others.length ? "Options" : "Effort")}
+            {controls?.effort
+              ? translateTraitText(m, controls.effort.descriptor.label)
+              : controls?.others.length
+                ? gt("Options")
+                : gt("Effort")}
           </span>
           <span className="ms-auto min-w-0 truncate text-muted-foreground text-xs">
             {picker.modelLabel}
@@ -528,9 +592,11 @@ const FOOTER_SEGMENT =
 function SpeedSegment(props: {
   checked: boolean;
   label: string;
+  rawLabel?: string | undefined;
   description?: string | undefined;
   onPick: () => void;
 }) {
+  const boltKey = props.rawLabel ?? props.label;
   const buttonProps = {
     type: "button",
     role: "radio",
@@ -541,8 +607,8 @@ function SpeedSegment(props: {
   } as const;
   const content = (
     <>
-      {props.label === "Fast" || props.label === "Ultrafast" ? (
-        <FastBolt ultra={props.label === "Ultrafast"} />
+      {boltKey === "Fast" || boltKey === "Ultrafast" ? (
+        <FastBolt ultra={boltKey === "Ultrafast"} />
       ) : null}
       {props.label}
     </>
@@ -557,6 +623,7 @@ function SpeedSegment(props: {
 }
 
 function SpeedControl(props: { traits: TraitsSelectionInput }) {
+  const m = useMessages();
   const traits = useTraitsSelection(props.traits);
   const { speedSelect, fastToggle } = splitSpeed(
     traits.selectDescriptors,
@@ -574,20 +641,25 @@ function SpeedControl(props: { traits: TraitsSelectionInput }) {
             <SpeedSegment
               key={option.id}
               checked={option.id === traits.selectValue(speedSelect)}
-              label={option.label}
+              rawLabel={option.label}
+              label={translateTraitText(m, option.label)}
               description={option.description}
               onPick={() => traits.changeSelect(speedSelect, option.id)}
             />
           ))
         : fastToggle
-          ? ([false, true] as const).map((value) => (
-              <SpeedSegment
-                key={String(value)}
-                checked={(fastToggle.currentValue === true) === value}
-                label={value ? "Fast" : "Standard"}
-                onPick={() => traits.changeBoolean(fastToggle.id, value)}
-              />
-            ))
+          ? ([false, true] as const).map((value) => {
+              const rawLabel = value ? "Fast" : "Standard";
+              return (
+                <SpeedSegment
+                  key={String(value)}
+                  checked={(fastToggle.currentValue === true) === value}
+                  rawLabel={rawLabel}
+                  label={translateTraitText(m, rawLabel)}
+                  onPick={() => traits.changeBoolean(fastToggle.id, value)}
+                />
+              );
+            })
           : null}
     </div>
   );
@@ -620,10 +692,13 @@ function PermissionsMenu(props: {
   options: ReadonlyArray<RuntimeModeOption>;
   onChange: (mode: RuntimeMode) => void;
 }) {
+  const gt = useGT();
+  const m = useMessages();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const current = props.options.find((option) => option.mode === props.runtimeMode);
   if (!current) return null;
   const CurrentIcon = current.icon;
+  const translatedLabel = m(current.label);
   return (
     <Menu
       onOpenChangeComplete={(open) => {
@@ -636,13 +711,13 @@ function PermissionsMenu(props: {
             ref={triggerRef}
             type="button"
             data-composer-permissions-trigger
-            aria-label={`Permissions: ${current.label}`}
+            aria-label={gt("Permissions: {label}", { label: translatedLabel })}
             className="ms-auto flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2 text-muted-foreground text-xs outline-none hover:bg-foreground/[0.09] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-popup-open:bg-foreground/[0.09] data-popup-open:text-foreground"
           />
         }
       >
         <CurrentIcon aria-hidden="true" className="size-3.5" />
-        {current.label}
+        {translatedLabel}
         <ChevronUpIcon aria-hidden="true" className="size-3" />
       </MenuTrigger>
       <MenuPopup side="top" align="end" {...composerFloatingLayerProps}>

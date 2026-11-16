@@ -38,11 +38,7 @@ export function HostedEmptyState() {
         <Empty className="flex-1">
           <EmptyHeader>
             <EmptyTitle>
-              {localEnvironmentOff ? (
-                <T>This computer is off</T>
-              ) : (
-                <T>No computer connected</T>
-              )}
+              {localEnvironmentOff ? <T>This computer is off</T> : <T>No computer connected</T>}
             </EmptyTitle>
             <EmptyDescription>
               {localEnvironmentOff ? (

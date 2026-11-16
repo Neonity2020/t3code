@@ -404,12 +404,15 @@ export const ComposerPrimaryActions = memo(function ComposerPrimaryActions({
     (compactsBeforeSend
       ? gt("Summarize {compactTokens} tokens of history, then send", { compactTokens })
       : isRunning && !isEditingQueuedMessage && canSteer
-        ? gt("Click to {followUpBehavior}, {modifier}-click{alternateShortcut} to {alternateAction}", {
-            followUpBehavior,
-            modifier: isMacPlatform(navigator.platform) ? "⌘" : "Ctrl",
-            alternateShortcut: alternateShortcutLabel ? ` or ${alternateShortcutLabel}` : "",
-            alternateAction,
-          })
+        ? gt(
+            "Click to {followUpBehavior}, {modifier}-click{alternateShortcut} to {alternateAction}",
+            {
+              followUpBehavior,
+              modifier: isMacPlatform(navigator.platform) ? "⌘" : "Ctrl",
+              alternateShortcut: alternateShortcutLabel ? ` or ${alternateShortcutLabel}` : "",
+              alternateAction,
+            },
+          )
         : submitLabel);
 
   const sendButton = (
