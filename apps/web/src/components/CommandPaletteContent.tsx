@@ -1,4 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { T, useGT } from "gt-react";
 import { type ComponentProps, type ReactNode, type RefObject } from "react";
 
 import { Command, CommandFooter, CommandInput, CommandPanel } from "./ui/command";
@@ -53,7 +54,7 @@ type CommandPaletteContentProps = Omit<ComponentProps<typeof Command>, "children
 
 export function CommandPaletteContent({
   children,
-  escapeLabel = "Close",
+  escapeLabel,
   footerActionLabel,
   footerTrailing,
   inputAccessory,
@@ -64,6 +65,8 @@ export function CommandPaletteContent({
   testId,
   ...commandProps
 }: CommandPaletteContentProps) {
+  const gt = useGT();
+  const resolvedEscapeLabel = escapeLabel ?? gt("Close");
   return (
     <div className="contents" data-testid={testId}>
       <Command {...commandProps}>
@@ -99,7 +102,9 @@ export function CommandPaletteContent({
               <Kbd>
                 <ArrowDownIcon />
               </Kbd>
-              <span>Navigate</span>
+              <span>
+                <T>Navigate</T>
+              </span>
             </KbdGroup>
             {footerActionLabel !== undefined ? (
               <KbdGroup>
@@ -110,12 +115,14 @@ export function CommandPaletteContent({
             {showBackHint ? (
               <KbdGroup>
                 <Kbd>Backspace</Kbd>
-                <span>Back</span>
+                <span>
+                  <T>Back</T>
+                </span>
               </KbdGroup>
             ) : null}
             <KbdGroup>
               <Kbd>Esc</Kbd>
-              <span>{escapeLabel}</span>
+              <span>{resolvedEscapeLabel}</span>
             </KbdGroup>
           </div>
           {footerTrailing}

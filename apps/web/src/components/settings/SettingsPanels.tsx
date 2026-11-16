@@ -2288,17 +2288,22 @@ export function MaintenanceSettingsPanel() {
 }
 
 export function AboutSettingsPanel() {
+  const gt = useGT();
+  const setting = useTranslatedSearchableSetting();
   const primaryPolicy = usePrimaryManagedPolicy();
   // The Welcome page sets up this computer, so it needs one.
   const primaryEnvironmentId = usePrimaryEnvironmentId();
   const telemetryOff = managedTelemetryOffMessage(primaryPolicy);
   return (
     <SettingsPageContainer>
-      <SettingsSection id="about" title="App">
+      <SettingsSection id="about" title={gt("App")}>
         {primaryPolicy ? (
           <SettingsRow
-            title="Organization"
-            description={`This environment is managed by ${primaryPolicy.organization}. Some settings and features follow its policy.`}
+            title={gt("Organization")}
+            description={gt(
+              "This environment is managed by {organization}. Some settings and features follow its policy.",
+              { organization: primaryPolicy.organization },
+            )}
             control={
               primaryPolicy.supportUrl ? (
                 <Button
@@ -2308,7 +2313,7 @@ export function AboutSettingsPanel() {
                   size="sm"
                   variant="outline"
                 >
-                  Get help
+                  <T>Get help</T>
                 </Button>
               ) : null
             }
@@ -2321,31 +2326,33 @@ export function AboutSettingsPanel() {
             <SettingsRow
               id={searchableSetting("app-version").id}
               title={<AboutVersionTitle />}
-              description="Current version of the application."
+              description={<T>Current version of the application.</T>}
             />
           </>
         )}
         <MobileAppSettingsRow />
         {primaryEnvironmentId === null ? null : (
           <SettingsRow
-            {...searchableSetting("welcome-page")}
-            description="See your agents, import projects, and set up your phone."
+            {...setting("welcome-page")}
+            description={<T>See your agents, import projects, and set up your phone.</T>}
             control={
               <Button size="sm" variant="outline" render={<Link to="/welcome" />}>
-                Open
+                <T>Open</T>
               </Button>
             }
           />
         )}
       </SettingsSection>
 
-      <SettingsSection id="legal" title="Legal">
+      <SettingsSection id="legal" title={gt("Legal")}>
         <SettingsRow
-          {...searchableSetting("privacy-policy")}
+          {...setting("privacy-policy")}
           description={
-            telemetryOff === undefined
-              ? "How we handle your data, including the anonymous usage data T3 Code collects."
-              : `How we handle your data. ${telemetryOff}`
+            telemetryOff === undefined ? (
+              <T>How we handle your data, including the anonymous usage data T3 Code collects.</T>
+            ) : (
+              gt("How we handle your data. {telemetryOff}", { telemetryOff })
+            )
           }
           control={
             <Button
@@ -2353,20 +2360,20 @@ export function AboutSettingsPanel() {
               size="sm"
               variant="outline"
             >
-              View policy
+              <T>View policy</T>
             </Button>
           }
         />
         <SettingsRow
-          {...searchableSetting("open-source-licenses")}
-          description="Notices for dependencies, assets, and optional tools used by T3 Code."
+          {...setting("open-source-licenses")}
+          description={<T>Notices for dependencies, assets, and optional tools used by T3 Code.</T>}
           control={
             <Button
               render={<Link to="/settings/open-source-licenses" />}
               size="sm"
               variant="outline"
             >
-              View licenses
+              <T>View licenses</T>
             </Button>
           }
         />
