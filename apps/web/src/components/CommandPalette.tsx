@@ -74,6 +74,7 @@ import {
   RotateCcwIcon,
   SettingsIcon,
   MonitorIcon,
+  Columns3Icon,
   PinIcon,
   PinOffIcon,
   PlugIcon,
@@ -1683,6 +1684,23 @@ function OpenCommandPaletteDialog(props: {
       icon: <PullRequestGlyph.pullRequest className={ITEM_ICON_CLASS} />,
       run: async () => {
         await navigate({ to: "/pull-requests", search: readPullRequestListPreferences() });
+      },
+    });
+
+    actionItems.push({
+      kind: "action",
+      value: "action:kanban",
+      searchTerms: ["kanban", "board", "tasks", "backlog", "todo", "review", "project management"],
+      title: "Open Kanban board",
+      icon: <Columns3Icon className={ITEM_ICON_CLASS} />,
+      run: async () => {
+        await navigate({
+          to: "/kanban",
+          search:
+            currentProjectId !== null && currentProjectEnvironmentId !== null
+              ? { projectId: currentProjectId, environmentId: currentProjectEnvironmentId }
+              : {},
+        });
       },
     });
   }

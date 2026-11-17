@@ -481,6 +481,22 @@ export function summarizeT3ToolCalls(
     case "send-to-user":
       label = phrase("Sent", "send", quantity(selected.length, "message"));
       break;
+    case "kanban-list":
+      label = phrase("Listed", "list", `kanban cards${selected.length === 1 ? "" : ` ${times}`}`);
+      break;
+    case "kanban-read":
+      label = phrase("Read", "read", quantity(selected.length, "kanban card"));
+      break;
+    case "kanban-create":
+      label = phrase(
+        "Created",
+        "create",
+        quantity(selected.length, "kanban card batch", "kanban card batches"),
+      );
+      break;
+    case "kanban-update":
+      label = phrase("Updated", "update", quantity(selected.length, "kanban card"));
+      break;
     case "capabilities":
       label = phrase("Checked", "check", `orchestration capabilities ${times}`);
       break;

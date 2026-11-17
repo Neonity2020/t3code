@@ -19,6 +19,7 @@ import {
   ThreadId,
   EnvironmentId,
   ORCHESTRATION_V2_WS_METHODS,
+  ProjectId,
   ScheduledTaskId,
   WS_METHODS,
   type AuthSessionState,
@@ -540,6 +541,11 @@ it.effect("rejects protected unary and streamed RPCs outside a guarded command",
             writes++;
             return { id: ScheduledTaskId.make("task") };
           }),
+        [WS_METHODS.kanbanCreateCard]: () =>
+          Effect.sync(() => {
+            writes++;
+            return { card: {} };
+          }),
         [WS_METHODS.gitRunStackedAction]: () =>
           Stream.fromEffect(
             Effect.sync(() => {
@@ -556,6 +562,11 @@ it.effect("rejects protected unary and streamed RPCs outside a guarded command",
       id: ScheduledTaskId.make("task"),
     }).pipe(Effect.provideService(EnvironmentSupervisor, supervisor), Effect.flip);
     expect(unary._tag).toBe("EnvironmentAuthorizationError");
+    const kanbanUnary = yield* requestGuarded(WS_METHODS.kanbanCreateCard, {
+      projectId: ProjectId.make("proj-1"),
+      title: "Test card",
+    }).pipe(Effect.provideService(EnvironmentSupervisor, supervisor), Effect.flip);
+    expect(kanbanUnary._tag).toBe("EnvironmentAuthorizationError");
     const streamed = yield* runStreamGuarded(WS_METHODS.gitRunStackedAction, {
       actionId: "test-action",
       cwd: "/repo",

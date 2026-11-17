@@ -385,6 +385,23 @@ import {
   ScheduledTaskUpsertInput,
   ScheduledTaskMutationResult,
 } from "./scheduledTask.ts";
+import {
+  KanbanArchiveDoneInput,
+  KanbanArchiveDoneResult,
+  KanbanCreateCardInput,
+  KanbanDeleteCardInput,
+  KanbanDeleteCardResult,
+  KanbanError,
+  KanbanLinkThreadInput,
+  KanbanListInput,
+  KanbanListResult,
+  KanbanMoveCardInput,
+  KanbanMutationResult,
+  KanbanSetArchivedInput,
+  KanbanStartCardInput,
+  KanbanSubscribeInput,
+  KanbanUpdateCardInput,
+} from "./kanban.ts";
 import { SecretRequestAnswerInput, SecretRequestError } from "./secretRequest.ts";
 import {
   ProjectCloneActionInput,
@@ -562,6 +579,17 @@ export const WS_METHODS = {
   guestShareCreate: "guestShare.create",
   scheduledTasksListWebhookDeliveries: "scheduledTasks.listWebhookDeliveries",
   scheduledTasksGetWebhookDelivery: "scheduledTasks.getWebhookDelivery",
+
+  kanbanList: "kanban.list",
+  kanbanSubscribe: "kanban.subscribe",
+  kanbanCreateCard: "kanban.createCard",
+  kanbanUpdateCard: "kanban.updateCard",
+  kanbanMoveCard: "kanban.moveCard",
+  kanbanStartCard: "kanban.startCard",
+  kanbanLinkThread: "kanban.linkThread",
+  kanbanSetArchived: "kanban.setArchived",
+  kanbanArchiveDone: "kanban.archiveDone",
+  kanbanDeleteCard: "kanban.deleteCard",
 
   cloudGetRelayClientStatus: "cloud.getRelayClientStatus",
   cloudInstallRelayClient: "cloud.installRelayClient",
@@ -2062,6 +2090,69 @@ const WsScheduledTasksRotateWebhookTokenRpc = Rpc.make(
   },
 );
 
+const KanbanRpcError = Schema.Union([KanbanError, EnvironmentAuthorizationError]);
+
+const WsKanbanListRpc = Rpc.make(WS_METHODS.kanbanList, {
+  payload: KanbanListInput,
+  success: KanbanListResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanSubscribeRpc = Rpc.make(WS_METHODS.kanbanSubscribe, {
+  payload: KanbanSubscribeInput,
+  success: KanbanListResult,
+  error: KanbanRpcError,
+  stream: true,
+});
+
+const WsKanbanCreateCardRpc = Rpc.make(WS_METHODS.kanbanCreateCard, {
+  payload: KanbanCreateCardInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanUpdateCardRpc = Rpc.make(WS_METHODS.kanbanUpdateCard, {
+  payload: KanbanUpdateCardInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanMoveCardRpc = Rpc.make(WS_METHODS.kanbanMoveCard, {
+  payload: KanbanMoveCardInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanStartCardRpc = Rpc.make(WS_METHODS.kanbanStartCard, {
+  payload: KanbanStartCardInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanLinkThreadRpc = Rpc.make(WS_METHODS.kanbanLinkThread, {
+  payload: KanbanLinkThreadInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanSetArchivedRpc = Rpc.make(WS_METHODS.kanbanSetArchived, {
+  payload: KanbanSetArchivedInput,
+  success: KanbanMutationResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanArchiveDoneRpc = Rpc.make(WS_METHODS.kanbanArchiveDone, {
+  payload: KanbanArchiveDoneInput,
+  success: KanbanArchiveDoneResult,
+  error: KanbanRpcError,
+});
+
+const WsKanbanDeleteCardRpc = Rpc.make(WS_METHODS.kanbanDeleteCard, {
+  payload: KanbanDeleteCardInput,
+  success: KanbanDeleteCardResult,
+  error: KanbanRpcError,
+});
+
 const WsGuestShareCreateRpc = Rpc.make(WS_METHODS.guestShareCreate, {
   payload: GuestShareCreateInput,
   success: GuestShareCreateResult,
@@ -2181,6 +2272,16 @@ export const WsRpcGroup = RpcGroup.make(
   WsSecretsAnswerRequestRpc,
   WsScheduledTasksListWebhookDeliveriesRpc,
   WsScheduledTasksGetWebhookDeliveryRpc,
+  WsKanbanListRpc,
+  WsKanbanSubscribeRpc,
+  WsKanbanCreateCardRpc,
+  WsKanbanUpdateCardRpc,
+  WsKanbanMoveCardRpc,
+  WsKanbanStartCardRpc,
+  WsKanbanLinkThreadRpc,
+  WsKanbanSetArchivedRpc,
+  WsKanbanArchiveDoneRpc,
+  WsKanbanDeleteCardRpc,
   WsServerReportClientActivityRpc,
   WsCloudGetRelayClientStatusRpc,
   WsCloudInstallRelayClientRpc,

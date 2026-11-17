@@ -79,6 +79,22 @@ describe("RPC authorization scopes", () => {
     expect(requiredScopeForRpcMethod("server.getSettings")).toBe(AuthOrchestrationReadScope);
   });
 
+  it("lets readers subscribe to kanban boards while guarding card mutations with operate scope", () => {
+    expect(requiredScopeForRpcMethod(WS_METHODS.kanbanSubscribe)).toBe(AuthOrchestrationReadScope);
+    for (const method of [
+      WS_METHODS.kanbanCreateCard,
+      WS_METHODS.kanbanUpdateCard,
+      WS_METHODS.kanbanMoveCard,
+      WS_METHODS.kanbanStartCard,
+      WS_METHODS.kanbanLinkThread,
+      WS_METHODS.kanbanSetArchived,
+      WS_METHODS.kanbanArchiveDone,
+      WS_METHODS.kanbanDeleteCard,
+    ]) {
+      expect(requiredScopeForRpcMethod(method)).toBe(AuthOrchestrationOperateScope);
+    }
+  });
+
   it("rejects unknown RPC method names", () => {
     for (const method of ["server.notRegistered", "toString", "constructor"]) {
       expect(() => requiredScopeForRpcMethod(method)).toThrow(

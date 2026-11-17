@@ -33,6 +33,7 @@ import { useAtomValue } from "@effect/atom-react";
 import { useOrchestrationCommand } from "../../state/use-orchestration-command";
 import { readEnvironmentScope, useEnvironmentScope } from "../../state/session";
 import { ProjectFavicon } from "../ProjectFavicon";
+import { ThreadKanbanPill } from "../kanban/ThreadKanbanPill";
 import {
   WorkspaceBreadcrumb,
   WorkspaceBreadcrumbItem,
@@ -410,6 +411,15 @@ export const ChatHeader = memo(function ChatHeader({
           ) : null}
         </WorkspaceBreadcrumbItem>
       </WorkspaceBreadcrumb>
+      {isServerThread ? (
+        <div className="shrink-0 [-webkit-app-region:no-drag]">
+          <ThreadKanbanPill
+            environmentId={activeThreadEnvironmentId}
+            projectId={activeProject?.id ?? null}
+            threadId={activeThreadId}
+          />
+        </div>
+      ) : null}
       {isServerThread ? <GuestShareIndicator threadRef={activeThreadRef} /> : null}
     </div>
   );

@@ -333,3 +333,5 @@ export const RawEventId = makeEntityId("RawEventId");
 export type RawEventId = typeof RawEventId.Type;
 export const PlanId = makeEntityId("PlanId");
 export type PlanId = typeof PlanId.Type;
+export const KanbanCardId = makeEntityId("KanbanCardId");
+export type KanbanCardId = typeof KanbanCardId.Type;

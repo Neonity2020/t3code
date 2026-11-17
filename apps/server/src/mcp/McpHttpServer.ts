@@ -22,6 +22,7 @@ import {
   type RunId,
   RuntimeMode,
   OrchestrationV2LinkedSender,
+  resolveBuiltinPluginEnabled,
   ThreadId,
 } from "@t3tools/contracts";
 
@@ -88,6 +89,8 @@ import {
 import * as HtmlHandlers from "./toolkits/html/handlers.ts";
 import { MessageToolkit } from "./toolkits/message/tools.ts";
 import * as MessageHandlers from "./toolkits/message/handlers.ts";
+import { KANBAN_MCP_TOOL_NAMES, KanbanToolkit } from "./toolkits/kanban/tools.ts";
+import * as KanbanHandlers from "./toolkits/kanban/handlers.ts";
 import { HtmlPreviewTool, HtmlPreviewToolkit, HtmlRenderToolkit } from "./toolkits/html/tools.ts";
 import { MCP_HTTP_PATH } from "../httpCors.ts";
 import { requestUrl } from "../requestUrl.ts";
@@ -1262,6 +1265,36 @@ export const layerThreadToolkit = toolkitRegistration(ThreadToolkit, ThreadHandl
 
 const layerMessageToolkit = toolkitRegistration(MessageToolkit, MessageHandlers.layer);
 
+export const layerKanbanToolkit = toolkitRegistration(KanbanToolkit, KanbanHandlers.layer);
+
+export const layerKanbanPluginVisibility = McpServer.visibility(
+  Effect.gen(function* () {
+    const serverSettings = yield* Effect.serviceOption(ServerSettings.ServerSettingsService);
+    const threadManagement = yield* Effect.serviceOption(
+      ThreadManagementService.ThreadManagementService,
+    );
+    // Untraced: evaluated per tool on tools/list requests.
+    return Effect.fnUntraced(function* ({ method, target }: McpServer.MiddlewareOptions) {
+      if (method !== "tools/list" || !KANBAN_MCP_TOOL_NAMES.has(target)) return true;
+      if (Option.isNone(serverSettings)) return true;
+      const settings = yield* serverSettings.value.getSettings.pipe(
+        Effect.orElseSucceed(() => null),
+      );
+      if (settings === null) return true;
+      const scope = yield* Effect.serviceOption(McpInvocationContext.McpInvocationContext);
+      const threadId = Option.getOrUndefined(scope)?.thread?.threadId;
+      if (threadId === undefined || Option.isNone(threadManagement)) {
+        return resolveBuiltinPluginEnabled(settings, "kanban", null);
+      }
+      const shell = yield* threadManagement.value
+        .getThreadShell(threadId)
+        .pipe(Effect.orElseSucceed(() => null));
+      return resolveBuiltinPluginEnabled(settings, "kanban", shell?.projectId ?? null);
+    });
+  }),
+  { global: true },
+);
+
 const layerWorktreeToolkitRegistration = toolkitRegistration(
   WorktreeToolkit,
   WorktreeHandlers.layer,
@@ -1353,6 +1386,8 @@ export const layerTools = Layer.mergeAll(
   layerDeviceToolkit,
   layerHtmlToolkit,
   layerMessageToolkit,
+  layerKanbanToolkit,
+  layerKanbanPluginVisibility,
 );
 
 const layerToolExposure = Layer.effect(

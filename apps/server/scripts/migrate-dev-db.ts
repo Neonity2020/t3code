@@ -214,6 +214,7 @@ const CLEARED_TABLES: ReadonlyArray<string> = [
 ];
 
 const PROVIDER_SESSIONS_TABLE = "orchestration_v2_projection_provider_sessions";
+const KANBAN_CARDS_TABLE = "kanban_cards";
 const FTS5_SHADOW_SUFFIXES = ["_data", "_idx", "_content", "_docsize", "_config"];
 
 // Settled threads stay: they are most of real history, and the UI shows them.
@@ -392,12 +393,18 @@ const pruneSnapshot = Effect.fn("pruneDevDbSnapshot")(function* (input: RunMigra
   const threadTables = yield* sql<{ name: string }>`
     SELECT m.name FROM sqlite_master m, pragma_table_info(m.name) c
     WHERE m.type = 'table' AND c.name = 'thread_id'
-      AND m.name <> ${PROVIDER_SESSIONS_TABLE}`;
+      AND m.name NOT IN (${PROVIDER_SESSIONS_TABLE}, ${KANBAN_CARDS_TABLE})`;
 
   yield* sql.withTransaction(
     Effect.gen(function* () {
       yield* sql`DELETE FROM projection_projects
         WHERE project_id NOT IN (SELECT project_id FROM kept_projects)`;
+      yield* sql`DELETE FROM ${sql(KANBAN_CARDS_TABLE)}
+        WHERE project_id NOT IN (SELECT project_id FROM kept_projects)`;
+      yield* sql`UPDATE ${sql(KANBAN_CARDS_TABLE)}
+        SET thread_id = NULL
+        WHERE thread_id IS NOT NULL
+          AND thread_id NOT IN (SELECT thread_id FROM kept_threads)`;
       yield* sql`DELETE FROM ${sql(PROVIDER_SESSIONS_TABLE)}
         WHERE COALESCE(thread_id, '') NOT IN (SELECT thread_id FROM kept_threads)
           AND provider_session_id NOT IN (

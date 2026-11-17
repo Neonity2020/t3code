@@ -1257,6 +1257,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
           api.contextMenu.show(
             [
               { id: "new-thread", label: "New thread" },
+              { id: "open-kanban", label: "Open Kanban board" },
               { id: "copy-path", label: "Copy path" },
               ...(canPinProject(group)
                 ? [
@@ -1274,6 +1275,16 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
         switch (clicked.value) {
           case "new-thread":
             startThreadInProjectFolder(group);
+            return;
+          case "open-kanban":
+            if (isMobile) setOpenMobile(false);
+            void router.navigate({
+              to: "/kanban",
+              search: {
+                environmentId: group.environmentId,
+                projectId: group.id,
+              },
+            });
             return;
           case "copy-path":
             copyPathToClipboard(group.workspaceRoot, { path: group.workspaceRoot });

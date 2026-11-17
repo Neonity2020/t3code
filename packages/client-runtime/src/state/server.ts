@@ -1503,6 +1503,11 @@ export function createServerEnvironmentAtoms<R, E>(
       label: "environment-data:server:scheduled-tasks:live",
       tag: WS_METHODS.scheduledTasksSubscribe,
     }),
+    kanbanLive: createEnvironmentRpcSubscriptionAtomFamily(runtime, {
+      label: "environment-data:server:kanban:live",
+      tag: WS_METHODS.kanbanSubscribe,
+      idleTtlMs: 0,
+    }),
     // A cold transcript scan is measured in seconds, so keep the result around
     // long enough that switching windows or re-rendering does not rescan. With
     // nothing to show yet, the server's last scan answers first, then a plain
@@ -1795,6 +1800,38 @@ export function createServerEnvironmentAtoms<R, E>(
       tag: WS_METHODS.scheduledTasksRotateWebhookToken,
       scheduler: configScheduler,
       concurrency: configConcurrency,
+    }),
+    createKanbanCard: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:create-card",
+      tag: WS_METHODS.kanbanCreateCard,
+    }),
+    updateKanbanCard: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:update-card",
+      tag: WS_METHODS.kanbanUpdateCard,
+    }),
+    moveKanbanCard: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:move-card",
+      tag: WS_METHODS.kanbanMoveCard,
+    }),
+    startKanbanCard: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:start-card",
+      tag: WS_METHODS.kanbanStartCard,
+    }),
+    linkKanbanThread: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:link-thread",
+      tag: WS_METHODS.kanbanLinkThread,
+    }),
+    setKanbanCardArchived: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:set-archived",
+      tag: WS_METHODS.kanbanSetArchived,
+    }),
+    archiveDoneKanbanCards: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:archive-done",
+      tag: WS_METHODS.kanbanArchiveDone,
+    }),
+    deleteKanbanCard: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:kanban:delete-card",
+      tag: WS_METHODS.kanbanDeleteCard,
     }),
     createGuestShare: createEnvironmentRpcCommand(runtime, {
       label: "environment-data:server:guest-share:create",

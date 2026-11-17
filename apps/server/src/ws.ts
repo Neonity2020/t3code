@@ -125,6 +125,7 @@ import * as ThreadLaunchService from "./orchestration-v2/ThreadLaunchService.ts"
 import * as ThreadMessageIntake from "./orchestration-v2/ThreadMessageIntake.ts";
 import * as DocumentText from "./provider/DocumentText.ts";
 import * as ScheduledTasks from "./scheduledTasks/ScheduledTaskService.ts";
+import * as Kanban from "./kanban/KanbanService.ts";
 import * as SecretRequests from "./secrets/SecretRequests.ts";
 import * as GuestShareService from "./guest/GuestShareService.ts";
 import {
@@ -1471,6 +1472,7 @@ export const layerWsRpc = (
       const commandOutputHub = yield* CommandOutputHub.CommandOutputHub;
       const providerSessionManager = yield* ProviderSessionManager.ProviderSessionManagerV2;
       const scheduledTasks = yield* ScheduledTasks.ScheduledTaskService;
+      const kanban = yield* Kanban.KanbanService;
       const secretRequests = yield* SecretRequests.SecretRequests;
       const guestShares = yield* GuestShareService.GuestShareService;
       const pullRequests = yield* PullRequestService.PullRequestService;
@@ -2327,6 +2329,37 @@ export const layerWsRpc = (
         [WS_METHODS.scheduledTasksGetWebhookDelivery]: (input) =>
           Effect.annotateCurrentSpan({ "scheduled_task.id": input.id }).pipe(
             Effect.andThen(scheduledTasks.getWebhookDelivery(input)),
+          ),
+        [WS_METHODS.kanbanList]: (input) => kanban.list(input),
+        [WS_METHODS.kanbanSubscribe]: (_input) => kanban.subscribe(),
+        [WS_METHODS.kanbanCreateCard]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.project_id": input.projectId }).pipe(
+            Effect.andThen(kanban.createCard(input)),
+          ),
+        [WS_METHODS.kanbanUpdateCard]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.updateCard(input)),
+          ),
+        [WS_METHODS.kanbanMoveCard]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.moveCard(input)),
+          ),
+        [WS_METHODS.kanbanStartCard]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.startCard(input)),
+          ),
+        [WS_METHODS.kanbanLinkThread]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.linkThread(input)),
+          ),
+        [WS_METHODS.kanbanSetArchived]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.setArchived(input)),
+          ),
+        [WS_METHODS.kanbanArchiveDone]: (input) => kanban.archiveDone(input),
+        [WS_METHODS.kanbanDeleteCard]: (input) =>
+          Effect.annotateCurrentSpan({ "kanban.card_id": input.id }).pipe(
+            Effect.andThen(kanban.deleteCard(input)),
           ),
         [WS_METHODS.serverProbe]: (_input) => Effect.succeed({}),
         [WS_METHODS.serverGetConfig]: (_input) =>
