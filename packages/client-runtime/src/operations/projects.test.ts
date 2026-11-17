@@ -1,8 +1,10 @@
 import { SourceControlProviderKind } from "@t3tools/contracts";
+import * as Option from "effect/Option";
 import { describe, expect, it } from "vite-plus/test";
 import { EnvironmentId, ProjectId } from "@t3tools/contracts";
 
 import {
+  buildAddProjectRemoteSourceReadiness,
   findExistingAddProject,
   getCloneDestinationForPickedFolder,
   getCloneDestinationPath,
@@ -11,6 +13,7 @@ import {
   getCloneDirectoryPath,
   getDefaultCloneUrl,
   githubIncompleteOwnerRepositoryMessage,
+  INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE,
   normalizePastedCloneUrl,
   sortAddProjectProviderSources,
 } from "./projects.ts";
@@ -28,7 +31,7 @@ describe("add project shared logic", () => {
   it("asks for a repository name when GitHub input is only an owner path", () => {
     const github = SourceControlProviderKind.make("github");
     expect(githubIncompleteOwnerRepositoryMessage(github, "pingdotgg/")).toBe(
-      "Enter the full owner/repository name.",
+      INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE,
     );
     expect(githubIncompleteOwnerRepositoryMessage(github, "  pingdotgg//  ")).toBe(
       "Enter the full owner/repository name.",
@@ -220,5 +223,82 @@ describe("add project shared logic", () => {
     expect(findExistingAddProject({ projects, environmentId: env, path: "/repo" })?.id).toBe(
       "project",
     );
+  });
+
+  it("classifies disabled remote source reasons independently of hint copy", () => {
+    const github = SourceControlProviderKind.make("github");
+    const gitlab = SourceControlProviderKind.make("gitlab");
+    const forgejo = SourceControlProviderKind.make("forgejo");
+
+    expect(buildAddProjectRemoteSourceReadiness(null)(github)).toMatchObject({
+      ready: false,
+      reason: "unavailable",
+    });
+
+    const readiness = buildAddProjectRemoteSourceReadiness({
+      versionControlSystems: [],
+      sourceControlProviders: [
+        {
+          kind: github,
+          label: "GitHub",
+          status: "available",
+          version: Option.none(),
+          installHint: "Install gh",
+          detail: Option.none(),
+          auth: {
+            status: "unauthenticated",
+            account: Option.none(),
+            host: Option.none(),
+            detail: Option.none(),
+          },
+        },
+        {
+          kind: gitlab,
+          label: "GitLab",
+          status: "available",
+          version: Option.none(),
+          installHint: "Install glab",
+          detail: Option.none(),
+          auth: {
+            status: "unauthenticated",
+            account: Option.none(),
+            host: Option.none(),
+            detail: Option.some("Token expired."),
+          },
+        },
+        {
+          kind: forgejo,
+          label: "Forgejo",
+          status: "missing",
+          version: Option.none(),
+          installHint: "Install tea",
+          detail: Option.none(),
+          auth: {
+            status: "unknown",
+            account: Option.none(),
+            host: Option.none(),
+            detail: Option.none(),
+          },
+        },
+      ],
+    });
+
+    expect(readiness("url")).toEqual({ ready: true, hint: null });
+    expect(readiness(github)).toMatchObject({
+      ready: false,
+      reason: "unauthenticated",
+      detail: null,
+    });
+    expect(readiness(gitlab)).toMatchObject({
+      ready: false,
+      reason: "unauthenticated",
+      detail: "Token expired.",
+      hint: "Token expired.",
+    });
+    expect(readiness(forgejo)).toEqual({
+      ready: false,
+      reason: "not-installed",
+      hint: "Install tea",
+    });
   });
 });

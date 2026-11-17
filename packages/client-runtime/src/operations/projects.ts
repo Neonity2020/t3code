@@ -47,9 +47,13 @@ export function availableScratchWorkspaceRoot(
     : null;
 }
 
+type AddProjectRemoteSourceDisabledReason = "unavailable" | "not-installed" | "unauthenticated";
+
 export interface AddProjectRemoteSourceReadinessEntry {
   readonly ready: boolean;
   readonly hint: string | null;
+  readonly reason?: AddProjectRemoteSourceDisabledReason;
+  readonly detail?: string | null;
 }
 
 export type AddProjectRemoteSourceReadiness = (
@@ -112,7 +116,7 @@ export function defaultHostCloneUrl(repository: string): string | null {
 /** Owner present, repository name missing: `owner/` or `owner//`. */
 const INCOMPLETE_GITHUB_OWNER_PATH = /^[A-Za-z0-9](?:[A-Za-z0-9_-]{0,38})\/+$/;
 
-const INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE = "Enter the full owner/repository name.";
+export const INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE = "Enter the full owner/repository name.";
 
 /**
  * Message to show when a GitHub add-project field is only `owner/`.
@@ -176,6 +180,7 @@ export function sortAddProjectProviderSources(
 const READY: AddProjectRemoteSourceReadinessEntry = { ready: true, hint: null };
 const UNAVAILABLE: AddProjectRemoteSourceReadinessEntry = {
   ready: false,
+  reason: "unavailable",
   hint: "Provider status unavailable. Open Source Control settings and rescan.",
 };
 
@@ -189,12 +194,17 @@ export function buildAddProjectRemoteSourceReadiness(
     if (source === "url") return READY;
     const provider = providerByKind.get(source);
     if (!provider) return UNAVAILABLE;
-    if (provider.status !== "available") return { ready: false, hint: provider.installHint };
+    if (provider.status !== "available") {
+      return { ready: false, reason: "not-installed", hint: provider.installHint };
+    }
     if (provider.auth.status === "unauthenticated") {
+      const detail = Option.getOrNull(provider.auth.detail);
       return {
         ready: false,
+        reason: "unauthenticated",
+        detail,
         hint:
-          Option.getOrNull(provider.auth.detail) ??
+          detail ??
           `${provider.label} is not authenticated. Open Source Control settings for setup guidance.`,
       };
     }

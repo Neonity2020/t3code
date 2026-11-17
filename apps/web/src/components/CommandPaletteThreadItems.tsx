@@ -15,6 +15,7 @@ import {
 import type { EnvironmentId, ThreadId } from "@t3tools/contracts";
 import { useAtomValue } from "@effect/atom-react";
 import { useNavigate } from "@tanstack/react-router";
+import { useGT } from "gt-react";
 import { MessageSquareIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -97,6 +98,7 @@ export function useCommandPaletteThreadItems(input: {
   readonly activeThread: { readonly environmentId: EnvironmentId; readonly id: ThreadId } | null;
   readonly threadSearchQuery: string;
 }) {
+  const gt = useGT();
   const { activeThread, threadSearchQuery } = input;
   const navigate = useNavigate();
   const threads = useVisibleThreadShells();
@@ -144,7 +146,7 @@ export function useCommandPaletteThreadItems(input: {
           project={projectByKey.get(`${thread.environmentId}:${thread.projectId}`) ?? null}
           projectTitle={projectTitle ?? null}
           environmentLabel={
-            projectEnvironmentLocationById.get(thread.environmentId)?.label ?? "Remote"
+            projectEnvironmentLocationById.get(thread.environmentId)?.label ?? gt("Remote")
           }
           branch={thread.branch}
           worktreePath={thread.worktreePath}

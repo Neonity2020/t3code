@@ -15,6 +15,7 @@ import {
   addProjectRemoteSourceLabel,
   addProjectRemoteSourcePathHint,
   buildAddProjectRemoteSourceReadiness,
+  INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE,
   type AddProjectRemoteSource,
   type AddProjectRemoteSourceReadiness,
 } from "@t3tools/client-runtime/operations/projects";
@@ -31,6 +32,7 @@ import {
 } from "@t3tools/contracts";
 import { filterFilesystemBrowseEntries } from "@t3tools/client-runtime/state/filesystem";
 import { isShownUnderParent } from "@t3tools/client-runtime/state/threads";
+import { msg } from "gt-react";
 import { type ReactNode } from "react";
 import { formatRelativeTimeLabel } from "../timestampFormat";
 import { type Project, type SidebarThreadSummary, type Thread } from "../types";
@@ -44,6 +46,9 @@ export function buildLinkedThreadActionItems(
   input: CommandPaletteLinkedThreads & {
     query: string;
     icon: ReactNode;
+    untitledLabel?: string;
+    linkedLabel?: string;
+    archivedLabel?: string;
     runThread: (thread: Pick<SidebarThreadSummary, "environmentId" | "id">) => Promise<void>;
   },
 ): CommandPaletteActionItem[] {
@@ -51,8 +56,11 @@ export function buildLinkedThreadActionItems(
     kind: "action",
     value: `thread:${input.environmentId}:${thread.id}`,
     threadRef: { environmentId: input.environmentId, threadId: thread.id },
-    title: thread.title || "Untitled thread",
-    description: thread.archivedAt === null ? "Linked thread" : "Archived thread",
+    title: thread.title || (input.untitledLabel ?? "Untitled thread"),
+    description:
+      thread.archivedAt === null
+        ? (input.linkedLabel ?? "Linked thread")
+        : (input.archivedLabel ?? "Archived thread"),
     searchTerms: [input.query, thread.title],
     icon: input.icon,
     run: () => input.runThread({ environmentId: input.environmentId, id: thread.id }),
@@ -229,6 +237,7 @@ export interface CommandPaletteSubmenuItem extends CommandPaletteItem {
   readonly addonIcon: ReactNode;
   readonly groups: ReadonlyArray<CommandPaletteGroup>;
   readonly initialQuery?: string;
+  readonly nestedItemTitle?: (childTitle: string) => string;
 }
 
 export interface CommandPaletteGroup {
@@ -357,12 +366,14 @@ export type CommandPaletteProject = Project & { readonly displayName: string };
 export function buildCommandPaletteProjectMetadata(input: {
   readonly projects: ReadonlyArray<Pick<Project, "environmentId" | "title" | "workspaceRoot">>;
   readonly locationByEnvironmentId: ReadonlyMap<EnvironmentId, { readonly label: string }>;
+  readonly unknownLocationLabel?: string;
 }) {
+  const fallbackLabel = input.unknownLocationLabel ?? "Remote";
   const searchTerms: string[] = [];
   const environmentLabels = new Set<string>();
 
   for (const project of input.projects) {
-    const label = input.locationByEnvironmentId.get(project.environmentId)?.label ?? "Remote";
+    const label = input.locationByEnvironmentId.get(project.environmentId)?.label ?? fallbackLabel;
     searchTerms.push(project.title, project.workspaceRoot, label);
     environmentLabels.add(label);
   }
@@ -610,28 +621,28 @@ export function filterCommandPaletteGroups(input: {
     if (input.allOptions && input.allOptions.nestedItems.length > 0) {
       searchableGroups.push({
         value: "nested-search",
-        label: "Suggestions",
+        label: msg("Suggestions"),
         items: input.allOptions.nestedItems,
       });
     }
     if (input.threadSearchItems.length > 0) {
       searchableGroups.push({
         value: "threads-search",
-        label: "Threads",
+        label: msg("Threads"),
         items: input.threadSearchItems,
       });
     }
     if (input.projectSearchItems.length > 0) {
       searchableGroups.push({
         value: "projects-search",
-        label: "Projects",
+        label: msg("Projects"),
         items: input.projectSearchItems,
       });
     }
     if (input.settingsSearchItems && input.settingsSearchItems.length > 0) {
       searchableGroups.push({
         value: "settings-search",
-        label: "Settings",
+        label: msg("Settings"),
         items: input.settingsSearchItems,
       });
     }
@@ -673,7 +684,7 @@ export function filterCommandPaletteGroups(input: {
   const messageItems = (input.threadMessageItems ?? []).filter((item) => !listed.has(item.value));
   return messageItems.length === 0
     ? groups
-    : [...groups, { value: "threads-messages", label: "In messages", items: messageItems }];
+    : [...groups, { value: "threads-messages", label: msg("In messages"), items: messageItems }];
 }
 
 /** Every option inside a submenu as one row, e.g. "New thread in t3code" or "Change theme: Dracula". */
@@ -695,7 +706,7 @@ export function buildNestedSearchItems(
       group.items.flatMap((child) => {
         const name = nameOf(child);
         if (child.kind !== "action" || name === undefined) return [];
-        const title = `${prefix}${name}`;
+        const title = parent.nestedItemTitle ? parent.nestedItemTitle(name) : `${prefix}${name}`;
         if (topLevelNames.has(title)) return [];
         const { searchTitle: _searchTitle, ...rest } = child;
         // Only the combined title: child keywords like "theme" would list every theme.
@@ -744,7 +755,7 @@ export function buildBrowseGroups(input: {
     });
   }
 
-  return [{ value: "directories", label: "Directories", items }];
+  return [{ value: "directories", label: msg("Directories"), items }];
 }
 
 export function filterPinnedBrowseEntries(input: {
@@ -787,12 +798,12 @@ export function buildRootGroups(input: {
 }): CommandPaletteGroup[] {
   const groups: CommandPaletteGroup[] = [];
   if (input.actionItems.length > 0) {
-    groups.push({ value: "actions", label: "Actions", items: input.actionItems });
+    groups.push({ value: "actions", label: msg("Actions"), items: input.actionItems });
   }
   if (input.recentThreadItems.length > 0) {
     groups.push({
       value: "recent-threads",
-      label: "Recent Threads",
+      label: msg("Recent Threads"),
       items: input.recentThreadItems,
     });
   }
@@ -802,13 +813,13 @@ export function buildRootGroups(input: {
 export function getCommandPaletteInputPlaceholder(mode: CommandPaletteMode): string {
   switch (mode) {
     case "root":
-      return "Search commands, projects, and threads...";
+      return msg("Search commands, projects, and threads...");
     case "root-browse":
-      return "Enter project path (e.g. ~/projects/my-app)";
+      return msg("Enter project path (e.g. ~/projects/my-app)");
     case "submenu":
-      return "Search...";
+      return msg("Search...");
     case "submenu-browse":
-      return "Enter path (e.g. ~/projects/my-app)";
+      return msg("Enter path (e.g. ~/projects/my-app)");
   }
 }
 
@@ -853,9 +864,12 @@ export function remoteProjectInputPlaceholder(flow: AddProjectCloneFlow | null):
   if (!flow) return null;
   if (flow.step === "confirm") return null;
   if (flow.source === "url") {
-    return "Enter Git clone URL";
+    return msg("Enter Git clone URL");
   }
-  return `Enter ${addProjectRemoteSourceLabel(flow.source)} repository (${addProjectRemoteSourcePathHint(flow.source)})`;
+  return msg("Enter {provider} repository ({pathHint})", {
+    provider: addProjectRemoteSourceLabel(flow.source),
+    pathHint: addProjectRemoteSourcePathHint(flow.source),
+  });
 }
 
 export function buildPaletteRemoteSourceReadiness(
@@ -864,23 +878,45 @@ export function buildPaletteRemoteSourceReadiness(
   const readiness = buildAddProjectRemoteSourceReadiness(discovery);
   return (source) => {
     const entry = readiness(source);
+    if (entry.ready) return entry;
+    if (entry.reason === "unavailable") {
+      return {
+        ...entry,
+        hint: msg("Provider status unavailable. Open Settings -> Source control and rescan."),
+      };
+    }
+    if (entry.reason === "unauthenticated" && !entry.detail) {
+      return {
+        ...entry,
+        hint: msg(
+          "{provider} is not authenticated. Open Settings -> Source control for setup guidance.",
+          { provider: addProjectRemoteSourceLabel(source) },
+        ),
+      };
+    }
     return entry.hint === null
       ? entry
       : {
           ...entry,
           hint: entry.hint.replace(
-            "Open source control settings",
+            /Open source control settings/i,
             "Open Settings -> Source control",
           ),
         };
   };
 }
 
+export function localizeIncompleteOwnerRepositoryMessage(message: string): string {
+  return message === INCOMPLETE_GITHUB_OWNER_REPOSITORY_MESSAGE
+    ? msg("Enter the full owner/repository name.")
+    : message;
+}
+
 export function errorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim().length > 0) {
     return error.message;
   }
-  return "An error occurred.";
+  return msg("An error occurred.");
 }
 
 const OVERLAY_MODE_BY_COMMAND = {

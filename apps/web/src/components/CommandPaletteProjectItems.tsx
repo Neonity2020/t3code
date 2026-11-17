@@ -1,4 +1,5 @@
 import type { EnvironmentId, EnvironmentMachineKind } from "@t3tools/contracts";
+import { T, useGT } from "gt-react";
 
 import type { SidebarProjectSnapshot } from "../sidebarProjectGrouping";
 import type { Project } from "../types";
@@ -19,16 +20,11 @@ export interface CommandPaletteProjectLocation {
   readonly machine: EnvironmentMachineKind;
 }
 
-const UNKNOWN_PROJECT_LOCATION: CommandPaletteProjectLocation = {
-  kind: "remote",
-  label: "Remote",
-  machine: "server",
-};
-
 interface ProjectItemsInput {
   readonly projects: ReadonlyArray<CommandPaletteProject>;
   readonly projectGroupByTargetKey: ReadonlyMap<string, SidebarProjectSnapshot>;
   readonly locationByEnvironmentId: ReadonlyMap<EnvironmentId, CommandPaletteProjectLocation>;
+  readonly unknownLocationLabel?: string;
   readonly runProject: (project: CommandPaletteProject) => Promise<void>;
   readonly pin?: (project: CommandPaletteProject) => CommandPaletteItemPin | null;
 }
@@ -46,16 +42,29 @@ export function buildProjectSearchItems(input: ProjectItemsInput) {
   return buildProjectActionItems({
     projects: input.projects,
     valuePrefix: "project",
-    searchTerms: (project) =>
-      buildCommandPaletteProjectMetadata({
-        projects: membersOf(project),
-        locationByEnvironmentId: input.locationByEnvironmentId,
-      }).searchTerms,
+    searchTerms: (project) => {
+      const members = membersOf(project);
+      return [
+        ...buildCommandPaletteProjectMetadata({
+          projects: members,
+          locationByEnvironmentId: input.locationByEnvironmentId,
+          ...(input.unknownLocationLabel !== undefined
+            ? { unknownLocationLabel: input.unknownLocationLabel }
+            : {}),
+        }).searchTerms,
+        ...members.map(
+          (member) => input.locationByEnvironmentId.get(member.environmentId)?.kind ?? "remote",
+        ),
+      ];
+    },
     renderDescription: (project) => {
       const members = membersOf(project);
       const metadata = buildCommandPaletteProjectMetadata({
         projects: members,
         locationByEnvironmentId: input.locationByEnvironmentId,
+        ...(input.unknownLocationLabel !== undefined
+          ? { unknownLocationLabel: input.unknownLocationLabel }
+          : {}),
       });
       return members.length > 1 ? (
         <span className="truncate">{metadata.environmentLabels.join(" · ")}</span>
@@ -84,7 +93,7 @@ export function buildNewThreadInProjectItems(
       const location = input.locationByEnvironmentId.get(project.environmentId);
       return [
         ...(group?.memberProjects.flatMap((member) => [member.title, member.workspaceRoot]) ?? []),
-        ...(location ? [location.label] : []),
+        ...(location ? [location.label, location.kind] : []),
       ];
     },
     renderDescription: (project) => (
@@ -105,12 +114,19 @@ function ProjectLocationDescription(props: {
   readonly workspaceRoot: string;
   readonly current?: boolean;
 }) {
-  const location = props.location ?? UNKNOWN_PROJECT_LOCATION;
+  const gt = useGT();
+  const location = props.location ?? {
+    kind: "remote" as const,
+    label: gt("Remote"),
+    machine: "server" as const,
+  };
   return (
     <span className="flex min-w-0 items-center gap-1">
       {props.current ? (
         <>
-          <span className="shrink-0">Current</span>
+          <span className="shrink-0">
+            <T>Current</T>
+          </span>
           <CommandPaletteMetaDot />
         </>
       ) : null}

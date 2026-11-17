@@ -101,7 +101,7 @@ function findSchemas({ cwd, configPath, files }: Project) {
 // The preprocessor loads this file again as each worker.
 if (!NodeWorkerThreads.isMainThread) {
   const projects: ReadonlyArray<Project> = NodeWorkerThreads.workerData;
-  NodeWorkerThreads.parentPort?.postMessage(projects.flatMap(findSchemas));
+  NodeWorkerThreads.parentPort?.postMessage({ schemas: projects.flatMap(findSchemas) });
 }
 
 // Three workers measured fastest. Each one parses Effect again, so more
@@ -147,7 +147,20 @@ const preprocess = async (options: Parameters<Preprocessor>[0]) => {
     workers.map(
       (worker) =>
         new Promise<ReturnType<typeof findSchemas>>((resolve, reject) => {
-          worker.once("message", resolve);
+          // Node/Vite loaders emit watch messages on the worker channel before user code runs.
+          const onMessage = (message: unknown) => {
+            if (
+              typeof message !== "object" ||
+              message === null ||
+              !("schemas" in message) ||
+              !Array.isArray(message.schemas)
+            ) {
+              return;
+            }
+            worker.off("message", onMessage);
+            resolve(message.schemas as ReturnType<typeof findSchemas>);
+          };
+          worker.on("message", onMessage);
           worker.once("error", reject);
           worker.once("exit", (code) => {
             if (code !== 0) reject(new Error(`knip-schemas worker exited with code ${code}`));

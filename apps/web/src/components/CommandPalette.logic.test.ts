@@ -1,11 +1,21 @@
 import { threadKey } from "@t3tools/client-runtime/state/entities";
+import * as Option from "effect/Option";
+import { decodeMsg, decodeOptions } from "gt-react";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { EnvironmentId, ProjectId, ProviderInstanceId, ThreadId } from "@t3tools/contracts";
+import {
+  EnvironmentId,
+  ProjectId,
+  ProviderInstanceId,
+  SourceControlProviderKind,
+  ThreadId,
+} from "@t3tools/contracts";
 import type { Thread } from "../types";
 import { makeThreadFixture } from "../test-fixtures";
 import {
   newThreadNoProjectIndex,
   buildNestedSearchItems,
+  buildPaletteRemoteSourceReadiness,
+  localizeIncompleteOwnerRepositoryMessage,
   resolveCommandPaletteProject,
   buildThreadActionItems,
   buildLinkedThreadActionItems,
@@ -268,6 +278,16 @@ describe("buildThreadActionItems", () => {
     expect(search("new thread", false).map(([label]) => label)).not.toContain("Suggestions");
     expect(search("t3", true)).toEqual([["Projects", ["t3code"]]]);
     expect(search("add project", true)).toEqual([["Actions", ["Add project"]]]);
+
+    const localizedCurrent = action("action:new-thread", "在 t3code 中新建线程");
+    const localizedSubmenu = {
+      ...newThreadIn,
+      title: "在项目中新建线程...",
+      nestedItemTitle: (project: string) => `在 ${project} 中新建线程`,
+    };
+    expect(
+      buildNestedSearchItems([localizedCurrent, localizedSubmenu], "web").map((item) => item.title),
+    ).toEqual(["在 web 中新建线程"]);
   });
 
   it("lists message matches last, once, without moving the title matches above them", () => {
@@ -985,5 +1005,68 @@ describe("newThreadNoProjectIndex", () => {
   it("keeps a pinned or current scratch project in its own place", () => {
     expect(newThreadNoProjectIndex([entry(false, true, true), entry()])).toBe(0);
     expect(newThreadNoProjectIndex([entry(true), entry(true, false, true), entry()])).toBe(1);
+  });
+});
+
+describe("CommandPalette remote source localization", () => {
+  it("maps structured readiness reasons to translatable palette hints and preserves custom details", () => {
+    const github = SourceControlProviderKind.make("github");
+    const gitlab = SourceControlProviderKind.make("gitlab");
+
+    expect(buildPaletteRemoteSourceReadiness(null)(github).hint).toBe(
+      "Provider status unavailable. Open Settings -> Source control and rescan.",
+    );
+
+    const readiness = buildPaletteRemoteSourceReadiness({
+      versionControlSystems: [],
+      sourceControlProviders: [
+        {
+          kind: github,
+          label: "GitHub",
+          status: "available",
+          version: Option.none(),
+          installHint: "Install gh",
+          detail: Option.none(),
+          auth: {
+            status: "unauthenticated",
+            account: Option.none(),
+            host: Option.none(),
+            detail: Option.none(),
+          },
+        },
+        {
+          kind: gitlab,
+          label: "GitLab",
+          status: "available",
+          version: Option.none(),
+          installHint: "Install glab",
+          detail: Option.none(),
+          auth: {
+            status: "unauthenticated",
+            account: Option.none(),
+            host: Option.none(),
+            detail: Option.some("Expired token. Open Source Control settings to re-authenticate."),
+          },
+        },
+      ],
+    });
+
+    const githubHint = readiness(github).hint!;
+    expect(decodeMsg(githubHint)).toBe(
+      "GitHub is not authenticated. Open Settings -> Source control for setup guidance.",
+    );
+    expect(decodeOptions(githubHint)).toMatchObject({ provider: "GitHub" });
+    expect(readiness(gitlab).hint).toBe(
+      "Expired token. Open Settings -> Source control to re-authenticate.",
+    );
+  });
+
+  it("localizes the standard incomplete GitHub owner message while preserving custom messages", () => {
+    expect(localizeIncompleteOwnerRepositoryMessage("Enter the full owner/repository name.")).toBe(
+      "Enter the full owner/repository name.",
+    );
+    expect(localizeIncompleteOwnerRepositoryMessage("Enter group/project/repository.")).toBe(
+      "Enter group/project/repository.",
+    );
   });
 });

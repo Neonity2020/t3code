@@ -1,7 +1,8 @@
+import { decodeMsg, decodeOptions } from "gt-react";
 import { ProviderDriverKind, type ManagedPolicySummary } from "@t3tools/contracts";
 import { describe, expect, it } from "vite-plus/test";
 
-import { managedInstanceLocks } from "./managedPolicy";
+import { managedInstanceLocks, managedTelemetryOffMessage } from "./managedPolicy";
 
 const codex = ProviderDriverKind.make("codex");
 const claude = ProviderDriverKind.make("claudeAgent");
@@ -41,5 +42,23 @@ describe("managedInstanceLocks", () => {
   it("locks nothing for drivers the policy does not pin, or without a policy", () => {
     expect(managedInstanceLocks(policy, claude)).toBeUndefined();
     expect(managedInstanceLocks(undefined, codex)).toBeUndefined();
+  });
+});
+
+describe("managedTelemetryOffMessage", () => {
+  it("encodes a translatable organization message only when telemetry is disabled", () => {
+    expect(managedTelemetryOffMessage(undefined)).toBeUndefined();
+    expect(managedTelemetryOffMessage(policy)).toBeUndefined();
+
+    const message = managedTelemetryOffMessage({
+      ...policy,
+      limits: { telemetry: false },
+    });
+    expect(message).toBeDefined();
+    expect(decodeMsg(message!)).toBe("Example Corp turned off anonymous usage data.");
+    expect(decodeOptions(message!)).toMatchObject({
+      organization: "Example Corp",
+      $_source: "{organization} turned off anonymous usage data.",
+    });
   });
 });

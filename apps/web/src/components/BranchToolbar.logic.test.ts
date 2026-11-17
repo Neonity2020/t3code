@@ -9,7 +9,9 @@ import {
   resolveEffectiveEnvMode,
   resolveBranchToolbarPrBranch,
   resolveConfirmedSelectedRef,
+  resolveCurrentWorkspaceLabel,
   resolveDefaultWorktreeBaseBranch,
+  resolveEnvModeLabel,
   resolveLocalCheckoutBranchMismatch,
   resolveLockedWorkspaceLabel,
   sanitizeNewRefName,
@@ -122,6 +124,15 @@ describe("resolveLockedWorkspaceLabel", () => {
     ["C:\\Users\\me\\worktrees\\feature-x", "feature-x"],
   ])("names the worktree at %s", (path, label) => {
     expect(resolveLockedWorkspaceLabel(path, "worktree")).toBe(label);
+  });
+
+  it("returns translatable workspace descriptors when no worktree path is active", () => {
+    expect(resolveEnvModeLabel("local")).toBe("Current checkout");
+    expect(resolveEnvModeLabel("worktree")).toBe("New worktree");
+    expect(resolveCurrentWorkspaceLabel(null)).toBe("Current checkout");
+    expect(resolveCurrentWorkspaceLabel("/repo/.t3/worktrees/feature-a")).toBe("Current worktree");
+    expect(resolveLockedWorkspaceLabel(null, "local")).toBe("Local checkout");
+    expect(resolveLockedWorkspaceLabel(null, "worktree")).toBe("New worktree");
   });
 });
 

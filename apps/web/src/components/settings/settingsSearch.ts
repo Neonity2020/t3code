@@ -895,14 +895,14 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "welcome-page",
-    title: "Welcome page",
+    title: msg("Welcome page"),
     to: "/settings/about",
     primaryEnvironmentOnly: true,
     searchTerms: ["onboarding setup first run getting started agents import projects"],
   },
   {
     id: "privacy-policy",
-    title: "Privacy policy",
+    title: msg("Privacy policy"),
     to: "/settings/about",
     searchTerms: ["telemetry analytics usage data tracking legal opt out"],
   },
@@ -922,7 +922,7 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "open-source-licenses",
-    title: "Open source licenses",
+    title: msg("Open source licenses"),
     to: "/settings/about",
   },
   {

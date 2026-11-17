@@ -4,6 +4,7 @@ import {
 } from "@t3tools/client-runtime/operations/projects";
 import { sourceControlClients } from "@t3tools/client-runtime/source-control-clients";
 import type { SourceControlProviderKind } from "@t3tools/contracts";
+import { T, useGT } from "gt-react";
 import { FolderGit2Icon, LinkIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
@@ -81,6 +82,7 @@ export function NewProjectPublishHostPicker(props: {
   readonly value: SourceControlProviderKind;
   readonly onValueChange: (kind: SourceControlProviderKind) => void;
 }) {
+  const gt = useGT();
   const [open, setOpen] = useState(false);
   return (
     <span
@@ -102,7 +104,7 @@ export function NewProjectPublishHostPicker(props: {
           if (kind !== null) props.onValueChange(kind);
         }}
       >
-        <SelectTrigger size="xs" variant="ghost" aria-label="Host for the new repository">
+        <SelectTrigger size="xs" variant="ghost" aria-label={gt("Host for the new repository")}>
           <SelectValue>
             {(kind: SourceControlProviderKind) => sourceControlClients.get(kind).label}
           </SelectValue>
@@ -128,6 +130,21 @@ export function NewProjectSummary(props: {
   readonly projectsRoot: string | null;
   readonly environmentLabel: string | null;
 }) {
+  const gt = useGT();
+  const summaryDescription =
+    props.name.length > 0
+      ? props.environmentLabel === null
+        ? gt("Creates {path}", { path: props.pathPreview })
+        : gt("Creates {path} on {environment}", {
+            path: props.pathPreview,
+            environment: props.environmentLabel,
+          })
+      : props.environmentLabel === null
+        ? gt("Goes in {path}", { path: props.projectsRoot ?? "" })
+        : gt("Goes in {path} on {environment}", {
+            path: props.projectsRoot ?? "",
+            environment: props.environmentLabel,
+          });
   return (
     <div className="p-2 pb-0">
       <div className="flex min-h-8 items-center gap-2 rounded-sm px-2 py-1.5">
@@ -136,14 +153,9 @@ export function NewProjectSummary(props: {
         </CommandPaletteTitleIcon>
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-foreground text-sm">
-            {props.name.length > 0 ? props.name : "New project"}
+            {props.name.length > 0 ? props.name : <T>New project</T>}
           </span>
-          <span className="truncate text-muted-foreground/85 text-xs">
-            {props.name.length > 0
-              ? `Creates ${props.pathPreview}`
-              : `Goes in ${props.projectsRoot}`}
-            {props.environmentLabel === null ? null : ` on ${props.environmentLabel}`}
-          </span>
+          <span className="truncate text-muted-foreground/85 text-xs">{summaryDescription}</span>
         </span>
       </div>
     </div>
@@ -157,7 +169,9 @@ export function RemoteRepositorySummary(props: {
 }) {
   return (
     <div className="shrink-0 p-2 pb-0">
-      <div className="px-2 py-1.5 font-medium text-muted-foreground text-xs">Repository</div>
+      <div className="px-2 py-1.5 font-medium text-muted-foreground text-xs">
+        <T>Repository</T>
+      </div>
       <div className="flex min-h-8 items-center gap-2 rounded-sm px-2 py-1.5">
         <CommandPaletteTitleIcon>
           {remoteProjectSourceIcon(props.source, ITEM_ICON_CLASS)}
