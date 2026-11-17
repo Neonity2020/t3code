@@ -284,6 +284,7 @@ import {
 import { useEnvironmentShellHasSnapshot } from "../state/shell";
 import { ChatComposer, type ChatComposerHandle } from "./chat/ChatComposer";
 import { DraftHeroHeadline } from "./chat/DraftHeroHeadline";
+import { DraftThreadSuggestions } from "./chat/DraftThreadSuggestions";
 import { ExpandedImageDialogHost, openExpandedImagePreview } from "./chat/ExpandedImageDialog";
 import {
   BranchRestoreConfirmHost,
@@ -1899,6 +1900,12 @@ export default function ChatView(props: ChatViewProps) {
     scheduleComposerFocusStable();
   };
   const insertArtifactTemplateStable = useStableCallback(insertArtifactTemplate);
+  const selectDraftSuggestion = (prompt: string) => {
+    const composer = composerRef.current;
+    if (!canOperateThread || !composer || composer.getSendContext().prompt.trim()) return;
+    if (composer.insertTextAtEnd(prompt)) scheduleComposerFocusStable();
+  };
+  const selectDraftSuggestionStable = useStableCallback(selectDraftSuggestion);
   const sendAppMessage = async (text: string) => {
     if (!isServerThread || activeThreadId === null) {
       throw new Error("Messages from apps need a started thread.");
@@ -3850,12 +3857,21 @@ export default function ChatView(props: ChatViewProps) {
                           </div>
                         </div>
                       </ComposerSurface.Shell>
-                      {isDraftHeroState && composerBannerItems.length > 0 ? (
+                      {isDraftHeroState ? (
                         // Out of flow, like the headline, so a notice never moves the centered composer.
                         // Short windows pin the composer to the bottom, where an out-of-flow notice
                         // would fall off-screen, so there it takes space and lifts the composer.
-                        <div className="absolute inset-x-0 top-full flex flex-col gap-1 pt-4 [@media(max-height:34rem)]:static">
-                          <ComposerBannerStack items={composerBannerItems} detached />
+                        <div className="absolute inset-x-0 top-full flex flex-col gap-4 pt-4 [@media(max-height:34rem)]:static">
+                          {draftId ? (
+                            <DraftThreadSuggestions
+                              draftId={draftId}
+                              disabled={!canOperateThread || !composerMounted}
+                              onSelect={selectDraftSuggestionStable}
+                            />
+                          ) : null}
+                          {composerBannerItems.length > 0 ? (
+                            <ComposerBannerStack items={composerBannerItems} detached />
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
