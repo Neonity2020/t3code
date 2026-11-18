@@ -1374,10 +1374,12 @@ export const SETTINGS_SEARCH_ITEMS = [
   },
   {
     id: "kanban-plugin",
-    title: "Project Kanban board",
+    title: msg("Project Kanban board"),
     to: "/settings/plugins",
     scope: "project-defaults",
-    searchTerms: ["kanban board tasks backlog todo review done plugin project management"],
+    searchTerms: [
+      "kanban board tasks backlog todo review done plugin project management 看板 项目看板 项目管理 任务 待办 插件",
+    ],
   },
 ] as const satisfies ReadonlyArray<SettingsSearchItem>;
 

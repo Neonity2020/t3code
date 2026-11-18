@@ -8,10 +8,12 @@ import {
   type KanbanTag,
   KanbanTag as KanbanTagSchema,
   type ProjectId,
+  type ThreadEnvMode,
 } from "@t3tools/contracts";
 import type { KanbanCardLiveAttention } from "@t3tools/client-runtime/state/kanban";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
+import { msg } from "gt-react";
 
 export interface KanbanRouteSearch {
   readonly projectId?: ProjectId;
@@ -24,11 +26,11 @@ export interface KanbanRouteSearch {
 }
 
 export const COLUMN_LABELS: Readonly<Record<KanbanColumn, string>> = {
-  backlog: "Backlog",
-  todo: "Todo",
-  in_progress: "In Progress",
-  review: "Review",
-  done: "Done",
+  backlog: msg("Backlog"),
+  todo: msg("Todo"),
+  in_progress: msg("In Progress"),
+  review: msg("Review"),
+  done: msg("Done"),
 };
 
 export const COLUMN_DOT_CLASSES: Readonly<Record<KanbanColumn, string>> = {
@@ -40,10 +42,15 @@ export const COLUMN_DOT_CLASSES: Readonly<Record<KanbanColumn, string>> = {
 };
 
 export const PRIORITY_LABELS: Readonly<Record<KanbanPriority, string>> = {
-  urgent: "Urgent",
-  high: "High",
-  medium: "Medium",
-  low: "Low",
+  urgent: msg("Urgent"),
+  high: msg("High"),
+  medium: msg("Medium"),
+  low: msg("Low"),
+};
+
+export const WORKSPACE_MODE_LABELS: Readonly<Record<ThreadEnvMode, string>> = {
+  worktree: msg("Worktree (isolated)"),
+  local: msg("Local checkout"),
 };
 
 export const PRIORITY_BADGE_VARIANTS: Readonly<
@@ -61,15 +68,15 @@ export function attentionBadgePresentation(attention: KanbanCardLiveAttention): 
 } | null {
   switch (attention.kind) {
     case "question_pending":
-      return { label: "Needs input", variant: "warning" };
+      return { label: msg("Needs input"), variant: "warning" };
     case "approval_required":
-      return { label: "Needs approval", variant: "warning" };
+      return { label: msg("Needs approval"), variant: "warning" };
     case "failed":
-      return { label: "Failed", variant: "error" };
+      return { label: msg("Failed"), variant: "error" };
     case "running":
-      return { label: "Running", variant: "info" };
+      return { label: msg("Running"), variant: "info" };
     case "completed":
-      return { label: "Completed", variant: "success" };
+      return { label: msg("Completed"), variant: "success" };
     case "idle":
       return null;
   }
@@ -80,7 +87,7 @@ const decodeTag = Schema.decodeUnknownOption(KanbanTagSchema);
 export function parseTagsInput(raw: string): ReadonlyArray<KanbanTag> {
   const seen = new Set<string>();
   const tags: Array<KanbanTag> = [];
-  for (const part of raw.split(",")) {
+  for (const part of raw.split(/[,，]/)) {
     const decoded = decodeTag(part);
     if (Option.isNone(decoded)) continue;
     const key = decoded.value.toLowerCase();

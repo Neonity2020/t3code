@@ -1,4 +1,4 @@
-import { createMemoryHistory } from "@tanstack/react-router";
+import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
 import {
   KanbanCardId,
   WS_METHODS,
@@ -12,6 +12,7 @@ import type * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
+import { GTProvider } from "gt-react";
 import { expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 
@@ -20,7 +21,9 @@ import { AppRoot } from "~/AppRoot";
 import "~/components/ChatView";
 import "~/components/kanban/KanbanBoardPage";
 import { __setClientSettingsForTests } from "~/hooks/useSettings";
+import zhTranslations from "~/i18n/translations/zh.json";
 import { getRouter } from "~/router";
+import { AppAtomRegistryProvider } from "~/rpc/atomRegistry";
 import {
   ENVIRONMENT_ID,
   PROJECT_ID,
@@ -159,4 +162,37 @@ it("creates a card on /kanban, links a project thread, and navigates bidirection
 
   await vi.waitFor(() => expect(router.state.location.pathname).toBe("/kanban"));
   expect(router.state.location.search).toMatchObject({ cardId: "card-e2e-1" });
+});
+
+it("renders Chinese translations when GTProvider locale is zh", async () => {
+  await page.viewport(1400, 900);
+  using _environment = installFakeEnvironment([]);
+  using _sub = answerRpc(WS_METHODS.kanbanSubscribe, () => Stream.make({ cards: [] }));
+
+  __setClientSettingsForTests({
+    ...DEFAULT_CLIENT_SETTINGS,
+    onboardingCompletedAt: "2026-01-01T00:00:00.000Z",
+  });
+
+  const router = getRouter(createMemoryHistory({ initialEntries: ["/kanban"] }));
+  await router.load();
+  await using _app = await render(
+    <GTProvider locale="zh" translations={{ zh: zhTranslations }}>
+      <AppAtomRegistryProvider>
+        <RouterProvider router={router} />
+      </AppAtomRegistryProvider>
+    </GTProvider>,
+    {
+      // RouterProvider brings its own router.
+      router: false,
+    },
+  );
+
+  await expect.element(page.getByRole("heading", { name: "看板", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("heading", { name: "待规划", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("heading", { name: "待办", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("heading", { name: "进行中", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("heading", { name: "待评审", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("heading", { name: "已完成", exact: true })).toBeVisible();
+  await expect.element(page.getByRole("button", { name: "新建卡片" })).toBeVisible();
 });

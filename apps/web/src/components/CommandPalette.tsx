@@ -1690,8 +1690,20 @@ function OpenCommandPaletteDialog(props: {
     actionItems.push({
       kind: "action",
       value: "action:kanban",
-      searchTerms: ["kanban", "board", "tasks", "backlog", "todo", "review", "project management"],
-      title: "Open Kanban board",
+      searchTerms: [
+        "kanban",
+        "board",
+        "tasks",
+        "backlog",
+        "todo",
+        "review",
+        "project management",
+        "看板",
+        "项目管理",
+        "任务",
+        "待办",
+      ],
+      title: gt("Open Kanban board"),
       icon: <Columns3Icon className={ITEM_ICON_CLASS} />,
       run: async () => {
         await navigate({

@@ -1,3 +1,4 @@
+import { T, useGT } from "gt-react";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "../ui/button";
@@ -27,6 +28,7 @@ export function KanbanReworkDialog({
   onCancel,
   onConfirm,
 }: KanbanReworkDialogProps) {
+  const gt = useGT();
   const [feedback, setFeedback] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,37 +55,45 @@ export function KanbanReworkDialog({
     >
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle>Move back to In Progress</DialogTitle>
+          <DialogTitle>
+            <T>Move back to In Progress</T>
+          </DialogTitle>
           <DialogDescription>
-            Send rework instructions to the existing thread for "{cardTitle}", or move the card
-            without sending a message.
+            {gt(
+              'Send rework instructions to the existing thread for "{title}", or move the card without sending a message.',
+              { title: cardTitle },
+            )}
           </DialogDescription>
         </DialogHeader>
         <form className="flex min-h-0 flex-col" onSubmit={handleSubmit}>
           <DialogPanel>
             <div className="space-y-1.5">
-              <Label htmlFor="kanban-rework-feedback">Rework instructions (optional)</Label>
+              <Label htmlFor="kanban-rework-feedback">
+                <T>Rework instructions (optional)</T>
+              </Label>
               <Textarea
                 id="kanban-rework-feedback"
                 rows={4}
-                placeholder="Describe what needs to be fixed or adjusted..."
+                placeholder={gt("Describe what needs to be fixed or adjusted...")}
                 value={feedback}
                 onChange={(event) => setFeedback(event.target.value)}
               />
             </div>
           </DialogPanel>
           <DialogFooter>
-            <DialogClose render={<Button variant="ghost" type="button" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="ghost" type="button" />}>
+              <T>Cancel</T>
+            </DialogClose>
             <Button
               variant="outline"
               type="button"
               disabled={submitting}
               onClick={() => void submit(false)}
             >
-              Move only
+              <T>Move only</T>
             </Button>
             <Button type="submit" disabled={submitting} data-slot="dialog-action">
-              {feedback.trim().length > 0 ? "Move & send to thread" : "Move to In Progress"}
+              {feedback.trim().length > 0 ? gt("Move & send to thread") : gt("Move to In Progress")}
             </Button>
           </DialogFooter>
         </form>

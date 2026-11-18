@@ -6,6 +6,7 @@ import {
   type ThreadId,
 } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
+import { T, useGT, useMessages } from "gt-react";
 import { CheckIcon, Columns3Icon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
@@ -23,6 +24,8 @@ export function ThreadKanbanPill({
   readonly projectId: ProjectId | null;
   readonly threadId: ThreadId | null;
 }) {
+  const gt = useGT();
+  const m = useMessages();
   const card = useThreadKanbanCard(environmentId, projectId, threadId);
   const { moveCard } = useKanbanMutations();
 
@@ -46,7 +49,7 @@ export function ThreadKanbanPill({
         render={<Badge variant="outline" size="control" render={<button type="button" />} />}
       >
         <span className={cn("size-2 shrink-0 rounded-full", COLUMN_DOT_CLASSES[card.column])} />
-        <span className="text-muted-foreground">{COLUMN_LABELS[card.column]}:</span>
+        <span className="text-muted-foreground">{m(COLUMN_LABELS[card.column])}:</span>
         <span className="max-w-36 truncate">{card.title}</span>
       </MenuTrigger>
       <MenuPopup align="start">
@@ -63,13 +66,15 @@ export function ThreadKanbanPill({
           }
         >
           <Columns3Icon />
-          <span>Open on Kanban board</span>
+          <span>
+            <T>Open on Kanban board</T>
+          </span>
         </MenuItem>
         <MenuSeparator />
         {KANBAN_COLUMNS.map((col) => (
           <MenuItem key={col} onClick={() => handleMove(col)}>
             {col === card.column ? <CheckIcon /> : <span className="size-4" />}
-            <span>Move to {COLUMN_LABELS[col]}</span>
+            <span>{gt("Move to {column}", { column: m(COLUMN_LABELS[col]) })}</span>
           </MenuItem>
         ))}
       </MenuPopup>

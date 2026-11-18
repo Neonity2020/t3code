@@ -1256,8 +1256,8 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
         const clicked = await settlePromise(() =>
           api.contextMenu.show(
             [
-              { id: "new-thread", label: "New thread" },
-              { id: "open-kanban", label: "Open Kanban board" },
+              { id: "new-thread", label: gt("New thread") },
+              { id: "open-kanban", label: gt("Open Kanban board") },
               { id: "copy-path", label: "Copy path" },
               ...(canPinProject(group)
                 ? [

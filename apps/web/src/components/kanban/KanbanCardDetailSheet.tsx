@@ -13,6 +13,7 @@ import {
   type ThreadEnvMode,
 } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
+import { T, useGT, useMessages } from "gt-react";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -40,6 +41,7 @@ import {
   parseTagsInput,
   PRIORITY_BADGE_VARIANTS,
   PRIORITY_LABELS,
+  WORKSPACE_MODE_LABELS,
 } from "./kanbanPresentation";
 
 interface KanbanCardDetailSheetProps {
@@ -125,6 +127,8 @@ function CardDetailBody({
   readonly onToggleArchive: KanbanCardDetailSheetProps["onToggleArchive"];
   readonly onDeleteCard: KanbanCardDetailSheetProps["onDeleteCard"];
 }) {
+  const gt = useGT();
+  const m = useMessages();
   const { card, environmentId } = scopedCard;
   const [title, setTitle] = useState(card.title);
   const [description, setDescription] = useState(card.description);
@@ -138,6 +142,15 @@ function CardDetailBody({
   const [busy, setBusy] = useState(false);
 
   const attention = threadStatus ? attentionBadgePresentation(threadStatus.attention) : null;
+  const columnItems = Object.fromEntries(KANBAN_COLUMNS.map((col) => [col, m(COLUMN_LABELS[col])]));
+  const priorityItems = Object.fromEntries(
+    KANBAN_PRIORITIES.map((prio) => [prio, m(PRIORITY_LABELS[prio])]),
+  );
+  const workspaceItems = {
+    worktree: m(WORKSPACE_MODE_LABELS.worktree),
+    local: m(WORKSPACE_MODE_LABELS.local),
+  };
+  const threadItems = Object.fromEntries(projectThreads.map((thread) => [thread.id, thread.title]));
   const isDirty =
     title.trim() !== card.title ||
     description !== card.description ||
@@ -211,13 +224,17 @@ function CardDetailBody({
         <div className="flex flex-wrap items-center gap-1.5 pe-8">
           {projectName ? <Badge variant="outline">{projectName}</Badge> : null}
           <Badge variant={PRIORITY_BADGE_VARIANTS[card.priority]}>
-            {PRIORITY_LABELS[card.priority]}
+            {m(PRIORITY_LABELS[card.priority])}
           </Badge>
-          {card.archivedAt !== null ? <Badge variant="secondary">Archived</Badge> : null}
+          {card.archivedAt !== null ? (
+            <Badge variant="secondary">
+              <T>Archived</T>
+            </Badge>
+          ) : null}
         </div>
         <SheetTitle>{card.title}</SheetTitle>
         <SheetDescription>
-          Edit card specifications, manage the linked agent thread, or move status columns.
+          <T>Edit card specifications, manage the linked agent thread, or move status columns.</T>
         </SheetDescription>
       </SheetHeader>
 
@@ -226,9 +243,9 @@ function CardDetailBody({
           <div className="space-y-3 rounded-lg border border-border bg-muted/30 p-3.5">
             <div className="flex items-center justify-between gap-2">
               <span className="font-medium text-foreground text-xs uppercase tracking-wide">
-                Agent execution
+                <T>Agent execution</T>
               </span>
-              {attention ? <Badge variant={attention.variant}>{attention.label}</Badge> : null}
+              {attention ? <Badge variant={attention.variant}>{m(attention.label)}</Badge> : null}
             </div>
 
             {card.threadId !== null ? (
@@ -236,7 +253,7 @@ function CardDetailBody({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-medium text-foreground text-sm">
-                      {threadStatus?.threadTitle ?? "Linked thread"}
+                      {threadStatus?.threadTitle ?? gt("Linked thread")}
                     </div>
                     {threadStatus?.attention.kind === "failed" && threadStatus.attention.message ? (
                       <p className="mt-1 line-clamp-2 text-destructive-foreground text-xs">
@@ -269,7 +286,9 @@ function CardDetailBody({
                     }
                   >
                     <MessageSquareIcon />
-                    <span>Open thread</span>
+                    <span>
+                      <T>Open thread</T>
+                    </span>
                   </Button>
                   <Button
                     size="sm"
@@ -278,16 +297,20 @@ function CardDetailBody({
                     onClick={() => void handleUnlinkThread()}
                   >
                     <Link2OffIcon />
-                    <span>Unlink</span>
+                    <span>
+                      <T>Unlink</T>
+                    </span>
                   </Button>
                 </div>
 
                 <div className="space-y-2 border-t border-border/60 pt-3">
-                  <Label htmlFor="kanban-detail-rework">Send follow-up / rework instructions</Label>
+                  <Label htmlFor="kanban-detail-rework">
+                    <T>Send follow-up / rework instructions</T>
+                  </Label>
                   <Textarea
                     id="kanban-detail-rework"
                     rows={2}
-                    placeholder="Send feedback to resume this thread in In Progress..."
+                    placeholder={gt("Send feedback to resume this thread in In Progress...")}
                     value={reworkText}
                     onChange={(event) => setReworkText(event.target.value)}
                   />
@@ -299,7 +322,9 @@ function CardDetailBody({
                       onClick={() => void handleSendFollowUp()}
                     >
                       <SendIcon />
-                      <span>Send & move to In Progress</span>
+                      <span>
+                        <T>Send & move to In Progress</T>
+                      </span>
                     </Button>
                   </div>
                 </div>
@@ -307,13 +332,17 @@ function CardDetailBody({
             ) : (
               <div className="space-y-3">
                 <p className="text-muted-foreground text-xs">
-                  No thread linked yet. Start an agent run with this card's prompt, or bind an
-                  existing project thread.
+                  <T>
+                    No thread linked yet. Start an agent run with this card's prompt, or bind an
+                    existing project thread.
+                  </T>
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button size="sm" disabled={busy} onClick={() => void handleStart()}>
                     <PlayIcon />
-                    <span>Start with agent</span>
+                    <span>
+                      <T>Start with agent</T>
+                    </span>
                   </Button>
                 </div>
 
@@ -321,13 +350,14 @@ function CardDetailBody({
                   <div className="flex items-center gap-2 border-t border-border/60 pt-3">
                     <div className="min-w-0 flex-1">
                       <Select
-                        value={selectedLinkThreadId}
+                        value={selectedLinkThreadId || null}
+                        items={threadItems}
                         onValueChange={(value) => {
-                          if (value !== null) setSelectedLinkThreadId(value);
+                          setSelectedLinkThreadId(value ?? "");
                         }}
                       >
                         <SelectTrigger size="sm">
-                          <SelectValue placeholder="Link existing thread..." />
+                          <SelectValue placeholder={gt("Link existing thread...")} />
                         </SelectTrigger>
                         <SelectPopup>
                           {projectThreads.map((thread) => (
@@ -345,7 +375,9 @@ function CardDetailBody({
                       onClick={() => void handleLinkSelectedThread()}
                     >
                       <Link2Icon />
-                      <span>Link</span>
+                      <span>
+                        <T>Link</T>
+                      </span>
                     </Button>
                   </div>
                 ) : null}
@@ -355,9 +387,12 @@ function CardDetailBody({
 
           <form className="space-y-4" onSubmit={(event) => void handleSave(event)}>
             <div className="space-y-1.5">
-              <Label>Status column</Label>
+              <Label>
+                <T>Status column</T>
+              </Label>
               <Select
                 value={card.column}
+                items={columnItems}
                 onValueChange={(value) => {
                   if (value !== null && value !== card.column) {
                     void onMoveColumn(scopedCard, value as KanbanColumn);
@@ -370,7 +405,7 @@ function CardDetailBody({
                 <SelectPopup>
                   {KANBAN_COLUMNS.map((col) => (
                     <SelectItem key={col} value={col}>
-                      {COLUMN_LABELS[col]}
+                      {m(COLUMN_LABELS[col])}
                     </SelectItem>
                   ))}
                 </SelectPopup>
@@ -378,7 +413,9 @@ function CardDetailBody({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="kanban-detail-title">Title</Label>
+              <Label htmlFor="kanban-detail-title">
+                <T>Title</T>
+              </Label>
               <Input
                 id="kanban-detail-title"
                 value={title}
@@ -388,21 +425,26 @@ function CardDetailBody({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="kanban-detail-description">Description & prompt (Markdown)</Label>
+              <Label htmlFor="kanban-detail-description">
+                <T>Description & prompt (Markdown)</T>
+              </Label>
               <Textarea
                 id="kanban-detail-description"
                 rows={7}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
-                placeholder="Write task requirements and acceptance criteria..."
+                placeholder={gt("Write task requirements and acceptance criteria...")}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Priority</Label>
+                <Label>
+                  <T>Priority</T>
+                </Label>
                 <Select
                   value={priority}
+                  items={priorityItems}
                   onValueChange={(value) => {
                     if (value !== null) setPriority(value as KanbanPriority);
                   }}
@@ -413,7 +455,7 @@ function CardDetailBody({
                   <SelectPopup>
                     {KANBAN_PRIORITIES.map((prio) => (
                       <SelectItem key={prio} value={prio}>
-                        {PRIORITY_LABELS[prio]}
+                        {m(PRIORITY_LABELS[prio])}
                       </SelectItem>
                     ))}
                   </SelectPopup>
@@ -421,9 +463,12 @@ function CardDetailBody({
               </div>
 
               <div className="space-y-1.5">
-                <Label>Default workspace</Label>
+                <Label>
+                  <T>Default workspace</T>
+                </Label>
                 <Select
                   value={workspaceMode}
+                  items={workspaceItems}
                   onValueChange={(value) => {
                     if (value !== null) setWorkspaceMode(value as ThreadEnvMode);
                   }}
@@ -432,26 +477,28 @@ function CardDetailBody({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectPopup>
-                    <SelectItem value="worktree">Worktree (isolated)</SelectItem>
-                    <SelectItem value="local">Local checkout</SelectItem>
+                    <SelectItem value="worktree">{m(WORKSPACE_MODE_LABELS.worktree)}</SelectItem>
+                    <SelectItem value="local">{m(WORKSPACE_MODE_LABELS.local)}</SelectItem>
                   </SelectPopup>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="kanban-detail-tags">Tags (comma-separated)</Label>
+              <Label htmlFor="kanban-detail-tags">
+                <T>Tags (comma-separated)</T>
+              </Label>
               <Input
                 id="kanban-detail-tags"
                 value={tagsText}
                 onChange={(event) => setTagsText(event.target.value)}
-                placeholder="frontend, api, urgent"
+                placeholder={gt("frontend, api, urgent")}
               />
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-1">
               <Button type="submit" size="sm" disabled={!isDirty || busy || title.trim() === ""}>
-                Save changes
+                <T>Save changes</T>
               </Button>
             </div>
           </form>
@@ -464,7 +511,7 @@ function CardDetailBody({
               onClick={() => void handleArchive()}
             >
               {card.archivedAt !== null ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-              <span>{card.archivedAt !== null ? "Restore card" : "Archive card"}</span>
+              <span>{card.archivedAt !== null ? gt("Restore card") : gt("Archive card")}</span>
             </Button>
 
             <Button
@@ -474,7 +521,9 @@ function CardDetailBody({
               onClick={() => void handleDelete()}
             >
               <Trash2Icon />
-              <span>Delete card</span>
+              <span>
+                <T>Delete card</T>
+              </span>
             </Button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import {
   type KanbanTag,
   type ThreadEnvMode,
 } from "@t3tools/contracts";
+import { T, useGT, useMessages } from "gt-react";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "../ui/button";
@@ -24,7 +25,12 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { COLUMN_LABELS, parseTagsInput, PRIORITY_LABELS } from "./kanbanPresentation";
+import {
+  COLUMN_LABELS,
+  parseTagsInput,
+  PRIORITY_LABELS,
+  WORKSPACE_MODE_LABELS,
+} from "./kanbanPresentation";
 
 interface KanbanCreateCardDialogProps {
   readonly open: boolean;
@@ -52,10 +58,14 @@ export function KanbanCreateCardDialog(props: KanbanCreateCardDialogProps) {
     <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogPopup>
         <DialogHeader>
-          <DialogTitle>New kanban card</DialogTitle>
+          <DialogTitle>
+            <T>New kanban card</T>
+          </DialogTitle>
           <DialogDescription>
-            Add a task to your project board. Cards placed in In Progress immediately launch an
-            agent thread.
+            <T>
+              Add a task to your project board. Cards placed in In Progress immediately launch an
+              agent thread.
+            </T>
           </DialogDescription>
         </DialogHeader>
         {props.open ? (
@@ -86,6 +96,8 @@ function CreateCardForm({
   readonly onClose: () => void;
   readonly onSubmit: KanbanCreateCardDialogProps["onSubmit"];
 }) {
+  const gt = useGT();
+  const m = useMessages();
   const initialProjectKey =
     (defaultProjectKey !== null &&
     projects.some((p) => projectSelectionKey(p) === defaultProjectKey)
@@ -103,6 +115,18 @@ function CreateCardForm({
 
   const effectiveProject =
     projects.find((p) => projectSelectionKey(p) === selectedProjectKey) ?? projects[0] ?? null;
+
+  const projectItems = Object.fromEntries(
+    projects.map((project) => [projectSelectionKey(project), project.title]),
+  );
+  const columnItems = Object.fromEntries(KANBAN_COLUMNS.map((col) => [col, m(COLUMN_LABELS[col])]));
+  const priorityItems = Object.fromEntries(
+    KANBAN_PRIORITIES.map((prio) => [prio, m(PRIORITY_LABELS[prio])]),
+  );
+  const workspaceItems = {
+    worktree: m(WORKSPACE_MODE_LABELS.worktree),
+    local: m(WORKSPACE_MODE_LABELS.local),
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -129,15 +153,18 @@ function CreateCardForm({
         <div className="space-y-4">
           {projects.length > 1 ? (
             <div className="space-y-1.5">
-              <Label>Project</Label>
+              <Label>
+                <T>Project</T>
+              </Label>
               <Select
-                value={effectiveProject ? projectSelectionKey(effectiveProject) : ""}
+                value={effectiveProject ? projectSelectionKey(effectiveProject) : null}
+                items={projectItems}
                 onValueChange={(value) => {
                   if (value !== null) setSelectedProjectKey(value);
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose project" />
+                  <SelectValue placeholder={gt("Choose project")} />
                 </SelectTrigger>
                 <SelectPopup>
                   {projects.map((project) => {
@@ -154,10 +181,12 @@ function CreateCardForm({
           ) : null}
 
           <div className="space-y-1.5">
-            <Label htmlFor="kanban-create-title">Title</Label>
+            <Label htmlFor="kanban-create-title">
+              <T>Title</T>
+            </Label>
             <Input
               id="kanban-create-title"
-              placeholder="e.g. Implement OAuth token refresh"
+              placeholder={gt("e.g. Implement OAuth token refresh")}
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               required
@@ -165,10 +194,14 @@ function CreateCardForm({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="kanban-create-description">Description & prompt (Markdown)</Label>
+            <Label htmlFor="kanban-create-description">
+              <T>Description & prompt (Markdown)</T>
+            </Label>
             <Textarea
               id="kanban-create-description"
-              placeholder="Context, acceptance criteria, and instructions sent to the agent when started..."
+              placeholder={gt(
+                "Context, acceptance criteria, and instructions sent to the agent when started...",
+              )}
               rows={5}
               value={description}
               onChange={(event) => setDescription(event.target.value)}
@@ -177,9 +210,12 @@ function CreateCardForm({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-1.5">
-              <Label>Column</Label>
+              <Label>
+                <T>Column</T>
+              </Label>
               <Select
                 value={column}
+                items={columnItems}
                 onValueChange={(value) => {
                   if (value !== null) setColumn(value as KanbanColumn);
                 }}
@@ -190,7 +226,7 @@ function CreateCardForm({
                 <SelectPopup>
                   {KANBAN_COLUMNS.map((col) => (
                     <SelectItem key={col} value={col}>
-                      {COLUMN_LABELS[col]}
+                      {m(COLUMN_LABELS[col])}
                     </SelectItem>
                   ))}
                 </SelectPopup>
@@ -198,9 +234,12 @@ function CreateCardForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label>Priority</Label>
+              <Label>
+                <T>Priority</T>
+              </Label>
               <Select
                 value={priority}
+                items={priorityItems}
                 onValueChange={(value) => {
                   if (value !== null) setPriority(value as KanbanPriority);
                 }}
@@ -211,7 +250,7 @@ function CreateCardForm({
                 <SelectPopup>
                   {KANBAN_PRIORITIES.map((prio) => (
                     <SelectItem key={prio} value={prio}>
-                      {PRIORITY_LABELS[prio]}
+                      {m(PRIORITY_LABELS[prio])}
                     </SelectItem>
                   ))}
                 </SelectPopup>
@@ -219,9 +258,12 @@ function CreateCardForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label>Workspace</Label>
+              <Label>
+                <T>Workspace</T>
+              </Label>
               <Select
                 value={workspaceMode}
+                items={workspaceItems}
                 onValueChange={(value) => {
                   if (value !== null) setWorkspaceMode(value as ThreadEnvMode);
                 }}
@@ -230,18 +272,20 @@ function CreateCardForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPopup>
-                  <SelectItem value="worktree">Worktree (isolated)</SelectItem>
-                  <SelectItem value="local">Local checkout</SelectItem>
+                  <SelectItem value="worktree">{m(WORKSPACE_MODE_LABELS.worktree)}</SelectItem>
+                  <SelectItem value="local">{m(WORKSPACE_MODE_LABELS.local)}</SelectItem>
                 </SelectPopup>
               </Select>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="kanban-create-tags">Tags (comma-separated)</Label>
+            <Label htmlFor="kanban-create-tags">
+              <T>Tags (comma-separated)</T>
+            </Label>
             <Input
               id="kanban-create-tags"
-              placeholder="auth, backend, bug"
+              placeholder={gt("auth, backend, bug")}
               value={tagsText}
               onChange={(event) => setTagsText(event.target.value)}
             />
@@ -249,13 +293,15 @@ function CreateCardForm({
         </div>
       </DialogPanel>
       <DialogFooter>
-        <DialogClose render={<Button variant="ghost" type="button" />}>Cancel</DialogClose>
+        <DialogClose render={<Button variant="ghost" type="button" />}>
+          <T>Cancel</T>
+        </DialogClose>
         <Button
           type="submit"
           disabled={!effectiveProject || title.trim().length === 0 || submitting}
           data-slot="dialog-action"
         >
-          {column === "in_progress" ? "Create & start agent" : "Create card"}
+          {column === "in_progress" ? gt("Create & start agent") : gt("Create card")}
         </Button>
       </DialogFooter>
     </form>

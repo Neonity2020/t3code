@@ -38,6 +38,7 @@ import {
   resolveBuiltinPluginEnabled,
 } from "@t3tools/contracts";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { T, useGT, useMessages } from "gt-react";
 import {
   ArchiveIcon,
   ArchiveRestoreIcon,
@@ -107,6 +108,8 @@ interface PendingReworkMove {
 }
 
 export function KanbanBoardPage() {
+  const gt = useGT();
+  const m = useMessages();
   const search: KanbanRouteSearch = useSearch({ from: "/_chat/kanban" });
   const navigate = useNavigate({ from: "/kanban" });
 
@@ -115,6 +118,17 @@ export function KanbanBoardPage() {
   const scopedCards = useScopedKanbanCards();
   const threadShells = useQuietThreadShells();
   const mutations = useKanbanMutations();
+
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createDefaultColumn, setCreateDefaultColumn] = useState<KanbanColumn>("backlog");
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [pendingRework, setPendingRework] = useState<PendingReworkMove | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 6 },
+    }),
+  );
 
   const enabledProjects = projects.filter((project) => {
     if (project.isScratch || project.archivedAt != null) return false;
@@ -160,16 +174,20 @@ export function KanbanBoardPage() {
     settingsByEnvironment,
   );
 
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [createDefaultColumn, setCreateDefaultColumn] = useState<KanbanColumn>("backlog");
-  const [activeDragId, setActiveDragId] = useState<string | null>(null);
-  const [pendingRework, setPendingRework] = useState<PendingReworkMove | null>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 },
-    }),
-  );
+  const projectFilterItems = {
+    [ALL_PROJECTS_VALUE]: gt("All projects"),
+    ...Object.fromEntries(
+      enabledProjects.map((project) => [projectSelectionKey(project), project.title]),
+    ),
+  };
+  const priorityFilterItems = {
+    [ALL_PRIORITIES_VALUE]: gt("All priorities"),
+    ...Object.fromEntries(KANBAN_PRIORITIES.map((prio) => [prio, m(PRIORITY_LABELS[prio])])),
+  };
+  const tagFilterItems = {
+    [ALL_TAGS_VALUE]: gt("All tags"),
+    ...Object.fromEntries(grouped.allTags.map((tag) => [tag, tag])),
+  };
 
   const updateSearch = (patch: {
     readonly [K in keyof KanbanRouteSearch]?: KanbanRouteSearch[K] | undefined;
@@ -235,7 +253,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not create card",
+        title: gt("Could not create card"),
         description: formatCommandFailure(result),
       });
       return false;
@@ -243,8 +261,10 @@ export function KanbanBoardPage() {
     if (result.value.launchedThreadId) {
       toastManager.add({
         type: "success",
-        title: "Agent started",
-        description: `Started a linked thread for "${result.value.card.title}".`,
+        title: gt("Agent started"),
+        description: gt('Started a linked thread for "{title}".', {
+          title: result.value.card.title,
+        }),
       });
     }
     return true;
@@ -269,7 +289,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not move card",
+        title: gt("Could not move card"),
         description: formatCommandFailure(result),
       });
       return;
@@ -277,8 +297,10 @@ export function KanbanBoardPage() {
     if (result.value.launchedThreadId) {
       toastManager.add({
         type: "success",
-        title: "Agent started",
-        description: `Launched a thread for "${result.value.card.title}".`,
+        title: gt("Agent started"),
+        description: gt('Launched a thread for "{title}".', {
+          title: result.value.card.title,
+        }),
       });
     }
   };
@@ -336,15 +358,17 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not start agent",
+        title: gt("Could not start agent"),
         description: formatCommandFailure(result),
       });
       return;
     }
     toastManager.add({
       type: "success",
-      title: "Agent started",
-      description: `Started "${result.value.card.title}" in In Progress.`,
+      title: gt("Agent started"),
+      description: gt('Started "{title}" in In Progress.', {
+        title: result.value.card.title,
+      }),
     });
   };
 
@@ -377,7 +401,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not save card",
+        title: gt("Could not save card"),
         description: formatCommandFailure(result),
       });
     }
@@ -391,7 +415,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not update thread link",
+        title: gt("Could not update thread link"),
         description: formatCommandFailure(result),
       });
     }
@@ -406,7 +430,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not update archive status",
+        title: gt("Could not update archive status"),
         description: formatCommandFailure(result),
       });
     }
@@ -432,7 +456,7 @@ export function KanbanBoardPage() {
     if (result._tag !== "Success") {
       toastManager.add({
         type: "error",
-        title: "Could not delete card",
+        title: gt("Could not delete card"),
         description: formatCommandFailure(result),
       });
       return;
@@ -472,14 +496,17 @@ export function KanbanBoardPage() {
       >
         <div className="flex min-w-0 items-center gap-2 [-webkit-app-region:no-drag]">
           <div className="md:hidden">
-            <SidebarTrigger variant="ghost" aria-label="Toggle main sidebar" />
+            <SidebarTrigger variant="ghost" aria-label={gt("Toggle main sidebar")} />
           </div>
-          <h1 className="font-semibold text-base text-foreground">Kanban</h1>
+          <h1 className="font-semibold text-base text-foreground">
+            <T>Kanban</T>
+          </h1>
 
           {enabledProjects.length > 0 ? (
             <div className="w-48">
               <Select
                 value={projectSelectValue}
+                items={projectFilterItems}
                 onValueChange={(value) => {
                   if (value === null) return;
                   const chosen = parseProjectFilterValue(value, enabledProjects);
@@ -494,7 +521,9 @@ export function KanbanBoardPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPopup>
-                  <SelectItem value={ALL_PROJECTS_VALUE}>All projects</SelectItem>
+                  <SelectItem value={ALL_PROJECTS_VALUE}>
+                    <T>All projects</T>
+                  </SelectItem>
                   {enabledProjects.map((project) => {
                     const key = projectSelectionKey(project);
                     return (
@@ -516,7 +545,7 @@ export function KanbanBoardPage() {
               <div className="[&_input]:ps-8">
                 <Input
                   size="sm"
-                  placeholder="Filter cards..."
+                  placeholder={gt("Filter cards...")}
                   value={search.q ?? ""}
                   onChange={(event) => updateSearch({ q: event.target.value || undefined })}
                 />
@@ -526,7 +555,7 @@ export function KanbanBoardPage() {
                   <Button
                     size="icon-xs"
                     variant="ghost"
-                    aria-label="Clear search"
+                    aria-label={gt("Clear search")}
                     onClick={() => updateSearch({ q: undefined })}
                   >
                     <XIcon />
@@ -538,6 +567,7 @@ export function KanbanBoardPage() {
             <div className="w-32">
               <Select
                 value={search.priority ?? ALL_PRIORITIES_VALUE}
+                items={priorityFilterItems}
                 onValueChange={(value) => {
                   if (value === null) return;
                   updateSearch({
@@ -550,10 +580,12 @@ export function KanbanBoardPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectPopup>
-                  <SelectItem value={ALL_PRIORITIES_VALUE}>All priorities</SelectItem>
+                  <SelectItem value={ALL_PRIORITIES_VALUE}>
+                    <T>All priorities</T>
+                  </SelectItem>
                   {KANBAN_PRIORITIES.map((prio) => (
                     <SelectItem key={prio} value={prio}>
-                      {PRIORITY_LABELS[prio]}
+                      {m(PRIORITY_LABELS[prio])}
                     </SelectItem>
                   ))}
                 </SelectPopup>
@@ -564,6 +596,7 @@ export function KanbanBoardPage() {
               <div className="w-32">
                 <Select
                   value={search.tag ?? ALL_TAGS_VALUE}
+                  items={tagFilterItems}
                   onValueChange={(value) => {
                     if (value === null) return;
                     updateSearch({ tag: value === ALL_TAGS_VALUE ? undefined : value });
@@ -573,7 +606,9 @@ export function KanbanBoardPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectPopup>
-                    <SelectItem value={ALL_TAGS_VALUE}>All tags</SelectItem>
+                    <SelectItem value={ALL_TAGS_VALUE}>
+                      <T>All tags</T>
+                    </SelectItem>
                     {grouped.allTags.map((tag) => (
                       <SelectItem key={tag} value={tag}>
                         {tag}
@@ -587,7 +622,7 @@ export function KanbanBoardPage() {
             {!search.archived && grouped.doneActiveCount > 0 ? (
               <Button size="sm" variant="outline" onClick={() => void handleArchiveAllDone()}>
                 <ArchiveIcon />
-                <span>Archive Done ({grouped.doneActiveCount})</span>
+                <span>{gt("Archive Done ({count})", { count: grouped.doneActiveCount })}</span>
               </Button>
             ) : null}
 
@@ -598,13 +633,17 @@ export function KanbanBoardPage() {
             >
               {search.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
               <span>
-                {search.archived ? "Back to active" : `Archived (${grouped.archivedCount})`}
+                {search.archived
+                  ? gt("Back to active")
+                  : gt("Archived ({count})", { count: grouped.archivedCount })}
               </span>
             </Button>
 
             <Button size="sm" onClick={() => openCreateForColumn("backlog")}>
               <PlusIcon />
-              <span>New card</span>
+              <span>
+                <T>New card</T>
+              </span>
             </Button>
           </div>
         ) : null}
@@ -615,13 +654,15 @@ export function KanbanBoardPage() {
           <Empty>
             <EmptyHeader>
               <BlocksIcon className="mx-auto mb-2 size-8 text-muted-foreground" />
-              <EmptyTitle>No projects with Kanban enabled</EmptyTitle>
+              <EmptyTitle>
+                <T>No projects with Kanban enabled</T>
+              </EmptyTitle>
               <EmptyDescription>
-                Add a project or enable the Project Kanban board plugin in Settings.
+                <T>Add a project or enable the Project Kanban board plugin in Settings.</T>
               </EmptyDescription>
             </EmptyHeader>
             <Button size="sm" variant="outline" render={<Link to="/settings/plugins" />}>
-              Manage plugins
+              <T>Manage plugins</T>
             </Button>
           </Empty>
         </div>
@@ -754,16 +795,19 @@ function KanbanColumnLane({
   readonly onSelectCard: (scoped: ScopedKanbanCard) => void;
   readonly onStartCard: (scoped: ScopedKanbanCard) => void;
 }) {
+  const gt = useGT();
+  const m = useMessages();
   const { isOver, setNodeRef } = useDroppable({
     id: columnDropId(column),
   });
 
+  const columnLabel = m(COLUMN_LABELS[column]);
   const itemIds = cards.map(cardDragId);
 
   return (
     <section
       ref={setNodeRef}
-      aria-label={COLUMN_LABELS[column]}
+      aria-label={columnLabel}
       className={cn(
         "flex h-full w-72 shrink-0 flex-col rounded-xl border border-border/70 bg-muted/25 transition-colors",
         isOver && "border-ring bg-accent/40",
@@ -772,7 +816,7 @@ function KanbanColumnLane({
       <div className="flex items-center justify-between gap-2 px-3 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
           <span className={cn("size-2 shrink-0 rounded-full", COLUMN_DOT_CLASSES[column])} />
-          <h2 className="truncate font-medium text-foreground text-sm">{COLUMN_LABELS[column]}</h2>
+          <h2 className="truncate font-medium text-foreground text-sm">{columnLabel}</h2>
           <Badge size="sm" variant="secondary">
             {cards.length}
           </Badge>
@@ -780,7 +824,7 @@ function KanbanColumnLane({
         <Button
           size="icon-xs"
           variant="ghost"
-          aria-label={`Add card to ${COLUMN_LABELS[column]}`}
+          aria-label={gt("Add card to {column}", { column: columnLabel })}
           onClick={onAddCard}
         >
           <PlusIcon />
@@ -813,7 +857,7 @@ function KanbanColumnLane({
           })}
           {cards.length === 0 ? (
             <div className="flex min-h-24 items-center justify-center rounded-lg border border-dashed border-border/50 p-3 text-center text-muted-foreground text-xs">
-              Drop cards here
+              <T>Drop cards here</T>
             </div>
           ) : null}
         </div>
@@ -881,6 +925,7 @@ function KanbanCardSurface({
   readonly onSelect?: () => void;
   readonly onStart?: () => void;
 }) {
+  const m = useMessages();
   const { card, environmentId } = scoped;
   const attention = threadStatus ? attentionBadgePresentation(threadStatus.attention) : null;
 
@@ -903,7 +948,7 @@ function KanbanCardSurface({
       <div className="flex flex-wrap items-center justify-between gap-1.5">
         <div className="flex flex-wrap items-center gap-1">
           <Badge size="sm" variant={PRIORITY_BADGE_VARIANTS[card.priority]}>
-            {PRIORITY_LABELS[card.priority]}
+            {m(PRIORITY_LABELS[card.priority])}
           </Badge>
           {projectName ? (
             <Badge size="sm" variant="outline">
@@ -913,7 +958,7 @@ function KanbanCardSurface({
         </div>
         {attention ? (
           <Badge size="sm" variant={attention.variant}>
-            {attention.label}
+            {m(attention.label)}
           </Badge>
         ) : null}
       </div>
@@ -953,7 +998,9 @@ function KanbanCardSurface({
                 }
               >
                 <MessageSquareIcon />
-                <span>Thread</span>
+                <span>
+                  <T>Thread</T>
+                </span>
               </Button>
             </div>
           ) : onStart &&
@@ -965,7 +1012,9 @@ function KanbanCardSurface({
             >
               <Button size="xs" variant="outline" onClick={onStart}>
                 <PlayIcon />
-                <span>Start</span>
+                <span>
+                  <T>Start</T>
+                </span>
               </Button>
             </div>
           ) : null}
