@@ -253,6 +253,7 @@ import {
   sourceControlHostIcon,
 } from "./CommandPaletteAddProject";
 import { useCommandPaletteThreadItems } from "./CommandPaletteThreadItems";
+import { useCommandPaletteLanguageItems } from "./CommandPaletteLanguageItems";
 import { useCommandPaletteThemeItems } from "./CommandPaletteThemeItems";
 import {
   CommandPaletteVirtualizedResults,
@@ -539,6 +540,7 @@ function OpenCommandPaletteDialog(props: {
   const keybindings = useAtomValue(primaryServerKeybindingsAtom);
   const providersByEnvironment = useEnvironmentProviders();
   const { changeThemeItem, changeAppearanceItem, themeEditorItem } = useCommandPaletteThemeItems();
+  const { changeLanguageItem } = useCommandPaletteLanguageItems();
   const currentView = viewStack.at(-1)?.view ?? null;
   const threadSearchQuery = currentView === null && !isActionsOnly ? deferredQuery : "";
   const [browseGeneration, setBrowseGeneration] = useState(0);
@@ -1653,6 +1655,7 @@ function OpenCommandPaletteDialog(props: {
 
   actionItems.push(changeThemeItem);
   actionItems.push(changeAppearanceItem);
+  actionItems.push(changeLanguageItem);
 
   actionItems.push(themeEditorItem);
 
@@ -1866,7 +1869,9 @@ function OpenCommandPaletteDialog(props: {
             ? changeThemeItem.groups
             : currentView?.groups[0]?.value === "appearance"
               ? changeAppearanceItem.groups
-              : (currentView?.groups ?? rootGroups);
+              : currentView?.groups[0]?.value === "languages"
+                ? changeLanguageItem.groups
+                : (currentView?.groups ?? rootGroups);
 
   const isLinkedThreadSearch =
     linkedThreadSearch?.linkedThreads !== undefined && deferredQuery === linkedThreadSearch.query;
